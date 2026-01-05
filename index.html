@@ -1,0 +1,839 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>위험성 평가표  모바일 표 즉시표시 V3.0</title>
+  <style>
+    :root{
+      --bg:#f6f7fb; --card:#fff; --text:#111827; --muted:#6b7280; --border:#e5e7eb; --primary:#111827;
+      --fs-body: clamp(13px, 1.7vw, 15px);
+      --fs-label: clamp(12px, 1.6vw, 14px);
+      --fs-title: clamp(18px, 3.6vw, 22px);
+      --fs-h2: clamp(14px, 2.6vw, 16px);
+      --fs-btn: clamp(13px, 2.4vw, 15px);
+      --line: 1.45;
+      --radius: 12px;
+      --table-pad: 6px;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0; padding:0; width:100%; max-width:100%; min-height:100vh;
+      overflow-x:hidden;
+      -webkit-text-size-adjust:100%;
+      -webkit-tap-highlight-color:transparent;
+      background:var(--bg); color:var(--text);
+      /* 모든 글씨 '맑은 고딕' 적용 */
+      font-family:"Malgun Gothic", sans-serif;
+      font-size:var(--fs-body); line-height:var(--line);
+    }
+    /* iOS 안전영역 대응 */
+    @supports (padding: env(safe-area-inset-top)) {
+      header { padding-top: calc(env(safe-area-inset-top)); }
+    }
+    header{
+      background:var(--card); border-bottom:1px solid var(--border);
+      position:sticky; top:0; z-index:10; backdrop-filter:saturate(120%) blur(6px);
+    }
+    .wrap{max-width:1000px; margin:0 auto; padding:12px}
+    .brand{display:flex; align-items:center; justify-content:space-between; gap:8px}
+    .title{font-weight:800; font-size:var(--fs-title)}
+    .toolbar{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+    button{
+      border:1px solid var(--border); background:var(--primary); color:#fff;
+      border-radius:var(--radius); padding:9px 12px; font-size:var(--fs-btn); min-height:40px; cursor:pointer;
+      font-family:inherit;
+    }
+    button.secondary{background:#374151}
+    button.warn{background:#b91c1c}
+    /* 터치 타겟 확대(갤럭시/아이폰 공통) */
+    @media (pointer:coarse) {
+      button{min-height:44px}
+      input, select, textarea{min-height:40px; font-family:inherit}
+      .table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+    }
+    main{padding:12px 0}
+    .card{
+      background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+      padding:12px; margin:12px auto; box-shadow:0 2px 6px rgba(0,0,0,.06)
+    }
+    h2{margin:0 0 8px; font-size:var(--fs-h2); font-family:inherit}
+    /* 표: 모바일 가로 스크롤 래퍼 */
+    .table-wrap{
+      width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;
+      border:1px solid var(--border); border-radius:var(--radius); background:#fff;
+    }
+    table{width:100%; border-collapse:collapse; min-width:920px; font-family:inherit}
+    /* 열폭 고정(px)  열폭조절 UI 삭제에 따라 CSS로 직접 지정 */
+    col:nth-child(1){width:120px}
+    col:nth-child(2){width:220px}
+    col:nth-child(3){width:120px}
+    col:nth-child(4){width:260px}
+    col:nth-child(5){width:90px}
+    col:nth-child(6){width:90px}
+    col:nth-child(7){width:90px}
+    col:nth-child(8){width:110px}
+    col:nth-child(9){width:200px}
+    col:nth-child(10){width:90px}
+    col:nth-child(11){width:90px}
+    col:nth-child(12){width:90px}
+    col:nth-child(13){width:120px}
+    col:nth-child(14){width:80px}
+    th,td{border:1px solid var(--border); padding:var(--table-pad); font-size:var(--fs-body); vertical-align:middle}
+    th{background:#f3f4f6; text-align:center; white-space:nowrap}
+    td{text-align:left}
+    .num{text-align:center}
+    .ctrl-lines{margin:0; padding-left:18px}
+    .ctrl-lines li{margin:2px 0}
+    .signature{border:1px dashed var(--muted); border-radius:var(--radius); overflow:hidden; background:#fff}
+    .signature canvas{width:100%; height:140px; display:block; cursor:crosshair; touch-action:none; user-select:none}
+    @media(max-width:768px){
+      /* 모바일에서 첫 열 sticky 비활성화(폭 계산 오류 방지) */
+      .sticky-first thead th:first-child,
+      .sticky-first tbody td:first-child{ position:static !important; box-shadow:none !important; }
+    }
+    @media print{
+      header, .toolbar{display:none!important}
+      .sheet{width:210mm; min-height:297mm; margin:0 auto; padding:12mm}
+      .card{box-shadow:none; border-color:#ddd}
+      .table-wrap{overflow:visible}
+      table{min-width:auto}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <div class="title">LG전자 ES에너지컨설팅팀  위험성 평가표 (모바일 표 V3.0)</div>
+      <!-- 안내/로드 상태 미표시 -->
+    </div>
+    <div class="toolbar">
+      <button id="saveDoc" type="button">저장</button>
+      <button id="printPDF" class="secondary" type="button">PDF로 내보내기</button>
+      <button id="clearAll" class="warn" type="button">전체 초기화</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- 상단 메타 폼 -->
+  <section class="card">
+    <div class="title" style="text-align:center; letter-spacing:2px">위 험 성 평 가 표</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+      <div><label class="hint">업체명</label><input id="fCompany" type="text" value="LG전자㈜ ES에너지컨설팅팀" style="width:100%"></div>
+      <div><label class="hint">현장명</label><input id="fSiteName" type="text" placeholder="예: 공장 라인" style="width:100%"></div>
+      <div><label class="hint">진단 시작</label><input id="fDiagStart" type="date" style="width:100%"></div>
+      <div><label class="hint">진단 종료</label><input id="fDiagEnd" type="date" style="width:100%"></div>
+      <div>
+        <label class="hint">평가구분</label>
+        <select id="assessmentType" style="width:100%">
+          <option value="최초">최초</option>
+          <option value="정기">정기</option>
+          <option value="수시">수시</option>
+        </select>
+      </div>
+      <div><label class="hint">작성</label><input id="fWriter" type="text" placeholder="작성자 성명" style="width:100%"></div>
+      <div><label class="hint">안전관리자</label><input id="fSafety" type="text" placeholder="성명" style="width:100%"></div>
+      <div><label class="hint">실무자1</label><input id="fWorker1" type="text" placeholder="성명" style="width:100%"></div>
+      <div><label class="hint">실무자2</label><input id="fWorker2" type="text" placeholder="성명" style="width:100%"></div>
+      <div><label class="hint">실무자3</label><input id="fWorker3" type="text" placeholder="성명" style="width:100%"></div>
+      <div style="grid-column:1/-1"><label class="hint">비고</label><textarea id="fRemark" style="width:100%; min-height:60px" placeholder="특이사항/참고사항"></textarea></div>
+    </div>
+  </section>
+
+  <!-- 본문: 표 (정적 행 내장 / 전체) -->
+  <section class="card">
+    <h2>작업별 유해위험요인 평가</h2>
+    <div class="table-wrap">
+      <table id="riskTable" class="sticky-first">
+        <colgroup>
+          <col /><col /><col /><col /><col /><col /><col /><col /><col /><col /><col /><col /><col /><col />
+        </colgroup>
+        <thead>
+          <tr>
+            <th rowspan="2">대분류</th>
+            <th rowspan="2">세부분류/설명</th>
+            <th rowspan="2">재해유형</th>
+            <th rowspan="2">현재 안전보건조치</th>
+            <th colspan="3">현재 위험성</th>
+            <th rowspan="2">위험등급</th>
+            <th rowspan="2">감소대책<br/><span class="hint">세부내용</span></th>
+            <th colspan="3">개선 후 위험성</th>
+            <th rowspan="2">최종 위험등급</th>
+            <th rowspan="2">완료</th>
+          </tr>
+          <tr>
+            <th>가능성</th><th>중대성</th><th>위험성</th>
+            <th>가능성</th><th>중대성</th><th>위험성</th>
+          </tr>
+        </thead>
+
+        <tbody id="riskBody">
+          <!-- ==== 정적 행(마스터)  화면 즉시표시 보장 ==== -->
+
+          <!-- 사전준비 작업 (rowspan=3) -->
+          <tr data-cat="사전준비 작업">
+            <td rowspan="3">사전준비 작업</td>
+            <td>기계실, 전기실 등 사전 현장 투어(칠러, 펌프, VCB, 배관 등)</td>
+            <td>넘어짐/부딪힘</td>
+            <td data-ctrl="1. 안전화안전모작업복안전거리 유지
+2. 고객사 동행
+3. 소화기비상계단 등 대피로 파악">
+              <ol class="ctrl-lines">
+                <li>안전화안전모작업복안전거리 유지</li>
+                <li>고객사 동행</li>
+                <li>소화기비상계단 등 대피로 파악</li>
+              </ol>
+            </td>
+            <td class="num">1</td><td class="num">1</td><td class="num">1</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none" placeholder="감소대책 세부 내용 ( 선택 시)"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="사전준비 작업">
+            <td>측정장비 기계실 이동</td>
+            <td>넘어짐/떨어짐</td>
+            <td data-ctrl="1. 손어깨 직접 이동
+2. 대차카트
+3. 엘리베이터 활용">
+              <ol class="ctrl-lines"><li>손어깨 직접 이동</li><li>대차카트</li><li>엘리베이터 활용</li></ol>
+            </td>
+            <td class="num">1</td><td class="num">1</td><td class="num">1</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="사전준비 작업">
+            <td>측정장비 정리 및 배터리 충전, 온도계/온습도계 준비</td>
+            <td>감전</td>
+            <td data-ctrl="1. 기계실 내 220V 콘센트
+2. 멀티탭 활용">
+              <ol class="ctrl-lines"><li>기계실 내 220V 콘센트</li><li>멀티탭 활용</li></ol>
+            </td>
+            <td class="num">1</td><td class="num">1</td><td class="num">1</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+
+          <!-- 유량측정 -->
+          <tr data-cat="유량측정">
+            <td rowspan="3">유량측정</td>
+            <td>보온재 탈거 및 제거</td>
+            <td>찔림/베임</td>
+            <td data-ctrl="1. 고객/전문점 탈거 요청
+2. 직접 탈거 시 2인 1조">
+              <ol class="ctrl-lines"><li>고객/전문점 탈거 요청</li><li>직접 탈거 시 2인 1조</li></ol>
+            </td>
+            <td class="num">2</td><td class="num">1</td><td class="num">2</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="유량측정">
+            <td>고소작업대 활용(보온재 탈거, 유량 측정)</td>
+            <td>넘어짐/떨어짐</td>
+            <td data-ctrl="1. 1m 정격값 준수
+2. 비대리프트 활용
+3. 2인 1조">
+              <ol class="ctrl-lines"><li>1m 정격값 준수</li><li>비대리프트 활용</li><li>2인 1조</li></ol>
+            </td>
+            <td class="num">1</td><td class="num">3</td><td class="num">3</td><td>Ⅱ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="유량측정">
+            <td>초음파 유량계 설치 및 제거</td>
+            <td>화재</td>
+            <td data-ctrl="1. 세팅센서통신선값 확인
+2. 2인 1조">
+              <ol class="ctrl-lines"><li>세팅센서통신선값 확인</li><li>2인 1조</li></ol>
+            </td>
+            <td class="num">1</td><td class="num">1</td><td class="num">1</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+
+          <!-- 온도측정 (rowspan=4) -->
+          <tr data-cat="온도측정">
+            <td rowspan="4">온도측정</td>
+            <td>온도계 부착 전 셋팅(써모커플 연결)</td><td>찔림</td>
+            <td data-ctrl="1. 안전장갑 착용
+2. 공용 태블릿/PC 활용">
+              <ol class="ctrl-lines"><li>안전장갑 착용</li><li>공용 태블릿/PC 활용</li></ol>
+            </td>
+            <td class="num">1</td><td class="num">1</td><td class="num">1</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="온도측정">
+            <td>써모웰 기존 온도센서 제거 및 자사 센서 부착</td><td>감전</td>
+            <td data-ctrl="1. 써모웰 확인(간접/직접)
+2. 기존센서 천천히 제거
+3. HMI 온도값 활용">
+              <ol class="ctrl-lines"><li>써모웰 확인(간접/직접)</li><li>기존센서 천천히 제거</li><li>HMI 온도값 활용</li></ol>
+            </td>
+            <td class="num">1</td><td class="num">3</td><td class="num">3</td><td>Ⅱ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="온도측정">
+            <td>배관표면 온도센서 부착</td><td>감전</td>
+            <td data-ctrl="1. HMI 온도값 활용"><ol class="ctrl-lines"><li>HMI 온도값 활용</li></ol></td>
+            <td class="num">1</td><td class="num">1</td><td class="num">1</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="온도측정">
+            <td>고소작업대 활용(온도센서 부착/제거)</td><td>감전</td>
+            <td data-ctrl="1. 1m HMI 온도값 활용
+2. 2인 1조"><ol class="ctrl-lines"><li>1m HMI 온도값 활용</li><li>2인 1조</li></ol></td>
+            <td class="num">1</td><td class="num">3</td><td class="num">3</td><td>Ⅱ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+
+          <!-- 온습도측정 -->
+          <tr data-cat="온습도측정">
+            <td rowspan="2">온습도측정</td>
+            <td>실내기 및 FCU</td><td>배임/떨어짐</td>
+            <td data-ctrl="1. 고소작업 지양
+2. 회전체 안전거리
+3. 안전장갑"><ol class="ctrl-lines"><li>고소작업 지양</li><li>회전체 안전거리</li><li>안전장갑</li></ol></td>
+            <td class="num">1</td><td class="num">1</td><td class="num">1</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="온습도측정">
+            <td>실외기 및 RTU</td><td>배임/떨어짐</td>
+            <td data-ctrl="1. 고소작업 지양
+2. 회전체 안전거리
+3. 안전장갑"><ol class="ctrl-lines"><li>고소작업 지양</li><li>회전체 안전거리</li><li>안전장갑</li></ol></td>
+            <td class="num">1</td><td class="num">3</td><td class="num">3</td><td>Ⅱ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+
+          <!-- 전력측정 -->
+          <tr data-cat="전력측정">
+            <td rowspan="3">전력측정</td>
+            <td>전기 저압 측정(전류/전압 클램프 직접 연결)</td><td>감전</td>
+            <td data-ctrl="1. 측정위치 분석
+2. 누전방지장갑
+3. 기존 계기값 활용"><ol class="ctrl-lines"><li>측정위치 분석</li><li>누전방지장갑</li><li>기존 계기값 활용</li></ol></td>
+            <td class="num">1</td><td class="num">3</td><td class="num">3</td><td>Ⅱ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="전력측정">
+            <td>전기 고압 측정(CT/PT 활용)</td><td>감전</td>
+            <td data-ctrl="1. 측정위치 분석
+2. 누전방지장갑
+3. 기존 계기값 활용"><ol class="ctrl-lines"><li>측정위치 분석</li><li>누전방지장갑</li><li>기존 계기값 활용</li></ol></td>
+            <td class="num">1</td><td class="num">3</td><td class="num">3</td><td>Ⅱ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="전력측정">
+            <td>기존 전력량계 활용(전류/전압/소비전력/역률)</td><td>감전</td>
+            <td data-ctrl="1. 고객 통해 스위치 누름"><ol class="ctrl-lines"><li>고객 통해 스위치 누름</li></ol></td>
+            <td class="num">1</td><td class="num">1</td><td class="num">1</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+
+          <!-- 풍량측정 -->
+          <tr data-cat="풍량측정">
+            <td rowspan="3">풍량측정</td>
+            <td>실내기 및 FCU</td><td>부딪힘/떨어짐</td>
+            <td data-ctrl="1. 2인 1조
+2. 고소작업 지양"><ol class="ctrl-lines"><li>2인 1조</li><li>고소작업 지양</li></ol></td>
+            <td class="num">1</td><td class="num">1</td><td class="num">1</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="풍량측정">
+            <td>기계실내 공기압축기 흡/토출량</td><td>감전</td>
+            <td data-ctrl="1. 고소작업 지양"><ol class="ctrl-lines"><li>고소작업 지양</li></ol></td>
+            <td class="num">1</td><td class="num">3</td><td class="num">3</td><td>Ⅱ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="풍량측정">
+            <td>실외(옥상/지상)</td><td>감전</td>
+            <td data-ctrl="1. 토출보다 흡입 측정
+2. 풍량계보다 풍속계
+3. 회전체 안전거리"><ol class="ctrl-lines"><li>토출보다 흡입 측정</li><li>풍량계보다 풍속계</li><li>회전체 안전거리</li></ol></td>
+            <td class="num">1</td><td class="num">2</td><td class="num">2</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+
+          <!-- 기타 -->
+          <tr data-cat="기타">
+            <td rowspan="3">기타</td>
+            <td>현장 이동 시 진단차/자차 직접 운전</td><td>교통사고</td>
+            <td data-ctrl="1. 새벽야간운전 금지
+2. 2시간 운전 후 휴식
+3. 충분히 휴식 후 이동(익일 권장)">
+              <ol class="ctrl-lines"><li>새벽야간운전 금지</li><li>2시간 운전 후 휴식</li><li>충분히 휴식 후 이동(익일 권장)</li></ol>
+            </td>
+            <td class="num">1</td><td class="num">2</td><td class="num">2</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="기타">
+            <td>작업자 건강 상태 이상(고열/감기/과음)</td><td>넘어짐/부딪힘</td>
+            <td data-ctrl="1. 체온 확인(37)
+2. 충분한 휴식"><ol class="ctrl-lines"><li>체온 확인(37)</li><li>충분한 휴식</li></ol></td>
+            <td class="num">1</td><td class="num">2</td><td class="num">2</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+          <tr data-cat="기타">
+            <td>(실외 작업시) 하절기 일사열</td><td>탈수</td>
+            <td data-ctrl="1. 수분 공급
+2. 주기적 휴식"><ol class="ctrl-lines"><li>수분 공급</li><li>주기적 휴식</li></ol></td>
+            <td class="num">1</td><td class="num">2</td><td class="num">2</td><td>Ⅰ등급</td>
+            <td>
+              <select class="miti"><option value="1">안전 조치 완료</option><option value="2" selected>해당 사항 없음</option><option value="3">(사용자 직접 입력)</option></select>
+              <textarea class="miti-detail" style="display:none"></textarea>
+            </td>
+            <td><select class="l1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="s1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="r1"><option value=""></option><option>1</option><option>2</option><option>3</option></select></td>
+            <td><select class="gFinal"><option value=""></option><option value="1">Ⅰ등급</option><option value="2">Ⅱ등급</option><option value="3">Ⅲ등급</option></select></td>
+            <td style="text-align:center"><input type="checkbox" class="done"/></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 서명 -->
+  <section class="card">
+    <h2>현장 확인 및 승인 서명</h2>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+      <div>
+        <label>현장 확인자</label>
+        <input id="sigName1" type="text" placeholder="성명" style="width:100%" />
+        <div class="signature" style="margin-top:8px"><canvas id="sigCanvas1"></canvas></div>
+        <div style="margin-top:8px"><button class="secondary" id="clearSig1" type="button">서명 지우기</button></div>
+      </div>
+      <div>
+        <label>승인자</label>
+        <input id="sigName2" type="text" placeholder="성명" style="width:100%" />
+        <div class="signature" style="margin-top:8px"><canvas id="sigCanvas2"></canvas></div>
+        <div style="margin-top:8px"><button class="secondary" id="clearSig2" type="button">서명 지우기</button></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ===== 안전 저장 래퍼(localStorage 실패 시 메모리 대체) ===== */
+const storage = (function(){
+  try{
+    const t='__hra_test__';
+    localStorage.setItem(t,'1'); localStorage.removeItem(t);
+    return localStorage;
+  }catch(e){
+    const mem={};
+    return {
+      getItem:k=> (k in mem ? mem[k] : null),
+      setItem:(k,v)=>{ mem[k] = String(v) },
+      removeItem:k=>{ delete mem[k] },
+      key:i=> Object.keys(mem)[i] ?? null,
+      get length(){ return Object.keys(mem).length; }
+    };
+  }
+})();
+const STORAGE_KEY = "hra-risk-mobile-v3";
+
+/* ===== 유틸 ===== */
+const qs = s => document.querySelector(s);
+function gradeValueFromLS(L,S){
+  const R=Number(L)*Number(S);
+  if(!Number.isFinite(R)) return null;
+  if(R<=2) return 1; if(R<=4) return 2; return 3;
+}
+
+/* ===== 행 이벤트 바인딩 ===== */
+function bindRowEvents(tr){
+  const miti = tr.querySelector(".miti");
+  const ta   = tr.querySelector(".miti-detail");
+  const l1   = tr.querySelector(".l1");
+  const s1   = tr.querySelector(".s1");
+  const r1   = tr.querySelector(".r1");
+  const gF   = tr.querySelector(".gFinal");
+  const done = tr.querySelector(".done");
+
+  const L0 = Number((tr.children[4]?.textContent || '').trim());
+  const S0 = Number((tr.children[5]?.textContent || '').trim());
+  const R0 = Number((tr.children[6]?.textContent || '').trim());
+
+  function recomputeFinal(){
+    const L1 = (l1.value==="" ? null : Number(l1.value));
+    const S1 = (s1.value==="" ? null : Number(s1.value));
+    const gv = (L1==null || S1==null) ? null : gradeValueFromLS(L1,S1);
+    gF.value = (gv==null ? "" : String(gv));
+  }
+  function setImprovedFromCurrent(){
+    l1.value = Number.isFinite(L0) ? String(L0) : "";
+    s1.value = Number.isFinite(S0) ? String(S0) : "";
+    r1.value = (Number.isFinite(L0) && Number.isFinite(S0)) ? String(L0*S0) : "";
+    recomputeFinal();
+  }
+  function clearImproved(){ l1.value=""; s1.value=""; r1.value=""; gF.value=""; }
+
+  if(miti){
+    miti.addEventListener("change", ()=>{
+      // () 사용자 입력 선택 시 세부내용 박스 표시
+      if(miti.value==="3"){ ta.style.display=""; } else { ta.style.display="none"; ta.value=""; }
+      // () 해당 사항 없음이면 개선후 필드/최종등급 공란, (/)이면 현재값으로 L1,S1 초기화
+      if(miti.value==="2"){ clearImproved(); } else { setImprovedFromCurrent(); }
+      autoSave();
+    });
+  }
+  [ta,l1,s1,r1,gF,done].forEach(el=>{
+    el?.addEventListener("input", autoSave);
+    el?.addEventListener("change", ()=>{
+      if(el===l1 || el===s1){ recomputeFinal(); }
+      autoSave();
+    });
+  });
+}
+[...document.querySelectorAll("#riskBody tr")].forEach(bindRowEvents);
+
+/* ===== 수집/저장 ===== */
+function collectDoc(){
+  const rows=[...document.querySelectorAll("#riskBody tr")].map(tr=>{
+    const td = tr.children;
+    const ctrlRaw = tr.querySelector("td[data-ctrl]")?.getAttribute("data-ctrl") || "";
+    const selM = tr.querySelector(".miti");
+    const taM  = tr.querySelector(".miti-detail");
+    const selects = tr.querySelectorAll("select");
+    const gSel = tr.querySelector(".gFinal");
+    const gTxt = (gSel?.value==="" ? "" : gSel?.selectedOptions[0]?.textContent || "");
+    const toNN = v => (v==="" ? null : Number(v));
+    return {
+      cat: tr.getAttribute("data-cat") || td[0].textContent.trim(),
+      step: td[1].textContent.trim(),
+      accType: td[2].textContent.trim(),
+      ctrl: ctrlRaw,
+      L0: Number(td[4].textContent), S0: Number(td[5].textContent), R0: Number(td[6].textContent),
+      grade0: td[7].textContent.trim(),
+      mitiType: Number(selM?.value || 2),
+      miti: (Number(selM?.value || 2)===3 ? (taM?.value || "") : (Number(selM?.value || 2)===1 ? "안전 조치 완료" : "해당 사항 없음")),
+      l1: toNN(selects[1]?.value || ""),
+      s1: toNN(selects[2]?.value || ""),
+      r1: toNN(selects[3]?.value || ""),
+      gFinal: toNN(selects[4]?.value || ""),
+      gFinalTxt: gTxt,
+      done: !!(tr.querySelector(".done")?.checked)
+    };
+  });
+  const meta = {
+    siteName:        qs("#fSiteName")?.value || "",
+    companyName:     qs("#fCompany")?.value || "",
+    diagStart:       qs("#fDiagStart")?.value || "",
+    diagEnd:         qs("#fDiagEnd")?.value || "",
+    evalDate:        qs("#fEvalDate")?.value || "",
+    assessmentType:  qs("#assessmentType")?.value || "최초",
+    writer:          qs("#fWriter")?.value || "",
+    safetyManager:   qs("#fSafety")?.value || "",
+    worker1:         qs("#fWorker1")?.value || "",
+    worker2:         qs("#fWorker2")?.value || "",
+    worker3:         qs("#fWorker3")?.value || "",
+    remark:          qs("#fRemark")?.value || ""
+  };
+  return { schema:1, meta, items:rows, ts:new Date().toISOString() };
+}
+function autoSave(){
+  try{
+    const doc = collectDoc();
+    if(!doc.items || !doc.items.length) return;
+    storage.setItem(STORAGE_KEY, JSON.stringify(doc));
+  }catch(e){ /* 비차단 */ }
+}
+
+/* ===== 병합: 현재 표에 사용자 입력만 반영(화면 유지) ===== */
+function mergeIntoTable(items){
+  items.forEach(it=>{
+    const tr = [...document.querySelectorAll("#riskBody tr")].find(r=>{
+      const step = r.children[1].textContent.trim();
+      const cat  = r.getAttribute("data-cat") || r.children[0].textContent.trim();
+      return (step===it.step && cat===it.cat);
+    });
+    if(!tr) return;
+    const miti = tr.querySelector(".miti");
+    const ta   = tr.querySelector(".miti-detail");
+    const l1   = tr.querySelector(".l1");
+    const s1   = tr.querySelector(".s1");
+    const r1   = tr.querySelector(".r1");
+    const gF   = tr.querySelector(".gFinal");
+    const done = tr.querySelector(".done");
+    if(miti){ miti.value = String(it.mitiType ?? 2); }
+    if(ta){
+      if((it.mitiType??2)===3){ ta.style.display=""; ta.value = it.miti ?? ""; }
+      else { ta.style.display="none"; ta.value=""; }
+    }
+    const setSel = (el,v)=>{ if(el) el.value = (v==null ? "" : String(v)); };
+    setSel(l1, it.l1); setSel(s1, it.s1); setSel(r1, it.r1); setSel(gF, it.gFinal);
+    if(done) done.checked = !!it.done;
+  });
+}
+
+/* ===== 버튼 바인딩 ===== */
+qs("#saveDoc").addEventListener("click", ()=>{ autoSave(); alert("저장되었습니다."); });
+qs("#printPDF").addEventListener("click", ()=> window.print());
+qs("#clearAll").addEventListener("click", ()=>{
+  if(!confirm("전체 초기화 하시겠습니까? 저장된 데이터가 삭제됩니다.")) return;
+  resetToMaster();
+});
+
+/* ===== 전체 초기화 ===== */
+function resetToMaster(){
+  // 상단 메타
+  ["#fSiteName","#fDiagStart","#fDiagEnd","#fWriter","#fSafety","#fWorker1","#fWorker2","#fWorker3","#fRemark"].forEach(sel=>{
+    const el = qs(sel); if(!el) return;
+    el.value = "";
+  });
+  // 업체명은 'LG전자'로 자동 기입
+  const companyEl = qs("#fCompany"); if(companyEl) companyEl.value = "LG전자";
+
+  const selType = qs("#assessmentType"); if(selType) selType.value="최초";
+
+  // 본문 표: 사용자 입력 필드 초기화
+  [...document.querySelectorAll("#riskBody tr")].forEach(tr=>{
+    const miti = tr.querySelector(".miti");
+    const ta   = tr.querySelector(".miti-detail");
+    const l1   = tr.querySelector(".l1");
+    const s1   = tr.querySelector(".s1");
+    const r1   = tr.querySelector(".r1");
+    const gF   = tr.querySelector(".gFinal");
+    const done = tr.querySelector(".done");
+    if(miti) miti.value = "2"; // 해당 사항 없음
+    if(ta){ ta.style.display="none"; ta.value=""; }
+    if(l1) l1.value=""; if(s1) s1.value=""; if(r1) r1.value="";
+    if(gF) gF.value="";
+    if(done) done.checked=false;
+  });
+
+  // 저장 데이터 삭제
+  try{ storage.removeItem(STORAGE_KEY); }catch(e){}
+  alert("초기화 완료: 마스터 항목으로 재설정 (업체명=LG전자)");
+}
+
+/* ===== 서명 드로잉 (iOS/Android/PC) ===== */
+function initSignature(canvasId, clearBtnId){
+  const cvs = qs(`#${canvasId}`), btn = qs(`#${clearBtnId}`);
+  if(!cvs) return;
+  const ctx = cvs.getContext('2d');
+
+  function resize(){
+    // 고해상도 대응
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    const rect = cvs.getBoundingClientRect();
+    const w = Math.floor(rect.width  * ratio);
+    const h = Math.floor(rect.height * ratio);
+    cvs.width = w; cvs.height = h;
+    ctx.setTransform(1,0,0,1,0,0); // 스케일 재설정
+    ctx.scale(ratio, ratio);
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.lineCap  = 'round';
+    ctx.strokeStyle = '#111827';
+    ctx.clearRect(0,0,w,h);
+  }
+
+  let drawing=false, last=null;
+  function getPos(e){
+    const rect = cvs.getBoundingClientRect();
+    if(e.touches && e.touches[0]){
+      return {x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top};
+    }
+    return {x: e.clientX - rect.left, y: e.clientY - rect.top};
+  }
+  function start(e){ e.preventDefault(); drawing=true; last=getPos(e); }
+  function move(e){
+    if(!drawing) return;
+    e.preventDefault();
+    const p=getPos(e);
+    ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke();
+    last=p;
+  }
+  function end(){ drawing=false; last=null; }
+
+  // 마우스
+  cvs.addEventListener('mousedown', start);
+  cvs.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+
+  // 터치 (iOS/Android)
+  cvs.addEventListener('touchstart', start, {passive:false});
+  cvs.addEventListener('touchmove',  move,  {passive:false});
+  cvs.addEventListener('touchend',   end);
+
+  // 리사이즈
+  window.addEventListener('resize', resize);
+  resize();
+
+  // 지우기
+  btn?.addEventListener('click', ()=>{ ctx.clearRect(0,0,cvs.width,cvs.height); });
+}
+
+// 초기 로드: 저장본 병합(비차단) 및 서명 초기화
+(function init(){
+  try{
+    const raw = storage.getItem(STORAGE_KEY);
+    if(raw){
+      const doc = JSON.parse(raw);
+      mergeIntoTable(doc.items ?? []);
+    }
+  }catch(e){}
+
+  // 서명 초기화
+  initSignature('sigCanvas1','clearSig1');
+  initSignature('sigCanvas2','clearSig2');
+})();
+</script>
+</body>
+</html>
