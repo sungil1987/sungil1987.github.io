@@ -14,7 +14,7 @@
     }
 
     :root{
-      /*  글자 120% 확대(기존 clamp 대비 +20%) */
+      /*  글자 120% 확대 */
       --bg:#f6f7fb; --card:#fff; --text:#111827; --border:#e5e7eb; --primary:#111827;
       --fs-body:  clamp(15.6px, 2.04vw, 18px);
       --fs-label: clamp(14.4px, 1.92vw, 16.8px);
@@ -141,42 +141,39 @@
     }
 
     /* 
-        인쇄(모바일 PDF 포함) 최적화
-       - 배경은 전부 '흰색'으로 고정(큰 네모 뒤 배경색 문제 해결)
-       - 표 헤더 반복, 행 단위 분리(행 내부 짤림 방지)
-       - 문단블록 단위 페이지 나눔, 캔버스/서명/입력요소 짤림 방지
-       - 인쇄 중에는 모바일 축소 transform 해제(폭 자동 맞춤)
-       - 가로/세로 모드에 따른 열 폭(유해위험요인=보완대책 동일폭)
+        인쇄(모바일 PDF 포함) 최적화 + 3단락 한 페이지 묶기
+       - 배경 '흰색' 강제
+       - 표/문단/서명 짤림 방지(행/블록 단위 페이지 나눔)
+       - 각 단락(page-block)을 한 페이지에 묶고,
+         두 번째/세 번째 단락(page-start)은 새 페이지 시작
+       - 인쇄 중 모바일 축소 transform 해제(폭 자동 맞춤)
         */
     @page{ margin:12mm }
 
     @media print{
-      /* 0) 인쇄 전용 리셋/배경 흰색 고정 */
+      /* 0) 배경/색상 재정의 */
       html, body{
         background:#fff !important;
         color:#000 !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-      /* 화면 전용 스케일/그림자/배경 제거 */
-      .wrap{
-        transform:none !important;
-        width:auto !important;
-      }
-      header,.toolbar{display:none !important}
+      .wrap{ transform:none !important; width:auto !important }
+      header,.toolbar{ display:none !important }
       .card{
         box-shadow:none !important;
         background:#fff !important;
         border-color:#ddd !important;
+        transform-origin:top left; /* 블록 단위 축소를 위한 기준점 */
       }
       .table-wrap, table, thead, tbody, tfoot, tr, th, td,
       input.field, textarea.field, .signature canvas{
         background:#fff !important;
       }
-      thead th{ background:#fff !important } /* 헤더 회색  흰색 */
-      td.section{ background:#fff !important } /* 섹션 셀 배경도 흰색으로 */
+      thead th{ background:#fff !important }
+      td.section{ background:#fff !important }
 
-      /* 1) 표 헤더/푸터 반복 + 행/셀 짤림 방지 */
+      /* 1) 표/문단/요소 짤림 방지 */
       thead{ display:table-header-group !important }
       tfoot{ display:table-footer-group !important }
       table{ min-width:auto; width:100%; table-layout:auto; border-collapse:collapse }
@@ -188,54 +185,39 @@
         page-break-inside:avoid !important;
         break-inside:avoid !important;
       }
-
-      /* 행 사이에서는 분리 허용(행 내부만 방지) */
       tbody{ page-break-inside:auto; break-inside:auto }
+      p, .cell-input, .miti-print{ orphans:3; widows:3 }
+      h1,h2,h3, .main-title, .section-title{ page-break-after:avoid; break-after:avoid }
 
-      /* 문단 단위 페이지 나눔(고아/과부 줄 최소 보장) */
-      p, .cell-input, .miti-print{
-        orphans:3; widows:3;
-      }
-      h1,h2,h3, .main-title, .section-title{
-        page-break-after:avoid; break-after:avoid;
-      }
-
-      /* 이미지/캔버스/서명 스케일 안정화 + 짤림 방지 */
-      img, canvas{
-        max-width:100% !important;
-        height:auto !important;
+      /* 2) 세 단락을 각 한 페이지에 묶기 */
+      .page-block{
         page-break-inside:avoid !important;
         break-inside:avoid !important;
       }
+      .page-start{
+        page-break-before:always !important;
+        break-before:page !important;
+      }
 
-      /* 버튼류 숨김 */
-      #printPDF,
-      #btnPrepAdd, #btnPrepRemove, #btnWorksAdd, #btnWorksRemove,
-      #addMiscRow, #removeMiscRow{ display:none !important }
-
-      /* 2) 인쇄 시 열 폭(가로/세로별) : 유해위험요인 = 보완대책 동일 폭 */
-      html.print-portrait col.c-task  { width:8%  !important }
-      html.print-portrait col.c-hazard{ width:36% !important }
-      html.print-portrait col.c-ok    { width:6%  !important }
-      html.print-portrait col.c-fix   { width:6%  !important }
-      html.print-portrait col.c-na    { width:6%  !important }
-      html.print-portrait col.c-miti  { width:36% !important } /* 동일폭 */
-      html.print-portrait col.c-done  { width:2%  !important }
+      /* 3) 인쇄 시 열 폭(유해위험요인 = 보완대책 동일) */
+      html.print-portrait  col.c-task  { width:8%  !important }
+      html.print-portrait  col.c-hazard{ width:36% !important }
+      html.print-portrait  col.c-ok    { width:6%  !important }
+      html.print-portrait  col.c-fix   { width:6%  !important }
+      html.print-portrait  col.c-na    { width:6%  !important }
+      html.print-portrait  col.c-miti  { width:36% !important }
+      html.print-portrait  col.c-done  { width:2%  !important }
 
       html.print-landscape col.c-task  { width:8%  !important }
       html.print-landscape col.c-hazard{ width:36% !important }
       html.print-landscape col.c-ok    { width:5%  !important }
       html.print-landscape col.c-fix   { width:5%  !important }
       html.print-landscape col.c-na    { width:5%  !important }
-      html.print-landscape col.c-miti  { width:36% !important } /* 동일폭 */
+      html.print-landscape col.c-miti  { width:36% !important }
       html.print-landscape col.c-done  { width:5%  !important }
     }
 
-    /* 
-        모바일 전용 UI 조정
-       - 유해위험요인(c-hazard)과 보완대책(c-miti) 동일 폭
-       - 화면 가독성을 위한 80% 축소(인쇄 시 해제됨)
-        */
+    /*  모바일 전용 UI 조정 (인쇄 시 해제됨) */
     @media (max-width:800px), (pointer:coarse){
       col.c-hazard, col.c-miti { width:182px !important } /* 364  182 */
       tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal }
@@ -280,8 +262,8 @@
 </header>
 
 <main class="wrap">
-  <!-- 상단 메타 폼 -->
-  <section class="card">
+  <!-- 1) 현장 정보란 -->
+  <section class="card page-block" id="metaCard">
     <div class="title main-title">수시 위험성 평가표</div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
       <div><label class="hint">업체명</label><input id="fCompany" type="text" value="LG전자 ES에너지컨설팅팀" class="field"></div>
@@ -299,8 +281,8 @@
     </div>
   </section>
 
-  <!-- 본문 -->
-  <section class="card">
+  <!-- 2) 체크리스트 (사전준비/작업시/기타) -->
+  <section class="card page-block page-start" id="checklistCard">
     <h2 style="display:none">작업별 유해위험요인 평가</h2>
     <div class="table-wrap">
       <table id="riskTable">
@@ -385,8 +367,8 @@
     </div>
   </section>
 
-  <!-- 서명 -->
-  <section id="approvalSection" class="card">
+  <!-- 3) 서명란 -->
+  <section id="approvalSection" class="card page-block page-start">
     <h2>현장 확인 및 승인 서명</h2>
     <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px">
       <div class="sig-box">
@@ -677,7 +659,7 @@
     });
   }
 
-  /* 모바일: c-hazard와 c-miti 폭 동일 유지 보정(실측 기반) */
+  /*  모바일: c-hazard와 c-miti 폭 동일 유지 보정(실측 기반) */
   function equalizeHazardMitiWidth(){
     const isMobile = window.matchMedia("(max-width: 800px), (pointer:coarse)").matches;
     const styleId = "dyn-mobile-cols";
@@ -702,7 +684,7 @@
     }catch(e){ /* silent */ }
   }
 
-  /* 인쇄 시 가로/세로 감지  열 폭 클래스 부여 */
+  /*  인쇄 시 가로/세로 감지  열 폭 클래스 부여 */
   function setPrintOrientationClass(){
     try{
       const isLandscape =
@@ -722,6 +704,39 @@
     const rootEl = document.documentElement;
     rootEl.classList.remove("print-landscape");
     rootEl.classList.remove("print-portrait");
+  }
+
+  /*  인쇄 직전: 각 단락(page-block)이 페이지를 넘치면 자동 축소(0.8~1.0) */
+  function scalePageBlocksForPrint(){
+    try{
+      const blocks = qsa('.page-block');
+      const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
+      const marginComp = 40; // 상하 여백 보정(픽셀 기준, 장치별 오버헤드 고려)
+      const usableH = Math.max(0, viewportH - marginComp);
+
+      blocks.forEach(block=>{
+        // 초기화
+        block.style.transform = '';
+        block.style.width = '';
+        const rect = block.getBoundingClientRect();
+        const h = rect.height;
+        if(usableH > 0 && h > usableH){
+          let scale = usableH / h;
+          scale = Math.max(0.8, Math.min(1.0, scale)); // 최소 80% ~ 최대 100%
+          block.style.transform = `scale(${scale})`;
+          block.style.transformOrigin = 'top left';
+          // 축소로 줄어든 가로폭 복구
+          block.style.width = `calc(100% / ${scale})`;
+        }
+      });
+    }catch(e){ /* silent */ }
+  }
+
+  function resetBlockScaleAfterPrint(){
+    qsa('.page-block').forEach(block=>{
+      block.style.transform = '';
+      block.style.width = '';
+    });
   }
 
   /* 초기화(회사명 제외) + 동적 행/rowSpan 복구 */
@@ -747,7 +762,7 @@
     }
   }
 
-  /* 인쇄 이벤트: 내용 동기화 + 방향 클래스 부여/해제 */
+  /* 인쇄 이벤트: 내용 동기화 + 방향 클래스 + 블록 자동 축소 + 원복 */
   window.addEventListener('beforeprint', ()=>{
     qsa('.miti-input').forEach((inp)=>{
       const p = inp.nextElementSibling;
@@ -756,8 +771,12 @@
       }
     });
     setPrintOrientationClass();
+    scalePageBlocksForPrint();
   });
-  window.addEventListener('afterprint', clearPrintOrientationClass);
+  window.addEventListener('afterprint', ()=>{
+    clearPrintOrientationClass();
+    resetBlockScaleAfterPrint();
+  });
 
   function initAll(){
     try{
