@@ -13,12 +13,13 @@
       font-weight: 400; font-style: normal; font-display: swap;
     }
     :root{
+      /*  폰트 120% 확대(기존 clamp 값 대비 +20%) */
       --bg:#f6f7fb; --card:#fff; --text:#111827; --border:#e5e7eb; --primary:#111827;
-      --fs-body: clamp(13px, 1.7vw, 15px);
-      --fs-label: clamp(12px, 1.6vw, 14px);
-      --fs-title: clamp(18px, 3.6vw, 22px);
-      --fs-h2: clamp(14px, 2.6vw, 16px);
-      --fs-btn: clamp(13px, 2.4vw, 15px);
+      --fs-body:  clamp(15.6px, 2.04vw, 18px);   /* 13,1.7vw,15  +20% */
+      --fs-label: clamp(14.4px, 1.92vw, 16.8px); /* 12,1.6vw,14  +20% */
+      --fs-title: clamp(21.6px, 4.32vw, 26.4px); /* 18,3.6vw,22  +20% */
+      --fs-h2:    clamp(16.8px, 3.12vw, 19.2px); /* 14,2.6vw,16  +20% */
+      --fs-btn:   clamp(15.6px, 2.88vw, 18px);   /* 13,2.4vw,15  +20% */
       --line: 1.45; --radius: 12px; --table-pad: 6px;
       --radius-input: 10px; --focus:#3b82f6; --shadow:0 2px 6px rgba(0,0,0,.06); --title-accent:#8B1B3D;
     }
@@ -116,7 +117,7 @@
     .cell-input{ white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; resize:vertical; }
     .miti-cell { padding:6px !important; }
     .miti-input:disabled{ background:#f9fafb; color:#6b7280; }
-    .miti-print{ display:none; }
+    .miti-print{ display:none; min-height:48px; }
     .signature{ width:100%; height:130px }
     .sig-box{ position:relative }
     #printPDF{
@@ -125,6 +126,7 @@
     .signature canvas{
       width:100%; height:100%; display:block; border:1px dashed var(--border); border-radius:8px; background:#fff; touch-action:none
     }
+
     /* 인쇄 공통: 방향 강제 없음(인쇄창에서 가로/세로 선택) */
     @page{ margin:12mm }
     @media print{
@@ -142,17 +144,26 @@
       .miti-print{
         display:block !important;
         border:1px solid #ddd; border-radius:8px; padding:6px 8px;
-        white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word;
-        min-height:48px;
       }
-      /*  인쇄용 중립 비율에서 체크박스 열 80% 축소 반영 */
-      col.c-task  {width:8%  !important}
-      col.c-hazard{width:28% !important}
-      col.c-ok    {width:7.2% !important} /* 9  7.2 */
-      col.c-fix   {width:7.2% !important} /* 9  7.2 */
-      col.c-na    {width:7.2% !important} /* 9  7.2 */
-      col.c-miti  {width:18% !important}
-      col.c-done  {width:6.4% !important} /* 8  6.4 */
+
+      /*  인쇄 시 가로/세로 자동 최적화: beforeprint에서 html에 클래스 부여 */
+      /* Portrait 최적화: 텍스트 열 충분, 체크열 컴팩트 */
+      html.print-portrait col.c-task  { width:8%  !important }
+      html.print-portrait col.c-hazard{ width:30% !important }
+      html.print-portrait col.c-ok    { width:6%  !important }
+      html.print-portrait col.c-fix   { width:6%  !important }
+      html.print-portrait col.c-na    { width:6%  !important }
+      html.print-portrait col.c-miti  { width:42% !important } /* 보완대책을 넉넉히 확보 */
+      html.print-portrait col.c-done  { width:2%  !important }
+
+      /* Landscape 최적화: 가로폭이 넓으므로 유해위험/보완대책을 넓게 */
+      html.print-landscape col.c-task  { width:8%  !important }
+      html.print-landscape col.c-hazard{ width:34% !important }
+      html.print-landscape col.c-ok    { width:5%  !important }
+      html.print-landscape col.c-fix   { width:5%  !important }
+      html.print-landscape col.c-na    { width:5%  !important }
+      html.print-landscape col.c-miti  { width:40% !important }
+      html.print-landscape col.c-done  { width:3%  !important }
     }
 
     /* =========================
@@ -164,8 +175,10 @@
       /* 1차: 기본 동일폭(고정값) */
       col.c-hazard,
       col.c-miti { width:182px !important; } /* 364  182 (절반) */
+
       /* 유해위험요인 셀 줄바꿈 허용 */
       tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal; }
+
       /* 날짜 입력 색상/아이콘 크기 통일 */
       main .card:first-of-type input[type="date"].field{
         width:100%; min-width:0; box-sizing:border-box; -webkit-appearance:none; appearance:none;
@@ -180,6 +193,7 @@
       main .card:first-of-type input[type="date"].field::-webkit-calendar-picker-indicator{
         margin:0 6px 0 0; padding:0; width:18px; height:18px;
       }
+
       /* 2) 전체 UI 80% 축소(가독성 유지/가로 스크롤 최소화) */
       .wrap{
         transform: scale(.8);
@@ -187,6 +201,7 @@
         width: calc(100% / .8); /* 축소로 줄어든 레이아웃 폭 복구 */
       }
     }
+
     #approvalSection > h2{ font-size:calc(var(--fs-h2) - 4px + 3px) }
   </style>
 
@@ -614,9 +629,7 @@
     });
   }
 
-  /*  모바일에서 c-hazard와 c-miti 폭을 항상 동일하게 유지하는 보정 로직
-     - CSS로 1차 동일폭 지정
-     - 회전/리사이즈/초기 로딩마다 실제 측정폭으로 c-miti를 재설정 */
+  /*  모바일: c-hazard와 c-miti 폭 동일 유지 보정 */
   function equalizeHazardMitiWidth(){
     const isMobile = window.matchMedia("(max-width: 800px), (pointer:coarse)").matches;
     const styleId = "dyn-mobile-cols";
@@ -641,6 +654,28 @@
     }catch(e){ /* silent */ }
   }
 
+  /*  PDF(인쇄) 최적화: 인쇄 직전에 가로/세로 감지  html에 클래스 부여 */
+  function setPrintOrientationClass(){
+    try{
+      const isLandscape =
+        (window.matchMedia && window.matchMedia("(orientation: landscape)").matches)
+        || (window.innerWidth > window.innerHeight);
+      const rootEl = document.documentElement;
+      if(isLandscape){
+        rootEl.classList.add("print-landscape");
+        rootEl.classList.remove("print-portrait");
+      }else{
+        rootEl.classList.add("print-portrait");
+        rootEl.classList.remove("print-landscape");
+      }
+    }catch(e){ /* silent */ }
+  }
+  function clearPrintOrientationClass(){
+    const rootEl = document.documentElement;
+    rootEl.classList.remove("print-landscape");
+    rootEl.classList.remove("print-portrait");
+  }
+
   function resetToMaster(){
     try{
       qsa('.riskchk').forEach((chk)=>{ chk.checked=false; chk.disabled=false; });
@@ -657,13 +692,13 @@
       const prepCell = byId("prep-section-cell"); if(prepCell) prepCell.rowSpan = PREP_BASE_ROWS;
       const worksCell= byId("task-works-label"); if(worksCell) worksCell.rowSpan = WORKS_BASE_ROWS;
       const miscCell = byId("misc-section-cell"); if(miscCell) miscCell.rowSpan = MISC_BASE_ROWS;
-      // 리셋 후 모바일 컬럼 동기화 재실행
       setTimeout(equalizeHazardMitiWidth, 50);
     }catch(e){
       console.error(e); alert("초기화 중 오류: " + (e && e.message ? e.message : e));
     }
   }
 
+  /* 인쇄 이벤트 훅: 보완대책 동기화 + 가로/세로 최적화 클래스 부여/해제 */
   window.addEventListener('beforeprint', ()=>{
     qsa('.miti-input').forEach((inp)=>{
       const p = inp.nextElementSibling;
@@ -671,7 +706,9 @@
         p.textContent = inp.value || "";
       }
     });
+    setPrintOrientationClass();
   });
+  window.addEventListener('afterprint', clearPrintOrientationClass);
 
   function initAll(){
     try{
