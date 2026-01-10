@@ -1,28 +1,3 @@
-
-#Requires -Version 5.1
-[CmdletBinding()]
-param(
-  [string]$OutDir   = 'D:\000. 현장\0000. 진단 보고서\2026\모바일 코딩',
-  [string]$FileName = 'index.html',
-  [switch]$Open,
-  [switch]$Hash
-)
-
-$ErrorActionPreference = 'Stop'
-
-try {
-  if (-not (Test-Path -LiteralPath $OutDir)) {
-    New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
-  }
-} catch {
-  Write-Error "출력 폴더 생성/확인 중 오류: $($_.Exception.Message)"
-  throw
-}
-
-$indexPath = Join-Path $OutDir $FileName
-
-# HTML 전체(모바일 위험성 평가 웹앱)
-$html = @'
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -125,11 +100,11 @@ $html = @'
     /* 화면용 열 폭 (체크박스 열 80% 축소 반영) */
     col.c-task { width:72px }
     col.c-hazard { width:364px }
-    col.c-ok { width:72px }   /* 90 → 72 */
-    col.c-fix { width:72px }  /* 90 → 72 */
-    col.c-na  { width:88px }  /* 110 → 88 */
+    col.c-ok { width:72px }   /* 90  72 */
+    col.c-fix { width:72px }  /* 90  72 */
+    col.c-na  { width:88px }  /* 110  88 */
     col.c-miti{ width:220px }
-    col.c-done{ width:56px }  /* 70 → 56 */
+    col.c-done{ width:56px }  /* 70  56 */
 
     th,td{ border:1px solid var(--border); padding:var(--table-pad); font-size:var(--fs-body); vertical-align:top }
     thead th{ background:#f3f4f6; text-align:center; white-space:nowrap }
@@ -142,7 +117,7 @@ $html = @'
     .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap }
 
     .chk-wrap{ display:flex; align-items:center; justify-content:center; min-height:32px; }
-    /* ✅ 체크박스 80% 축소 */
+    /*  체크박스 80% 축소 */
     .riskchk { width:18px; height:18px; accent-color:#111827; cursor:pointer; }
     @media(pointer:coarse){ .riskchk{ width:21px; height:21px } }
 
@@ -190,7 +165,7 @@ $html = @'
       }
     }
 
-    /* 🖨️ 가로(landscape) 인쇄 최적화: 가운데 정렬 + 열폭 자동 조정 + 동등폭(유해·위험요인=보완대책) */
+    /*  가로(landscape) 인쇄 최적화: 가운데 정렬 + 열폭 자동 조정 + 동등폭(유해위험요인=보완대책) */
     @media print and (orientation: landscape){
       body{ background:#fff; }
       .wrap{
@@ -206,22 +181,22 @@ $html = @'
       col.c-na    { width:7%  !important; }
       col.c-done  { width:6%  !important; }
 
-      /* ✅ 유해·위험요인과 보완대책을 항상 동일 폭으로(각 30%) */
+      /*  유해위험요인과 보완대책을 항상 동일 폭으로(각 30%) */
       col.c-hazard{ width:30% !important; }
       col.c-miti  { width:30% !important; }
     }
 
     /* =========================
-       📱 모바일 전용 UI 조정
-       1) 유해·위험요인(c-hazard)과 보완대책(c-miti) 동일 폭
+        모바일 전용 UI 조정
+       1) 유해위험요인(c-hazard)과 보완대책(c-miti) 동일 폭
        2) 전체 UI 80% 축소 표시
        ========================= */
     @media (max-width: 800px), (pointer:coarse){
       /* 1차: 기본 동일폭(고정값) */
       col.c-hazard,
-      col.c-miti { width:182px !important; } /* 364 → 182 (절반) */
+      col.c-miti { width:182px !important; } /* 364  182 (절반) */
 
-      /* 유해·위험요인 셀 줄바꿈 허용 */
+      /* 유해위험요인 셀 줄바꿈 허용 */
       tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal; }
 
       /* 날짜 입력 색상/아이콘 크기 통일 */
@@ -266,7 +241,7 @@ $html = @'
         <div class="toolbar-left">
           <button id="clearAll" class="warn" type="button">초기화</button>
         </div>
-        <!-- ⛔ 조절 버튼 제거됨 -->
+        <!--  조절 버튼 제거됨 -->
       </div>
     </div>
   </header>
@@ -278,7 +253,7 @@ $html = @'
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
         <div><label class="hint">업체명</label><input id="fCompany" type="text" value="LG전자 ES에너지컨설팅팀" class="field"></div>
-        <div><label class="hint">현장명</label><input id="fSiteName" type="text" placeholder="예: ○○공장 ○○라인" class="field"></div>
+        <div><label class="hint">현장명</label><input id="fSiteName" type="text" placeholder="예: 공장 라인" class="field"></div>
 
         <div><label class="hint">진단 시작</label><input id="fDiagStart" type="date" class="field"></div>
         <div><label class="hint">진단 종료</label><input id="fDiagEnd" type="date" class="field"></div>
@@ -310,7 +285,7 @@ $html = @'
           <thead>
             <tr>
               <th rowspan="2" class="th-center">작업</th>
-              <th rowspan="2" class="th-center">유해·위험요인 파악</th>
+              <th rowspan="2" class="th-center">유해위험요인 파악</th>
               <th colspan="3" class="th-center">위험성 확인결과</th>
               <th rowspan="2" class="th-center">보완 대책</th>
               <th rowspan="2" class="th-center">확인</th>
@@ -630,7 +605,7 @@ $html = @'
       }catch(e){ console.error(e); alert("기타 섹션 행 삭제 중 오류: " + (e && e.message ? e.message : e)); }
     }
 
-    /* ‘해당없음’ 체크 시 하이픈 행 전체 잠금/해제(확인+보완대책 포함) */
+    /* 해당없음 체크 시 하이픈 행 전체 잠금/해제(확인+보완대책 포함) */
     function setPrepSubRowsDisabled(disabled){
       qsa("#riskTable tbody tr.prep-sub-row").forEach((row)=>{
         ["ok","fix","na","done"].forEach((colKey)=>{
@@ -692,7 +667,7 @@ $html = @'
       });
     }
 
-    /* 📏 모바일에서 c-hazard와 c-miti 폭을 항상 동일하게 유지하는 보정 로직 (화면) */
+    /*  모바일에서 c-hazard와 c-miti 폭을 항상 동일하게 유지하는 보정 로직 (화면) */
     function equalizeHazardMitiWidth(){
       const isMobile = window.matchMedia("(max-width: 800px), (pointer:coarse)").matches;
       const styleId = "dyn-mobile-cols";
@@ -709,7 +684,7 @@ $html = @'
         if(!tb || !tb.tBodies.length) return;
         const firstRow = tb.tBodies[0].rows[0];
         if(!firstRow || firstRow.cells.length < 2) return;
-        const hazardCell = firstRow.cells[1]; // 2번째 열(유해·위험요인)
+        const hazardCell = firstRow.cells[1]; // 2번째 열(유해위험요인)
         const width = hazardCell.offsetWidth;
         if(width>0){
           styleEl.textContent =
@@ -809,37 +784,3 @@ $html = @'
   </script>
 </body>
 </html>
-'@
-
-# 파일 쓰기
-Set-Content -Path $indexPath -Value $html -Encoding UTF8
-
-# 폰트 복사(있을 경우)
-$fontFiles = @("LGSmartRegular.woff2","LGSmartRegular.woff")
-foreach($f in $fontFiles){
-  $src = Join-Path $PSScriptRoot $f
-  $dst = Join-Path $OutDir $f
-  if(Test-Path $src){ Copy-Item -LiteralPath $src -Destination $dst -Force }
-}
-
-# 해시 출력(선택)
-if ($Hash) {
-  try {
-    $h = Get-FileHash -LiteralPath $indexPath -Algorithm SHA256
-    Write-Host ("SHA256: " + $h.Hash)
-  } catch {
-    Write-Warning "SHA256 해시 계산 실패: $($_.Exception.Message)"
-  }
-}
-
-# 자동 열기(선택)
-if ($Open) {
-  try {
-    Start-Process $indexPath
-    Write-Host "생성 완료: $indexPath (자동 열기)"
-  } catch {
-    Write-Warning "생성은 완료되었지만 자동 열기에 실패했습니다. 파일을 직접 더블클릭 해주세요."
-  }
-} else {
-  Write-Host "생성 완료: $indexPath"
-}
