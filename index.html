@@ -12,8 +12,9 @@
            url("LGSmartRegular.woff")  format("woff");
       font-weight: 400; font-style: normal; font-display: swap;
     }
+
     :root{
-      /*  폰트 120% 확대 */
+      /*  글자 120% 확대(기존 clamp 대비 +20%) */
       --bg:#f6f7fb; --card:#fff; --text:#111827; --border:#e5e7eb; --primary:#111827;
       --fs-body:  clamp(15.6px, 2.04vw, 18px);
       --fs-label: clamp(14.4px, 1.92vw, 16.8px);
@@ -23,6 +24,7 @@
       --line: 1.45; --radius: 12px; --table-pad: 6px;
       --radius-input: 10px; --focus:#3b82f6; --shadow:0 2px 6px rgba(0,0,0,.06); --title-accent:#8B1B3D;
     }
+
     *{ box-sizing:border-box }
     html,body{
       margin:0; padding:0; width:100%; min-height:100vh; overflow-x:hidden;
@@ -31,12 +33,14 @@
       font-family:"LG스마트체","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
       font-size:var(--fs-body); line-height:var(--line);
     }
+
     header{
       background:var(--card);
       border-bottom:1px solid var(--border);
       position:sticky; top:0; z-index:10;
       backdrop-filter:saturate(120%) blur(6px);
     }
+
     .wrap{max-width:1000px; margin:0 auto; padding:12px}
     .brand{display:flex; align-items:center; justify-content:space-between; gap:8px}
     .title{font-weight:800;}
@@ -50,8 +54,10 @@
       line-height:1.25;
       margin:6px 0 10px 0;
     }
+
     .toolbar{display:flex; gap:8px; margin-top:8px}
     .toolbar-left{display:flex; gap:8px; margin-right:auto}
+
     button{
       border:1px solid var(--border); background:var(--primary); color:#fff;
       border-radius:var(--radius); padding:9px 12px; font-size:var(--fs-btn);
@@ -60,17 +66,20 @@
     button.secondary{background:#374151}
     button.warn{background:#b91c1c}
     button.mini{ padding:6px 8px; min-height:32px; font-size:calc(var(--fs-btn) - 2px); border-radius:10px }
+
     @media (pointer:coarse){
       button{min-height:44px}
       input,select,textarea{min-height:48px; font-family:inherit}
       .table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
       button.mini{ min-height:36px }
     }
+
     main{padding:12px 0}
     .card{
       background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
       padding:18px; margin:12px auto; box-shadow:var(--shadow)
     }
+
     .field{
       width:100%; padding:10px 12px;
       border:1px solid var(--border); border-radius:var(--radius-input);
@@ -80,6 +89,7 @@
     }
     .field:focus{ border-color:var(--focus); box-shadow:0 0 0 3px rgba(59,130,246,.15) }
     .field.textarea{ min-height:72px; resize:vertical }
+
     .table-wrap{
       width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;
       border:1px solid var(--border); border-radius:var(--radius); background:#fff;
@@ -88,14 +98,16 @@
       width:100%; border-collapse:collapse; min-width:920px; table-layout:fixed;
       word-break:keep-all; font-family:inherit;
     }
-    /* 화면용 열 폭 (체크박스 열 80% 축소 반영) */
+
+    /* 화면용 열 폭 */
     col.c-task  { width:72px }
     col.c-hazard{ width:364px }
-    col.c-ok    { width:72px }  /* 90  72 */
-    col.c-fix   { width:72px }  /* 90  72 */
-    col.c-na    { width:88px }  /* 110  88 */
+    col.c-ok    { width:72px }
+    col.c-fix   { width:72px }
+    col.c-na    { width:88px }
     col.c-miti  { width:220px }
-    col.c-done  { width:56px }  /* 70  56 */
+    col.c-done  { width:56px }
+
     th,td{ border:1px solid var(--border); padding:var(--table-pad); font-size:var(--fs-body); vertical-align:top }
     thead th{ background:#f3f4f6; text-align:center; white-space:nowrap }
     td{ text-align:left }
@@ -106,102 +118,149 @@
     .section-title{ font-weight:700 }
     .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap }
     .chk-wrap{ display:flex; align-items:center; justify-content:center; min-height:32px; }
-    /*  체크박스 80% 축소 */
-    .riskchk { width:18px; height:18px; accent-color:#111827; cursor:pointer; }
+
+    .riskchk{ width:18px; height:18px; accent-color:#111827; cursor:pointer; }
     @media(pointer:coarse){ .riskchk{ width:21px; height:21px } }
+
     .cell-input,
     .miti-input{
       width:100%; min-height:40px; border:1px solid var(--border); border-radius:8px; background:#fff;
       font-family:inherit; font-size:inherit; padding:6px 8px; outline:none;
     }
     .cell-input{ white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; resize:vertical; }
-    .miti-cell { padding:6px !important; }
+    .miti-cell{ padding:6px !important; }
     .miti-input:disabled{ background:#f9fafb; color:#6b7280; }
     .miti-print{ display:none; min-height:48px; }
+
     .signature{ width:100%; height:130px }
     .sig-box{ position:relative }
-    #printPDF{
-      position:absolute; top:-50px; right:14px; transform:none; z-index:2
-    }
+    #printPDF{ position:absolute; top:-50px; right:14px; transform:none; z-index:2 }
     .signature canvas{
-      width:100%; height:100%; display:block; border:1px dashed var(--border); border-radius:8px; background:#fff; touch-action:none
+      width:100%; height:100%; display:block; border:1px dashed var(--border);
+      border-radius:8px; background:#fff; touch-action:none
     }
 
-    /* 인쇄 공통 */
+    /* 
+        인쇄(모바일 PDF 포함) 최적화
+       - 배경은 전부 '흰색'으로 고정(큰 네모 뒤 배경색 문제 해결)
+       - 표 헤더 반복, 행 단위 분리(행 내부 짤림 방지)
+       - 문단블록 단위 페이지 나눔, 캔버스/서명/입력요소 짤림 방지
+       - 인쇄 중에는 모바일 축소 transform 해제(폭 자동 맞춤)
+       - 가로/세로 모드에 따른 열 폭(유해위험요인=보완대책 동일폭)
+        */
     @page{ margin:12mm }
+
     @media print{
-      header,.toolbar{display:none!important}
-      #printPDF,
-      #btnPrepAdd, #btnPrepRemove, #btnWorksAdd, #btnWorksRemove,
-      #addMiscRow, #removeMiscRow { display:none !important; }
-      .card{box-shadow:none; border-color:#ddd; page-break-inside:avoid}
-      .table-wrap{overflow:visible}
-      table{min-width:auto; width:100%; table-layout:auto;}
-      thead th{white-space:normal!important}
-      th,td{word-break:break-word!important; overflow-wrap:break-word!important; white-space:pre-wrap!important}
-      tbody tr{page-break-inside:avoid; break-inside:avoid;}
-      .miti-input{ display:none !important; }
-      .miti-print{
-        display:block !important;
-        border:1px solid #ddd; border-radius:8px; padding:6px 8px;
+      /* 0) 인쇄 전용 리셋/배경 흰색 고정 */
+      html, body{
+        background:#fff !important;
+        color:#000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      /* 화면 전용 스케일/그림자/배경 제거 */
+      .wrap{
+        transform:none !important;
+        width:auto !important;
+      }
+      header,.toolbar{display:none !important}
+      .card{
+        box-shadow:none !important;
+        background:#fff !important;
+        border-color:#ddd !important;
+      }
+      .table-wrap, table, thead, tbody, tfoot, tr, th, td,
+      input.field, textarea.field, .signature canvas{
+        background:#fff !important;
+      }
+      thead th{ background:#fff !important } /* 헤더 회색  흰색 */
+      td.section{ background:#fff !important } /* 섹션 셀 배경도 흰색으로 */
+
+      /* 1) 표 헤더/푸터 반복 + 행/셀 짤림 방지 */
+      thead{ display:table-header-group !important }
+      tfoot{ display:table-footer-group !important }
+      table{ min-width:auto; width:100%; table-layout:auto; border-collapse:collapse }
+      .table-wrap{ overflow:visible !important }
+
+      tr, th, td,
+      .sig-box, .signature, .section-cell,
+      .miti-print, .cell-input, .miti-input{
+        page-break-inside:avoid !important;
+        break-inside:avoid !important;
       }
 
-      /*  요청: 인쇄 시 c-miti(보완대책) = c-hazard(유해위험요인) 동일 폭 */
-      /* Portrait: 총합 100% (task 8 + ok 6 + fix 6 + na 6 + done 2 + hazard 36 + miti 36) */
+      /* 행 사이에서는 분리 허용(행 내부만 방지) */
+      tbody{ page-break-inside:auto; break-inside:auto }
+
+      /* 문단 단위 페이지 나눔(고아/과부 줄 최소 보장) */
+      p, .cell-input, .miti-print{
+        orphans:3; widows:3;
+      }
+      h1,h2,h3, .main-title, .section-title{
+        page-break-after:avoid; break-after:avoid;
+      }
+
+      /* 이미지/캔버스/서명 스케일 안정화 + 짤림 방지 */
+      img, canvas{
+        max-width:100% !important;
+        height:auto !important;
+        page-break-inside:avoid !important;
+        break-inside:avoid !important;
+      }
+
+      /* 버튼류 숨김 */
+      #printPDF,
+      #btnPrepAdd, #btnPrepRemove, #btnWorksAdd, #btnWorksRemove,
+      #addMiscRow, #removeMiscRow{ display:none !important }
+
+      /* 2) 인쇄 시 열 폭(가로/세로별) : 유해위험요인 = 보완대책 동일 폭 */
       html.print-portrait col.c-task  { width:8%  !important }
       html.print-portrait col.c-hazard{ width:36% !important }
       html.print-portrait col.c-ok    { width:6%  !important }
       html.print-portrait col.c-fix   { width:6%  !important }
       html.print-portrait col.c-na    { width:6%  !important }
-      html.print-portrait col.c-miti  { width:36% !important } /* 동일 폭 */
+      html.print-portrait col.c-miti  { width:36% !important } /* 동일폭 */
       html.print-portrait col.c-done  { width:2%  !important }
 
-      /* Landscape: 동일하게 두 열을 36%로 유지하여 가로폭에서도 균형 */
       html.print-landscape col.c-task  { width:8%  !important }
       html.print-landscape col.c-hazard{ width:36% !important }
       html.print-landscape col.c-ok    { width:5%  !important }
       html.print-landscape col.c-fix   { width:5%  !important }
       html.print-landscape col.c-na    { width:5%  !important }
-      html.print-landscape col.c-miti  { width:36% !important } /* 동일 폭 */
+      html.print-landscape col.c-miti  { width:36% !important } /* 동일폭 */
       html.print-landscape col.c-done  { width:5%  !important }
     }
 
-    /* =========================
+    /* 
         모바일 전용 UI 조정
-       1) 유해위험요인(c-hazard)과 보완대책(c-miti) 동일 폭
-       2) 전체 UI 80% 축소 표시
-       ========================= */
-    @media (max-width: 800px), (pointer:coarse){
-      col.c-hazard,
-      col.c-miti { width:182px !important; } /* 364  182 (절반) */
+       - 유해위험요인(c-hazard)과 보완대책(c-miti) 동일 폭
+       - 화면 가독성을 위한 80% 축소(인쇄 시 해제됨)
+        */
+    @media (max-width:800px), (pointer:coarse){
+      col.c-hazard, col.c-miti { width:182px !important } /* 364  182 */
+      tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal }
 
-      tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal; }
-
+      /* 모바일 날짜 UI 통일 */
       main .card:first-of-type input[type="date"].field{
-        width:100%; min-width:0; box-sizing:border-box; -webkit-appearance:none; appearance:none;
-        height:48px; line-height:48px;
-        color:var(--text); caret-color:var(--text);
+        width:100%; min-width:0; -webkit-appearance:none; appearance:none;
+        height:48px; line-height:48px; color:var(--text); caret-color:var(--text);
       }
       main .card:first-of-type input[type="date"].field::-webkit-datetime-edit,
       main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-year-field,
       main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-month-field,
       main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-day-field,
-      main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-text{ color:var(--text); }
+      main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-text{ color:var(--text) }
       main .card:first-of-type input[type="date"].field::-webkit-calendar-picker-indicator{
         margin:0 6px 0 0; padding:0; width:18px; height:18px;
       }
 
-      .wrap{
-        transform: scale(.8);
-        transform-origin: top left;
-        width: calc(100% / .8);
-      }
+      .wrap{ transform:scale(.8); transform-origin:top left; width:calc(100%/.8) }
     }
 
     #approvalSection > h2{ font-size:calc(var(--fs-h2) - 4px + 3px) }
   </style>
 
-  <!-- 보완대책 제안(사용자 입력+안전조치완료) -->
+  <!-- 보완대책 제안(사용자 입력 + 안전조치 완료) -->
   <datalist id="mitiOptions">
     <option value="안전 조치 완료"></option>
   </datalist>
@@ -305,7 +364,7 @@
           <tr><td>기존 온도센서 제거 및 자사 온도센서 부착 시 배관 내 압력에 의해 문제가 생길 수 있는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
           <tr id="works-last-fixed"><td>220V 이상 전원이 있는 장소에서 작업을 하는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
 
-          <!-- 기타 (작업시와 분리) -->
+          <!-- 기타 -->
           <tr id="misc-section-row">
             <td id="misc-section-cell" class="section" rowspan="1">
               <div class="section-cell">
@@ -451,18 +510,15 @@
     try{
       const tbody = qs("#riskTable tbody"), lastFixed = byId("prep-last-fixed");
       if(!tbody || !lastFixed) return;
-
       let insertAfter = lastFixed;
       while(insertAfter.nextElementSibling &&
             insertAfter.nextElementSibling.classList &&
             insertAfter.nextElementSibling.classList.contains("prep-extra-row")){
         insertAfter = insertAfter.nextElementSibling;
       }
-
       const tr = document.createElement("tr"); tr.className = "prep-extra-row";
       tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
       tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
-
       const tds = tr.querySelectorAll("td");
       injectTextarea(tds[0]);
       injectMitiInput(tds[4]);
@@ -495,18 +551,15 @@
     try{
       const tbody = qs("#riskTable tbody"), lastFixed = byId("works-last-fixed");
       if(!tbody || !lastFixed) return;
-
       let insertAfter = lastFixed;
       while(insertAfter.nextElementSibling &&
             insertAfter.nextElementSibling.classList &&
             insertAfter.nextElementSibling.classList.contains("extra-work-row")){
         insertAfter = insertAfter.nextElementSibling;
       }
-
       const tr = document.createElement("tr"); tr.className = "extra-work-row";
       tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
       tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
-
       const tds = tr.querySelectorAll("td");
       injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
       adjustRowspan("task-works-label", WORKS_BASE_ROWS, +1);
@@ -533,18 +586,15 @@
     try{
       const tbody = qs("#riskTable tbody"), miscHead = byId("misc-section-row");
       if(!tbody || !miscHead) return;
-
       let insertAfter = miscHead;
       while(insertAfter.nextElementSibling &&
             insertAfter.nextElementSibling.classList &&
             insertAfter.nextElementSibling.classList.contains("misc-extra-row")){
         insertAfter = insertAfter.nextElementSibling;
       }
-
       const tr = document.createElement("tr"); tr.className = "misc-extra-row";
       tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
       tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
-
       const tds = tr.querySelectorAll("td");
       injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
       adjustRowspan("misc-section-cell", MISC_BASE_ROWS, +1);
@@ -590,6 +640,7 @@
     evalState();
   }
 
+  /* 서명 패드 */
   function initSignature(canvasId, clearBtnId){
     const cvs=byId(canvasId), btn=byId(clearBtnId); if(!cvs) return;
     const ctx=cvs.getContext('2d');
@@ -612,6 +663,7 @@
     if(btn){ btn.addEventListener('click', ()=>{ ctx.clearRect(0,0,cvs.width,cvs.height); }); }
   }
 
+  /* 상단 성명  하단 서명란 이름 자동 반영 */
   function syncSigFromMeta(){
     [
       {src:"fSafety",  dst:"sigNameSafety"},
@@ -625,7 +677,7 @@
     });
   }
 
-  /*  모바일: c-hazard와 c-miti 폭 동일 유지 보정 */
+  /* 모바일: c-hazard와 c-miti 폭 동일 유지 보정(실측 기반) */
   function equalizeHazardMitiWidth(){
     const isMobile = window.matchMedia("(max-width: 800px), (pointer:coarse)").matches;
     const styleId = "dyn-mobile-cols";
@@ -650,7 +702,7 @@
     }catch(e){ /* silent */ }
   }
 
-  /*  PDF(인쇄) 최적화: 인쇄 직전에 가로/세로 감지  html에 클래스 부여 */
+  /* 인쇄 시 가로/세로 감지  열 폭 클래스 부여 */
   function setPrintOrientationClass(){
     try{
       const isLandscape =
@@ -672,6 +724,7 @@
     rootEl.classList.remove("print-portrait");
   }
 
+  /* 초기화(회사명 제외) + 동적 행/rowSpan 복구 */
   function resetToMaster(){
     try{
       qsa('.riskchk').forEach((chk)=>{ chk.checked=false; chk.disabled=false; });
@@ -694,7 +747,7 @@
     }
   }
 
-  /* 인쇄 이벤트 훅: 보완대책 동기화 + 가로/세로 최적화 클래스 부여/해제 */
+  /* 인쇄 이벤트: 내용 동기화 + 방향 클래스 부여/해제 */
   window.addEventListener('beforeprint', ()=>{
     qsa('.miti-input').forEach((inp)=>{
       const p = inp.nextElementSibling;
@@ -708,7 +761,7 @@
 
   function initAll(){
     try{
-      // 로컬스토리지 복원(선택)
+      /* 선택: 로컬스토리지 복원 */
       try{
         const raw=localStorage.getItem("hra-risk-mobile-v3");
         if(raw){
@@ -745,7 +798,7 @@
       initSignature('sigCanvasW3','clearSigW3');
       syncSigFromMeta();
 
-      // 모바일 컬럼 동일폭 보정 실행
+      /* 모바일 동일폭 보정 */
       setTimeout(equalizeHazardMitiWidth, 50);
       window.addEventListener("resize", ()=>{ requestAnimationFrame(equalizeHazardMitiWidth); });
       window.addEventListener("orientationchange", equalizeHazardMitiWidth);
