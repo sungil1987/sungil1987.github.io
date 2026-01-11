@@ -14,6 +14,7 @@
     }
 
     :root{
+      /*  유지: 120% 글자 확대 및 컬러/레이아웃 변수 */
       --bg:#f6f7fb; --card:#fff; --text:#111827; --border:#e5e7eb; --primary:#111827;
       --fs-body:  clamp(15.6px, 2.04vw, 18px);
       --fs-label: clamp(14.4px, 1.92vw, 16.8px);
@@ -113,7 +114,7 @@
     }
     .section-cell{ display:flex; flex-direction:column; align-items:center; justify-content:space-between; min-height:100%; gap:8px }
     .section-title{ font-weight:700 }
-    .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap }
+    .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap } /* + / - 버튼 컨테이너 */
 
     .chk-wrap{ display:flex; align-items:center; justify-content:center; min-height:32px; }
     .riskchk{ width:18px; height:18px; accent-color:#111827; cursor:pointer; }
@@ -125,16 +126,35 @@
       white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; resize:vertical;
     }
 
-    /*  보완대책 드롭셀/사용자입력 UI */
+    /*  보완대책 드롭셀/사용자입력 UI  iOS/Android 박스 모양 통일 보정 */
     .miti-cell{ padding:6px !important; }
     .miti-ui{ display:flex; flex-direction:column; gap:6px; }
+
     .miti-select,
     .miti-user{
-      width:100%; min-height:40px; border:1px solid var(--border); border-radius:8px; background:#fff;
-      font-family:inherit; font-size:inherit; padding:6px 8px; outline:none;
+      box-sizing:border-box;
+      width:100%;
+      min-height:48px;                /* 입력칸과 동일 높이 */
+      padding:6px 8px;                /* 동일 패딩 */
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:#fff;
+      font-family:inherit; font-size:inherit; line-height:normal;
+      outline:none;
+      -webkit-appearance:none; appearance:none;  /* iOS/Android 기본 select 모양/높이 해제 */
     }
-    .miti-user{ display:none; } /* '사용자 입력' 선택 시에만 표시 */
+    .miti-user{ display:none; }                  /* '사용자 입력' 선택 시에만 표시 */
     .miti-print{ display:none; min-height:48px; white-space:pre-wrap; word-break:break-word; }
+
+    /*  iOS Safari 정밀 보정: 상하 패딩 미세 조정으로 시각적 중앙 정렬 */
+    @supports (-webkit-touch-callout: none) {
+      .miti-select{ padding-top:8px; padding-bottom:8px; }
+    }
+
+    /*  Android Chrome 정밀 보정: 폰트 메트릭에 따른 line-box 차이를 완화 */
+    @media (pointer:coarse) and (max-width:800px){
+      .miti-select{ line-height:1.2; }
+    }
 
     .signature{ width:100%; height:130px }
     .sig-box{ position:relative }
@@ -145,10 +165,11 @@
     }
 
     /* 
-        인쇄 최적화(모바일 포함)
+        인쇄 최적화 + 3단락 묶기 + 열폭 동기화
         */
     @page{ margin:12mm }
     @media print{
+      /* 배경/색상 재정의 */
       html, body{
         background:#fff !important;
         color:#000 !important;
@@ -170,7 +191,18 @@
       thead th{ background:#fff !important }
       td.section{ background:#fff !important }
 
-      /* 표/문단/요소 짤림 방지 */
+      /*  인쇄 시: PDF 버튼과 Clear 버튼 숨김 (요청 유지) */
+      #printPDF,
+      #clearAll,
+      #clearSigSafety,
+      #clearSigW1,
+      #clearSigW2,
+      #clearSigW3 { display:none !important; }
+
+      /*  인쇄 시 + / - 버튼 숨김 (요청 유지) */
+      .section-actions{ display:none !important; }
+
+      /* 짤림 방지 */
       thead{ display:table-header-group !important }
       tfoot{ display:table-footer-group !important }
       table{ min-width:auto; width:100%; table-layout:auto; border-collapse:collapse }
@@ -185,7 +217,7 @@
       p, .cell-input, .miti-print{ orphans:3; widows:3 }
       h1,h2,h3, .main-title, .section-title{ page-break-after:avoid; break-after:avoid }
 
-      /* 각 단락을 한 페이지 단위로 */
+      /* 단락 묶기 */
       .page-block{ page-break-inside:avoid !important; break-inside:avoid !important; }
       .page-start{ page-break-before:always !important; break-before:page !important; }
 
@@ -206,14 +238,14 @@
       html.print-landscape  col.c-miti   { width:36% !important }
       html.print-landscape  col.c-done   { width:5%  !important }
 
-      /*  인쇄 시: 드롭셀/입력칸 숨기고 텍스트만 출력 */
+      /* 인쇄 시: 드롭셀/입력칸 숨기고 텍스트만 출력 (기존 유지) */
       .miti-ui{ display:none !important; }
       .miti-print{ display:block !important; }
     }
 
-    /*  모바일 전용 UI 조정 */
+    /*  모바일 전용 UI 조정 (기존 유지) */
     @media (max-width:800px), (pointer:coarse){
-      col.c-hazard, col.c-miti { width:182px !important }
+      col.c-hazard, col.c-miti { width:182px !important } /* 364  182 */
       tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal }
 
       /* 모바일 날짜 UI 통일 */
@@ -278,7 +310,7 @@
     </div>
   </section>
 
-  <!-- 2) 체크리스트 -->
+  <!-- 2) 체크리스트 (사전준비/작업시/기타) -->
   <section class="card page-block page-start" id="checklistCard">
     <h2 style="display:none">작업별 유해위험요인 평가</h2>
 
@@ -437,7 +469,7 @@
     return ta;
   }
 
-  /*  보완대책: 드롭셀(선택/안전 조치 완료/사용자 입력) + 인쇄 전용 텍스트 */
+  /*  보완대책 드롭셀(선택/안전 조치 완료/사용자 입력) */
   function injectMitiInput(cell){
     cell.innerHTML=""; cell.classList.add("miti-cell");
 
@@ -654,7 +686,7 @@
     }
   }
 
-  /* 해당없음 체크 시 사전준비 하이픈 서브행 전체 잠금/해제 */
+  /* 해당없음 체크 시 사전준비 하이픈 서브행 전체 잠금/해제(확인+보완대책 포함) */
   function setPrepSubRowsDisabled(disabled){
     qsa("#riskTable tbody tr.prep-sub-row").forEach((row)=>{
       ["ok","fix","na","done"].forEach((colKey)=>{
@@ -719,7 +751,7 @@
     });
   }
 
-  /*  모바일: c-hazard와 c-miti 폭 동일 유지 */
+  /*  모바일: c-hazard와 c-miti 폭 동일 유지 보정(실측 기반) */
   function equalizeHazardMitiWidth(){
     const isMobile = window.matchMedia("(max-width: 800px), (pointer:coarse)").matches;
     const styleId = "dyn-mobile-cols";
@@ -737,7 +769,7 @@
       const firstRow = tb.tBodies[0].rows[0];
       if(!firstRow || firstRow.cells.length < 2) return;
 
-      const hazardCell = firstRow.cells[1];
+      const hazardCell = firstRow.cells[1]; // 2번째 열(유해위험요인)
       const width = Math.round(hazardCell.getBoundingClientRect().width);
       if(width>0){
         styleEl.textContent = `@media (max-width:800px), (pointer:coarse){ col.c-miti{ width:${width}px !important; } }`;
@@ -765,12 +797,12 @@
     rootEl.classList.remove("print-portrait");
   }
 
-  /*  인쇄 직전: 각 단락이 페이지를 넘치면 자동 축소(0.8~1.0) + 보완대책 텍스트 동기화 */
+  /*  인쇄 직전: 각 단락 넘치면 자동 축소(0.8~1.0) + 보완대책 텍스트 동기화 */
   function scalePageBlocksForPrint(){
     try{
       const blocks = qsa('.page-block');
       const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
-      const marginComp = 40;
+      const marginComp = 40; // 상하 여백 보정
       const usableH = Math.max(0, viewportH - marginComp);
 
       blocks.forEach(block=>{
@@ -808,6 +840,30 @@
     });
   }
 
+  /*  안전 프린트(모바일 차단 팝업 방지): 사용자 제스처 내에서만 호출 + 단발성 재시도 + 쓰로틀 */
+  function attachSafePrint(btn){
+    if(!btn) return;
+    let lastPrintTs = 0;
+    const handler = (ev)=>{
+      ev.preventDefault();
+      const now = Date.now();
+      if(now - lastPrintTs < 1500) return; // 1.5초 이내 중복 호출 방지
+      lastPrintTs = now;
+      try {
+        window.print();
+      } catch (e) {
+        requestAnimationFrame(()=>{
+          try { window.print(); }
+          catch(_){
+            setTimeout(()=>{ try{ window.print(); }catch(__){} }, 120);
+          }
+        });
+      }
+    };
+    btn.addEventListener("click",    handler, {passive:false});
+    btn.addEventListener("touchend", handler, {passive:false});
+  }
+
   /* 초기화(회사명 제외) + 동적 행/rowSpan 복구 */
   function resetToMaster(){
     try{
@@ -816,8 +872,6 @@
         if(el.id === "fCompany") return;
         el.value = "";
       });
-
-      /* 보완대책 드롭셀/사용자입력 초기화 */
       qsa('.miti-select').forEach((sel)=>{ sel.value=""; });
       qsa('.miti-user').forEach((inp)=>{ inp.value=""; inp.style.display="none"; });
       qsa('.miti-print').forEach((el)=>{ el.textContent=""; });
@@ -872,7 +926,9 @@
       const btnWorksAdd= byId("btnWorksAdd"), btnWorksRemove = byId("btnWorksRemove");
       const btnMiscAdd = byId("addMiscRow"),  btnMiscRemove = byId("removeMiscRow");
 
-      if(btnPrint){ btnPrint.addEventListener("click", ()=>{ try{ window.print(); }catch(e){} }); }
+      /* 안전 프린트 로직 적용(모바일 자동차단 팝업 방지) */
+      attachSafePrint(btnPrint);
+
       if(btnClear){ btnClear.addEventListener("click", ()=>{ if(confirm("초기화 하시겠습니까? 저장된 데이터가 삭제됩니다.")){ resetToMaster(); } }); }
 
       if(btnPrepAdd)   btnPrepAdd  .addEventListener("click", addPrepRow);
@@ -892,6 +948,7 @@
 
       syncSigFromMeta();
 
+      /* 모바일 동일폭 보정 */
       setTimeout(equalizeHazardMitiWidth, 50);
       window.addEventListener("resize", ()=>{ requestAnimationFrame(equalizeHazardMitiWidth); });
       window.addEventListener("orientationchange", equalizeHazardMitiWidth);
