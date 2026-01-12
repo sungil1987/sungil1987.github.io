@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
   <title>LG전자 ES에너지컨설팅팀 위험성 평가표 (모바일 표 Ver.)</title>
+
+  <!--  클라이언트 PDF 생성용 라이브러리 (CDN). 로드 실패 시 print() 폴백 처리 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <style>
     @font-face {
       font-family: "LG스마트체";
@@ -113,48 +118,37 @@
       white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; resize:vertical;
     }
 
-    /*  보완대책 드롭셀/사용자입력 UI  네모 박스(입력칸) 동일 보정 */
+    /*  보완대책 드롭셀/사용자입력 UI  네모 박스 동일 보정 */
     .miti-cell{
       padding:6px !important;
-      position:relative; /* 커스텀 화살표 위치 기준 */
+      position:relative;
     }
     .miti-ui{ display:flex; flex-direction:column; gap:6px; }
-    .miti-select,
-    .miti-user{
-      box-sizing:border-box;
-      width:100%;
-      height:48px; /* 입력칸과 동일 고정 높이 */
-      padding:0 34px 0 10px; /* 텍스트 좌측 여유 + 화살표 영역 우측 확보 */
-      border:1px solid var(--border);
-      border-radius:8px;
-      background:#fff;
-      font-family:inherit; font-size:inherit; line-height:48px; /* 수직 중앙 정렬 */
-      outline:none;
-      -webkit-appearance:none; appearance:none; /* OS 기본 select 모양 제거 */
-      background-image:none; /* 기본 화살표 제거 */
+    .miti-select, .miti-user{
+      box-sizing:border-box; width:100%;
+      height:48px; padding:0 34px 0 10px; border:1px solid var(--border);
+      border-radius:8px; background:#fff; font-family:inherit; font-size:inherit; line-height:48px; outline:none;
+      -webkit-appearance:none; appearance:none; background-image:none;
     }
-    .miti-user{
-      display:none; /* '사용자 입력' 선택 시에만 표시 */
-      padding:6px 8px; line-height:normal;
-    }
-    /* 커스텀 화살표(작은 역삼각형)  박스 내부, 넘침 방지 */
+    .miti-user{ display:none; padding:6px 8px; line-height:normal; }
     .miti-cell::after{
-      content:"";
-      position:absolute; right:14px; top:50%; margin-top:-4px;
-      width:0; height:0;
-      border-left:6px solid transparent; border-right:6px solid transparent;
-      border-top:8px solid #6b7280;
-      pointer-events:none;
+      content:""; position:absolute; right:14px; top:50%; margin-top:-4px;
+      width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:8px solid #6b7280; pointer-events:none;
     }
     .miti-print{ display:none; min-height:48px; white-space:pre-wrap; word-break:break-word; }
 
     .signature{ width:100%; height:130px }
     .sig-box{ position:relative }
 
-    /*  Android Chrome 터치 활성화 보정 */
+    /* 버튼 위치: PDF 왼쪽에 '공유' 버튼 */
+    #sharePDF{
+      position:absolute; top:-50px; right:88px; /* PDF 왼쪽 */
+      z-index:10000; pointer-events:auto;
+      transform:none;
+    }
     #printPDF{
       position:absolute; top:-50px; right:14px;
-      z-index:10000; pointer-events:auto; /* 레이어/터치 보정 */
+      z-index:10000; pointer-events:auto;
       transform:none;
     }
 
@@ -180,7 +174,7 @@
       thead th{ background:#fff !important } td.section{ background:#fff !important }
 
       /* 인쇄 시 PDF/Clear/+/ 숨김 */
-      #printPDF, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3{ display:none !important; }
+      #printPDF, #sharePDF, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3{ display:none !important; }
       .section-actions{ display:none !important; }
 
       /* 짤림 방지/페이지 묶기 */
@@ -217,7 +211,6 @@
       col.c-hazard, col.c-miti { width:182px !important }
       tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal }
 
-      /* 모바일 날짜 UI */
       main .card:first-of-type input[type="date"].field{
         width:100%; min-width:0; -webkit-appearance:none; appearance:none; height:48px; line-height:48px;
         color:var(--text); caret-color:var(--text);
@@ -234,6 +227,12 @@
     }
 
     #approvalSection > h2{ font-size:calc(var(--fs-h2) - 4px + 3px) }
+
+    /* 캡쳐용 프린트 강제 클래스: @media print 규칙 일부를 화면에 적용 */
+    html.capture-print header, html.capture-print .toolbar{ display:none !important; }
+    html.capture-print .card{ box-shadow:none !important; background:#fff !important; border-color:#ddd !important; }
+    html.capture-print .section-actions{ display:none !important; }
+    html.capture-print .wrap{ transform:none !important; width:auto !important }
   </style>
 </head>
 <body>
@@ -284,7 +283,6 @@
               <th rowspan="2" class="th-center">유해위험요인 파악</th>
               <th colspan="3" class="th-center">위험성 확인결과</th>
               <th rowspan="2" class="th-center">보완 대책</th>
-              <!-- 확인 헤더 + 마스터 체크박스 -->
               <th rowspan="2" class="th-center">
                 <div style="display:flex; flex-direction:column; align-items:center; gap:4px">
                   <span>확인</span>
@@ -391,7 +389,13 @@
           <label>실무자3</label>
           <input id="sigNameW3" type="text" placeholder="성명" class="field">
           <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW3"></canvas></div>
-          <button id="printPDF" class="secondary" type="button" title="PDF로 내보내기" tabindex="0">PDF</button>
+
+          <!-- 공유 버튼 (PDF 왼쪽) -->
+          <button id="sharePDF" class="secondary" type="button" title="PDF 공유">공유</button>
+
+          <!-- 기존 PDF 버튼 -->
+          <button id="printPDF" class="secondary" type="button" title="PDF로 내보내기">PDF</button>
+
           <div style="margin-top:6px"><button class="secondary" id="clearSigW3" type="button">Clear</button></div>
         </div>
       </div>
@@ -576,8 +580,7 @@
         tbody.removeChild(lastExtra);
         adjustRowspan("task-works-label", WORKS_BASE_ROWS, -1);
       }catch(e){
-        console.error(e); alert("작업시 추가 행 삭제 중 오류: " + (e && e.message ? e.message : e));
-      }
+        console.error(e); alert("작업시 추가 행 삭제 중 오류: " + (e && e.message ? e.message : e)); }
     }
 
     function addMiscRow(){
@@ -756,18 +759,13 @@
       if(!btn) return;
       let printing = false;
       const handler = (ev)=>{
-        if(printing) return;            // 중복 호출 방지
+        if(printing) return;
         printing = true;
-        try {
-          //  사용자 제스처 콜스택에서 동기적으로 단 1회 호출
-          window.print();
-        } finally {
-          // 모바일 크롬 afterprint 즉시 발화 등 고려해 일정 시간 후 해제
-          setTimeout(()=>{ printing = false; }, 1200);
-        }
+        try { window.print(); }
+        finally { setTimeout(()=>{ printing = false; }, 1200); }
       };
-      btn.addEventListener("click",     handler, {passive:false}); // 주 이벤트
-      btn.addEventListener("pointerup", handler, {passive:false}); // 폴백(일부 단말 click 누락)
+      btn.addEventListener("click",     handler, {passive:false});
+      btn.addEventListener("pointerup", handler, {passive:false});
     }
 
     /* 확인 헤더 마스터 체크 */
@@ -810,9 +808,109 @@
     window.addEventListener('beforeprint', ()=>{ setPrintOrientationClass(); scalePageBlocksForPrint(); });
     window.addEventListener('afterprint',  ()=>{ clearPrintOrientationClass(); resetBlockScaleAfterPrint(); });
 
+    /* ===================== PDF 생성 + 공유 ===================== */
+
+    // A4 크기(mm), 여백(인쇄 규칙과 동일 12mm) 적용
+    const PDF_MM = { w: 210, h: 297, margin: 12 };
+
+    // 세로 인쇄 규칙을 화면 캡쳐에도 적용하기 위한 보조
+    function applyCapturePrintMode(){
+      document.documentElement.classList.add('capture-print');     // 일부 print 규칙 강제
+      document.documentElement.classList.remove('print-landscape');
+      document.documentElement.classList.add('print-portrait');    // 열폭 규칙도 세로 기준
+      scalePageBlocksForPrint();                                   // 블록 스케일(짤림 방지)
+    }
+    function clearCapturePrintMode(){
+      document.documentElement.classList.remove('capture-print');
+      clearPrintOrientationClass();
+      resetBlockScaleAfterPrint();
+    }
+
+    // 각 page-block을 별도 페이지로 캡쳐  A4 PDF 조합
+    async function makePdfBlob(){
+      try{
+        applyCapturePrintMode();
+
+        // 라이브러리 로드 확인
+        const hasH2C  = !!window.html2canvas;
+        const hasJsPDF= !!window.jspdf && !!window.jspdf.jsPDF;
+
+        if(!hasH2C || !hasJsPDF){
+          // 폴백: 라이브러리 없으면 print()로 현재 문서 인쇄
+          window.print();
+          return null;
+        }
+
+        const jsPDF = window.jspdf.jsPDF;
+        const doc   = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+
+        const blocks = qsa('.page-block');
+        for(let i=0;i<blocks.length;i++){
+          const el = blocks[i];
+          // 캡쳐: 고해상도 스케일(디바이스 픽셀 비율 반영)
+          const canvas = await html2canvas(el, { scale: Math.max(window.devicePixelRatio||1, 2), useCORS:true, background:'#ffffff' });
+          const imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+          // 이미지 비율대로 A4에 맞춰 배치(여백 고려)
+          const pageW = PDF_MM.w - PDF_MM.margin*2;
+          const pageH = PDF_MM.h - PDF_MM.margin*2;
+          const imgWpx = canvas.width, imgHpx = canvas.height;
+          const imgRatio = imgWpx / imgHpx;
+          let drawW = pageW, drawH = drawW / imgRatio;
+          if(drawH > pageH){ drawH = pageH; drawW = drawH * imgRatio; }
+
+          if(i>0) doc.addPage('a4', 'portrait');
+          doc.addImage(imgData, 'JPEG',
+                       PDF_MM.margin + (pageW - drawW)/2,
+                       PDF_MM.margin + (pageH - drawH)/2,
+                       drawW, drawH);
+        }
+
+        const blob = doc.output('blob');  // PDF Blob 생성
+        clearCapturePrintMode();
+        return blob;
+
+      }catch(e){
+        console.error(e);
+        clearCapturePrintMode();
+        return null;
+      }
+    }
+
+    // Web Share API로 파일 공유(가능하면), 불가 시 새 탭 열기
+    async function sharePdfFromButton(){
+      try{
+        const blob = await makePdfBlob();
+        if(!blob){
+          // 이미 print() 폴백했거나 실패
+          return;
+        }
+        const fileName = `위험성평가_${new Date().toISOString().slice(0,10)}.pdf`;
+        const file = new File([blob], fileName, { type:'application/pdf' });
+
+        const canShare = !!navigator.canShare && navigator.canShare({ files:[file] });
+        if(canShare && navigator.share){
+          // 사용자 제스처 내 동기 컨텍스트에서 호출
+          await navigator.share({
+            title: '위험성 평가 PDF',
+            text: '위험성 평가표 (모바일 표 Ver.)',
+            files: [file]
+          }); // 성공 시 OS 공유 시트 표시
+        }else{
+          // 폴백: 새 탭/뷰어로 열어 iOS/Android에서 공유 버튼 접근
+          const url = URL.createObjectURL(blob);
+          const w = window.open(url, '_blank');
+          // 메모리 정리
+          setTimeout(()=>URL.revokeObjectURL(url), 60*1000);
+        }
+      }catch(err){
+        console.error('PDF 공유 중 오류:', err);
+      }
+    }
+
     function initAll(){
       try{
-        /* 선택: 로컬스토리지 복원 */
+        // 선택: 로컬스토리지 복원
         try{
           const raw=localStorage.getItem("hra-risk-mobile-v3");
           if(raw){
@@ -827,12 +925,23 @@
           }
         }catch(e){ /* ignore */ }
 
-        const btnPrint = byId("printPDF"), btnClear = byId("clearAll");
+        const btnPrint = byId("printPDF"), btnShare = byId("sharePDF"), btnClear = byId("clearAll");
         const btnPrepAdd = byId("btnPrepAdd"), btnPrepRemove = byId("btnPrepRemove");
         const btnWorksAdd= byId("btnWorksAdd"),btnWorksRemove = byId("btnWorksRemove");
         const btnMiscAdd = byId("addMiscRow"), btnMiscRemove = byId("removeMiscRow");
 
+        // 프린트 버튼: 사용자 제스처 내 동기 호출(팝업 차단 회피)
         attachSafePrint(btnPrint);
+
+        // 공유 버튼: 클릭 제스처 안에서 PDF 생성 + 공유 시트
+        if(btnShare){
+          const handler = async (ev)=>{
+            await sharePdfFromButton();
+          };
+          btnShare.addEventListener("click", handler, {passive:false});
+          btnShare.addEventListener("pointerup", handler, {passive:false}); // 일부 단말 폴백
+        }
+
         if(btnClear){ btnClear.addEventListener("click", ()=>{ if(confirm("초기화 하시겠습니까? 저장된 데이터가 삭제됩니다.")){ resetToMaster(); } }); }
         if(btnPrepAdd)    btnPrepAdd   .addEventListener("click", addPrepRow);
         if(btnPrepRemove) btnPrepRemove.addEventListener("click", removePrepRow);
