@@ -14,7 +14,6 @@
     }
 
     :root{
-      /* 120% 글자 확대 유지 */
       --bg:#f6f7fb; --card:#fff; --text:#111827; --border:#e5e7eb; --primary:#111827;
       --fs-body:  clamp(15.6px, 2.04vw, 18px);
       --fs-label: clamp(14.4px, 1.92vw, 16.8px);
@@ -114,7 +113,7 @@
     }
     .section-cell{ display:flex; flex-direction:column; align-items:center; justify-content:space-between; min-height:100%; gap:8px }
     .section-title{ font-weight:700 }
-    .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap } /* + / - 컨테이너 */
+    .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap } /* + / - 버튼 컨테이너 */
 
     .chk-wrap{ display:flex; align-items:center; justify-content:center; min-height:32px; }
     .riskchk{ width:18px; height:18px; accent-color:#111827; cursor:pointer; }
@@ -126,26 +125,52 @@
       white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; resize:vertical;
     }
 
-    /* 보완대책 드롭셀/사용자입력 UI (iOS/Android 상자형 통일) */
-    .miti-cell{ padding:6px !important; }
+    /*  보완대책 드롭셀/사용자입력 UI  네모 박스(입력칸)과 완전 동일하게 보정 */
+    .miti-cell{
+      padding:6px !important;
+      position:relative; /* 커스텀 화살표 위치 기준 */
+    }
     .miti-ui{ display:flex; flex-direction:column; gap:6px; }
+
     .miti-select,
     .miti-user{
-      box-sizing:border-box; width:100%;
-      min-height:48px; padding:6px 8px;
-      border:1px solid var(--border); border-radius:8px; background:#fff;
-      font-family:inherit; font-size:inherit; line-height:normal; outline:none;
-      -webkit-appearance:none; appearance:none;
+      box-sizing:border-box;
+      width:100%;
+      height:48px;                 /* 입력칸과 동일 고정 높이 */
+      padding:0 34px 0 10px;       /* 텍스트 좌측 여유 + 화살표 영역 우측 확보 */
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:#fff;
+      font-family:inherit; font-size:inherit; line-height:48px; /* 수직 중앙 정렬 */
+      outline:none;
+      -webkit-appearance:none; appearance:none; /* OS 기본 select 모양 제거 */
+      background-image:none;                     /* 기본 화살표 제거 */
     }
-    .miti-user{ display:none; }
-    .miti-print{ display:none; min-height:48px; white-space:pre-wrap; word-break:break-word; }
+    .miti-user{
+      display:none;                /* '사용자 입력' 선택 시에만 표시 */
+      padding:6px 8px;             /* 입력칸의 실제 텍스트 패딩 */
+      line-height:normal;
+    }
+    /* 커스텀 화살표(작은 역삼각형)  박스 내부, 넘침 방지 */
+    .miti-cell::after{
+      content:"";
+      position:absolute; right:14px; top:50%; margin-top:-4px;
+      width:0; height:0;
+      border-left:6px solid transparent; border-right:6px solid transparent;
+      border-top:8px solid #6b7280; /* 회색 작은 삼각형 */
+      pointer-events:none;
+    }
 
-    @supports (-webkit-touch-callout: none) { /* iOS Safari 정밀 보정 */
-      .miti-select{ padding-top:8px; padding-bottom:8px; }
+    /* iOS Safari 정밀 보정: 폰트 메트릭 차이 보정 */
+    @supports (-webkit-touch-callout: none) {
+      .miti-select{ line-height:48px; }
     }
-    @media (pointer:coarse) and (max-width:800px){ /* Android Chrome 보정 */
-      .miti-select{ line-height:1.2; }
+    /* Android Chrome 정밀 보정: 일부 기기에서 글자 상하 여백 보정 */
+    @media (pointer:coarse) and (max-width:800px){
+      .miti-select{ line-height:48px; }
     }
+
+    .miti-print{ display:none; min-height:48px; white-space:pre-wrap; word-break:break-word; }
 
     .signature{ width:100%; height:130px }
     .sig-box{ position:relative }
@@ -155,25 +180,47 @@
       border-radius:8px; background:#fff; touch-action:none
     }
 
-    /*  인쇄 최적화 (요청 유지)  */
+    /* 
+        인쇄 최적화 + 3단락 묶기 + 열폭 동기화 (변경 없음)
+        */
     @page{ margin:12mm }
     @media print{
-      html, body{ background:#fff !important; color:#000 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      html, body{
+        background:#fff !important;
+        color:#000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
       .wrap{ transform:none !important; width:auto !important }
       header,.toolbar{ display:none !important }
-      .card{ box-shadow:none !important; background:#fff !important; border-color:#ddd !important; transform-origin:top left; }
-      .table-wrap, table, thead, tbody, tfoot, tr, th, td, input.field, textarea.field, .signature canvas{ background:#fff !important; }
-      thead th{ background:#fff !important } td.section{ background:#fff !important }
+      .card{
+        box-shadow:none !important;
+        background:#fff !important;
+        border-color:#ddd !important;
+        transform-origin:top left;
+      }
+      .table-wrap, table, thead, tbody, tfoot, tr, th, td,
+      input.field, textarea.field, .signature canvas{
+        background:#fff !important;
+      }
+      thead th{ background:#fff !important }
+      td.section{ background:#fff !important }
 
-      /* 인쇄 시 PDF/Clear/+/ 숨김 (요청 유지) */
-      #printPDF, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3{ display:none !important; }
+      /* 인쇄 시 PDF/Clear/ + / - 숨김 (유지) */
+      #printPDF, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3 { display:none !important; }
       .section-actions{ display:none !important; }
 
-      /* 짤림 방지/페이지 묶기(유지) */
-      thead{ display:table-header-group !important } tfoot{ display:table-footer-group !important }
+      /* 짤림 방지/페이지 묍기 (유지) */
+      thead{ display:table-header-group !important }
+      tfoot{ display:table-footer-group !important }
       table{ min-width:auto; width:100%; table-layout:auto; border-collapse:collapse }
       .table-wrap{ overflow:visible !important }
-      tr, th, td, .sig-box, .signature, .section-cell, .miti-print, .cell-input, .miti-select, .miti-user{ page-break-inside:avoid !important; break-inside:avoid !important; }
+      tr, th, td,
+      .sig-box, .signature, .section-cell,
+      .miti-print, .cell-input, .miti-select, .miti-user{
+        page-break-inside:avoid !important;
+        break-inside:avoid !important;
+      }
       tbody{ page-break-inside:auto; break-inside:auto }
       p, .cell-input, .miti-print{ orphans:3; widows:3 }
       h1,h2,h3, .main-title, .section-title{ page-break-after:avoid; break-after:avoid }
@@ -181,7 +228,7 @@
       .page-block{ page-break-inside:avoid !important; break-inside:avoid !important; }
       .page-start{ page-break-before:always !important; break-before:page !important; }
 
-      /* 인쇄 시 열폭(유해위험요인 = 보완대책 동일) (유지) */
+      /* 인쇄 시 열 폭(유해위험요인 = 보완대책 동일) (유지) */
       html.print-portrait   col.c-task{width:8%!important}   html.print-portrait   col.c-hazard{width:36%!important}
       html.print-portrait   col.c-ok{width:6%!important}     html.print-portrait   col.c-fix{width:6%!important}
       html.print-portrait   col.c-na{width:6%!important}     html.print-portrait   col.c-miti{width:36%!important}
@@ -196,19 +243,24 @@
       .miti-print{ display:block !important; }
     }
 
-    /* 모바일 전용 UI 조정 (유지) */
+    /*  모바일 전용 UI 조정 (유지) */
     @media (max-width:800px), (pointer:coarse){
       col.c-hazard, col.c-miti { width:182px !important }
       tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal }
 
       /* 모바일 날짜 UI (유지) */
-      main .card:first-of-type input[type="date"].field{ width:100%; min-width:0; -webkit-appearance:none; appearance:none; height:48px; line-height:48px; color:var(--text); caret-color:var(--text); }
+      main .card:first-of-type input[type="date"].field{
+        width:100%; min-width:0; -webkit-appearance:none; appearance:none;
+        height:48px; line-height:48px; color:var(--text); caret-color:var(--text);
+      }
       main .card:first-of-type input[type="date"].field::-webkit-datetime-edit,
       main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-year-field,
       main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-month-field,
       main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-day-field,
       main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-text{ color:var(--text) }
-      main .card:first-of-type input[type="date"].field::-webkit-calendar-picker-indicator{ margin:0 6px 0 0; padding:0; width:18px; height:18px; }
+      main .card:first-of-type input[type="date"].field::-webkit-calendar-picker-indicator{
+        margin:0 6px 0 0; padding:0; width:18px; height:18px;
+      }
 
       .wrap{ transform:scale(.8); transform-origin:top left; width:calc(100%/.8) }
     }
@@ -245,7 +297,7 @@
       <div><label class="hint">진단 종료</label><input id="fDiagEnd" type="date" class="field"></div>
 
       <div><label class="hint">작성 일자</label><input id="fWrittenDate" type="date" class="field"></div>
-      <div><label class="hint">안전관리자</label><input id="fSafety" type="text" placeholder="성명" class="field"></div>
+      <div><label class="hint">현장관리자</label><input id="fSafety" type="text" placeholder="성명" class="field"></div>
 
       <div><label class="hint">실무자1</label><input id="fWorker1" type="text" placeholder="성명" class="field"></div>
       <div><label class="hint">실무자2</label><input id="fWorker2" type="text" placeholder="성명" class="field"></div>
@@ -273,14 +325,22 @@
             <th rowspan="2" class="th-center">유해위험요인 파악</th>
             <th colspan="3" class="th-center">위험성 확인결과</th>
             <th rowspan="2" class="th-center">보완 대책</th>
-            <th rowspan="2" class="th-center">확인</th>
+            <!-- 확인 헤더 + 마스터 체크박스(유지) -->
+            <th rowspan="2" class="th-center">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:4px">
+                <span>확인</span>
+                <label class="chk-wrap" title="전체 확인 체크/해제">
+                  <input id="chkConfirmAll" type="checkbox" class="riskchk" style="width:18px;height:18px">
+                </label>
+              </div>
+            </th>
           </tr>
           <tr>
             <th>적정</th><th>보완</th><th>해당없음</th>
           </tr>
         </thead>
         <tbody>
-          <!-- 사전준비 -->
+          <!-- 사전준비 작업 (유지) -->
           <tr id="prep-master-row">
             <td id="prep-section-cell" class="section" rowspan="8">
               <div class="section-cell">
@@ -306,7 +366,7 @@
           <tr><td>측정장비의 현장 운반까지 유해, 위험 요인이 있는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
           <tr id="prep-last-fixed"><td>작업 공간이 밀폐되거나, 소통이 어려운 환경인가? Ex. 긴급, 응급상황 대처</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
 
-          <!-- 작업시 -->
+          <!-- 작업시 (유지) -->
           <tr>
             <td id="task-works-label" class="section" rowspan="5">
               <div class="section-cell">
@@ -325,7 +385,7 @@
           <tr><td>기존 온도센서 제거 및 자사 온도센서 부착 시 배관 내 압력에 의해 문제가 생길 수 있는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
           <tr id="works-last-fixed"><td>220V 이상 전원이 있는 장소에서 작업을 하는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
 
-          <!-- 기타 -->
+          <!-- 기타 (유지) -->
           <tr id="misc-section-row">
             <td id="misc-section-cell" class="section" rowspan="1">
               <div class="section-cell">
@@ -351,7 +411,7 @@
     <h2>현장 확인 및 승인 서명</h2>
     <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px">
       <div class="sig-box">
-        <label>안전관리자</label>
+        <label>현장관리자</label>
         <input id="sigNameSafety" type="text" placeholder="성명" class="field">
         <div class="signature" style="margin-top:6px"><canvas id="sigCanvasSafety"></canvas></div>
         <div style="margin-top:6px"><button class="secondary" id="clearSigSafety" type="button">Clear</button></div>
@@ -397,8 +457,10 @@
     const input=document.createElement("input");
     input.type="checkbox"; input.className="riskchk";
     input.setAttribute("data-col", colKey); input.setAttribute("title", labelText);
+
     const wrap=document.createElement("label");
     wrap.className="chk-wrap"; wrap.appendChild(input);
+
     cell.innerHTML=""; cell.appendChild(wrap);
     return input;
   }
@@ -406,40 +468,57 @@
   function injectTextarea(cell){
     const ta=document.createElement("textarea");
     ta.className="cell-input"; ta.setAttribute("rows","1");
+
     function autosize(){ ta.style.height="auto"; ta.style.height=(ta.scrollHeight)+"px"; }
     ta.addEventListener("input", autosize); setTimeout(autosize,0);
+
     cell.innerHTML=""; cell.appendChild(ta);
     return ta;
   }
 
-  /* 보완대책 드롭셀/사용자입력 */
   function injectMitiInput(cell){
     cell.innerHTML=""; cell.classList.add("miti-cell");
+
     const ui=document.createElement("div"); ui.className="miti-ui";
+
     const sel=document.createElement("select"); sel.className="miti-select";
     sel.innerHTML = `
       <option value="">선택</option>
       <option value="완료">안전 조치 완료</option>
       <option value="입력">사용자 입력</option>
     `;
-    const user=document.createElement("input"); user.type="text"; user.className="miti-user"; user.style.display="none";
+
+    const user=document.createElement("input");
+    user.type="text"; user.className="miti-user"; user.placeholder=""; user.style.display="none";
+
     const printDiv=document.createElement("div"); printDiv.className="miti-print";
+
     function sync(){
       const v = sel.value;
-      if(v === "완료"){ user.style.display="none";  printDiv.textContent = "안전 조치 완료"; }
-      else if(v === "입력"){ user.style.display="block"; printDiv.textContent = user.value || ""; }
-      else{ user.style.display="none"; printDiv.textContent = ""; }
+      if(v === "완료"){
+        user.style.display="none";
+        printDiv.textContent = "안전 조치 완료";
+      }else if(v === "입력"){
+        user.style.display="block";
+        printDiv.textContent = user.value || "";
+      }else{
+        user.style.display="none";
+        printDiv.textContent = ""; // 디폴트 '선택'은 인쇄에서 공백
+      }
     }
     sel.addEventListener("change", sync);
     user.addEventListener("input",  sync);
+    setTimeout(sync,0);
+
     ui.appendChild(sel); ui.appendChild(user);
     cell.appendChild(ui); cell.appendChild(printDiv);
-    setTimeout(sync,0);
+
     return sel;
   }
 
   function initRiskRow(tr){
     const tds=tr.querySelectorAll("td"); const len=tds.length; if(len<6) return;
+
     const idxHaz = (len===7 ? 1 : 0);
     const idxOk  = idxHaz + 1;
     const idxFix = idxHaz + 2;
@@ -454,6 +533,7 @@
       if(!tds[idxOk ].querySelector(".riskchk")) injectCheckbox(tds[idxOk ], "ok",  "적정");
       if(!tds[idxFix].querySelector(".riskchk")) injectCheckbox(tds[idxFix], "fix", "보완");
       if(!tds[idxNa ].querySelector(".riskchk")) injectCheckbox(tds[idxNa ], "na",  "해당없음");
+
       const rowChks=tr.querySelectorAll(".riskchk");
       rowChks.forEach((chk)=>{
         chk.addEventListener("change", ()=>{
@@ -465,9 +545,13 @@
         });
       });
     }
+
     if(!tds[idxDone].querySelector(".riskchk")) injectCheckbox(tds[idxDone], "done", "확인");
     if(!tds[idxMiti].querySelector(".miti-select")) injectMitiInput(tds[idxMiti]);
-    if(idxHaz>=0 && tds[idxHaz].textContent.trim()==="" && !tds[idxHaz].querySelector(".cell-input")){ injectTextarea(tds[idxHaz]); }
+
+    if(idxHaz>=0 && tds[idxHaz].textContent.trim()==="" && !tds[idxHaz].querySelector(".cell-input")){
+      injectTextarea(tds[idxHaz]);
+    }
   }
 
   function initRiskTable(){ document.querySelectorAll("#riskTable tbody tr").forEach(initRiskRow); }
@@ -488,18 +572,30 @@
     try{
       const tbody = qs("#riskTable tbody"), lastFixed = byId("prep-last-fixed");
       if(!tbody || !lastFixed) return;
+
       let insertAfter = lastFixed;
-      while(insertAfter.nextElementSibling && insertAfter.nextElementSibling.classList && insertAfter.nextElementSibling.classList.contains("prep-extra-row")){
+      while(insertAfter.nextElementSibling &&
+            insertAfter.nextElementSibling.classList &&
+            insertAfter.nextElementSibling.classList.contains("prep-extra-row")){
         insertAfter = insertAfter.nextElementSibling;
       }
+
       const tr = document.createElement("tr"); tr.className = "prep-extra-row";
       tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
       tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
+
       const tds = tr.querySelectorAll("td");
-      injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
+      injectTextarea(tds[0]);
+      injectMitiInput(tds[4]);
+      initRiskRow(tr);
+
       adjustRowspan("prep-section-cell", PREP_BASE_ROWS, +1);
-    }catch(e){ console.error(e); alert("사전준비 작업 행 추가 중 오류: " + (e && e.message ? e.message : e)); }
+    }catch(e){
+      console.error(e);
+      alert("사전준비 작업 행 추가 중 오류: " + (e && e.message ? e.message : e));
+    }
   }
+
   function removePrepRow(){
     try{
       const tbody = qs("#riskTable tbody"); if(!tbody) return;
@@ -509,27 +605,37 @@
         node = node.previousElementSibling;
       }
       if(!lastExtra){ alert("사전준비 섹션에 삭제할 추가 행이 없습니다."); return; }
+
       tbody.removeChild(lastExtra);
       adjustRowspan("prep-section-cell", PREP_BASE_ROWS, -1);
-    }catch(e){ console.error(e); alert("사전준비 작업 행 삭제 중 오류: " + (e && e.message ? e.message : e)); }
+    }catch(e){
+      console.error(e);
+      alert("사전준비 작업 행 삭제 중 오류: " + (e && e.message ? e.message : e));
+    }
   }
 
   function addWorkRow(){
     try{
       const tbody = qs("#riskTable tbody"), lastFixed = byId("works-last-fixed");
       if(!tbody || !lastFixed) return;
+
       let insertAfter = lastFixed;
-      while(insertAfter.nextElementSibling && insertAfter.nextElementSibling.classList && insertAfter.nextElementSibling.classList.contains("extra-work-row")){
+      while(insertAfter.nextElementSibling &&
+            insertAfter.nextElementSibling.classList &&
+            insertAfter.nextElementSibling.classList.contains("extra-work-row")){
         insertAfter = insertAfter.nextElementSibling;
       }
+
       const tr = document.createElement("tr"); tr.className = "extra-work-row";
       tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
       tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
+
       const tds = tr.querySelectorAll("td");
       injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
       adjustRowspan("task-works-label", WORKS_BASE_ROWS, +1);
     }catch(e){ console.error(e); alert("작업시 행 추가 중 오류: " + (e && e.message ? e.message : e)); }
   }
+
   function removeWorkRow(){
     try{
       const tbody = qs("#riskTable tbody"); if(!tbody) return;
@@ -539,27 +645,36 @@
         node = node.previousElementSibling;
       }
       if(!lastExtra){ alert("작업시 섹션에 삭제할 추가 행이 없습니다."); return; }
+
       tbody.removeChild(lastExtra);
       adjustRowspan("task-works-label", WORKS_BASE_ROWS, -1);
-    }catch(e){ console.error(e); alert("작업시 추가 행 삭제 중 오류: " + (e && e.message ? e.message : e)); }
+    }catch(e){
+      console.error(e); alert("작업시 추가 행 삭제 중 오류: " + (e && e.message ? e.message : e));
+    }
   }
 
   function addMiscRow(){
     try{
       const tbody = qs("#riskTable tbody"), miscHead = byId("misc-section-row");
       if(!tbody || !miscHead) return;
+
       let insertAfter = miscHead;
-      while(insertAfter.nextElementSibling && insertAfter.nextElementSibling.classList && insertAfter.nextElementSibling.classList.contains("misc-extra-row")){
+      while(insertAfter.nextElementSibling &&
+            insertAfter.nextElementSibling.classList &&
+            insertAfter.nextElementSibling.classList.contains("misc-extra-row")){
         insertAfter = insertAfter.nextElementSibling;
       }
+
       const tr = document.createElement("tr"); tr.className = "misc-extra-row";
       tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
       tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
+
       const tds = tr.querySelectorAll("td");
       injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
       adjustRowspan("misc-section-cell", MISC_BASE_ROWS, +1);
     }catch(e){ console.error(e); alert("기타 섹션 행 추가 중 오류: " + (e && e.message ? e.message : e)); }
   }
+
   function removeMiscRow(){
     try{
       const tbody = qs("#riskTable tbody"); if(!tbody) return;
@@ -569,12 +684,15 @@
         node = node.previousElementSibling;
       }
       if(!lastExtra){ alert("기타 섹션에 삭제할 추가 행이 없습니다."); return; }
+
       tbody.removeChild(lastExtra);
       adjustRowspan("misc-section-cell", MISC_BASE_ROWS, -1);
-    }catch(e){ console.error(e); alert("기타 섹션 행 삭제 중 오류: " + (e && e.message ? e.message : e)); }
+    }catch(e){
+      console.error(e); alert("기타 섹션 행 삭제 중 오류: " + (e && e.message ? e.message : e));
+    }
   }
 
-  /* 사전준비 해당없음 시 하위행 잠금/해제 (유지) */
+  /* 해당없음 체크 시 사전준비 하이픈 서브행 전체 잠금/해제(확인+보완대책 포함) (유지) */
   function setPrepSubRowsDisabled(disabled){
     qsa("#riskTable tbody tr.prep-sub-row").forEach((row)=>{
       ["ok","fix","na","done"].forEach((colKey)=>{
@@ -587,6 +705,7 @@
       if(user){ user.disabled=!!disabled; }
     });
   }
+
   function initPrepRowLogic(){
     const master=byId("prep-master-row"); if(!master) return;
     function evalState(){
@@ -602,6 +721,7 @@
   function initSignature(canvasId, clearBtnId){
     const cvs=byId(canvasId), btn=byId(clearBtnId); if(!cvs) return;
     const ctx=cvs.getContext('2d');
+
     function resize(){
       const ratio=Math.max((window.devicePixelRatio || 1), 1);
       const rect=cvs.getBoundingClientRect(); const w=Math.floor(rect.width*ratio), h=Math.floor(rect.height*ratio);
@@ -609,18 +729,21 @@
       ctx.lineWidth=2; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.strokeStyle='#111827';
       ctx.clearRect(0,0,w,h);
     }
+
     let drawing=false, last=null;
-    function getPos(e){ const r=cvs.getBoundingClientRect(); const t=(e.touches&&e.touches[0])||null; return t?{x:t.clientX-r.left,y:t.clientY-r.top}:{x:e.clientX-r.left,y:e.clientY-r.top}; }
+    function getPos(e){ const r=cvs.getBoundingClientRect(); const t=(e.touches&&e.touches[0]) || null; return t?{x:t.clientX-r.left, y:t.clientY-r.top}:{x:e.clientX-r.left, y:e.clientY-r.top}; }
     function start(e){ if(e&&e.preventDefault) e.preventDefault(); drawing=true; last=getPos(e); }
     function move (e){ if(!drawing) return; if(e&&e.preventDefault) e.preventDefault(); const p=getPos(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; }
     function end (){ drawing=false; last=null; }
-    cvs.addEventListener('mousedown',start); cvs.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+
+    cvs.addEventListener('mousedown',start);   cvs.addEventListener('mousemove',move);   window.addEventListener('mouseup',end);
     cvs.addEventListener('touchstart',start,{passive:false}); cvs.addEventListener('touchmove',move,{passive:false}); cvs.addEventListener('touchend',end);
     window.addEventListener('resize',resize); resize();
+
     if(btn){ btn.addEventListener('click', ()=>{ ctx.clearRect(0,0,cvs.width,cvs.height); }); }
   }
 
-  /* 상단 성명  하단 서명란 자동 반영 (유지) */
+  /* 상단 성명  하단 서명란 이름 자동 반영 (유지) */
   function syncSigFromMeta(){
     [
       {src:"fSafety",  dst:"sigNameSafety"},
@@ -634,31 +757,44 @@
     });
   }
 
-  /* 모바일: c-hazard와 c-miti 폭 동일 유지 (유지) */
+  /*  모바일: c-hazard와 c-miti 폭 동일 유지 (유지) */
   function equalizeHazardMitiWidth(){
     const isMobile = window.matchMedia("(max-width: 800px), (pointer:coarse)").matches;
     const styleId = "dyn-mobile-cols";
     let styleEl = document.getElementById(styleId);
-    if(!styleEl){ styleEl = document.createElement("style"); styleEl.id = styleId; document.head.appendChild(styleEl); }
+    if(!styleEl){
+      styleEl = document.createElement("style");
+      styleEl.id = styleId;
+      document.head.appendChild(styleEl);
+    }
     if(!isMobile){ styleEl.textContent=""; return; }
+
     try{
       const tb = document.getElementById("riskTable");
       if(!tb || !tb.tBodies.length) return;
       const firstRow = tb.tBodies[0].rows[0];
       if(!firstRow || firstRow.cells.length < 2) return;
-      const hazardCell = firstRow.cells[1];
+
+      const hazardCell = firstRow.cells[1]; // 2번째 열(유해위험요인)
       const width = Math.round(hazardCell.getBoundingClientRect().width);
-      if(width>0){ styleEl.textContent = `@media (max-width:800px), (pointer:coarse){ col.c-miti{ width:${width}px !important; } }`; }
+      if(width>0){
+        styleEl.textContent = `@media (max-width:800px), (pointer:coarse){ col.c-miti{ width:${width}px !important; } }`;
+      }
     }catch(e){ /* silent */ }
   }
 
-  /* 인쇄 방향 클래스 (유지) */
+  /*  인쇄 시 가로/세로 감지  열 폭 클래스 부여 (유지) */
   function setPrintOrientationClass(){
     try{
       const isLandscape = (window.matchMedia && window.matchMedia("(orientation: landscape)").matches) || (window.innerWidth > window.innerHeight);
       const rootEl = document.documentElement;
-      if(isLandscape){ rootEl.classList.add("print-landscape"); rootEl.classList.remove("print-portrait"); }
-      else{ rootEl.classList.add("print-portrait"); rootEl.classList.remove("print-landscape"); }
+      if(isLandscape){
+        rootEl.classList.add("print-landscape");
+        rootEl.classList.remove("print-portrait");
+      }else{
+        rootEl.classList.add("print-portrait");
+        rootEl.classList.remove("print-landscape");
+      }
     }catch(e){ /* silent */ }
   }
   function clearPrintOrientationClass(){
@@ -667,24 +803,29 @@
     rootEl.classList.remove("print-portrait");
   }
 
-  /* 인쇄 전/후 훅 (유지) */
+  /*  인쇄 직전: 블록 자동 축소 + 인쇄 텍스트 동기화 (유지) */
   function scalePageBlocksForPrint(){
     try{
       const blocks = qsa('.page-block');
       const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
-      const marginComp = 40;
+      const marginComp = 40; // 상하 여백 보정
       const usableH = Math.max(0, viewportH - marginComp);
+
       blocks.forEach(block=>{
-        block.style.transform = ''; block.style.width = '';
-        const rect = block.getBoundingClientRect(); const h = rect.height;
+        block.style.transform = '';
+        block.style.width = '';
+        const rect = block.getBoundingClientRect();
+        const h = rect.height;
+
         if(usableH > 0 && h > usableH){
-          let scale = usableH / h; scale = Math.max(0.8, Math.min(1.0, scale));
+          let scale = usableH / h;
+          scale = Math.max(0.8, Math.min(1.0, scale));
           block.style.transform = `scale(${scale})`;
           block.style.transformOrigin = 'top left';
           block.style.width = `calc(100% / ${scale})`;
         }
       });
-      /* 인쇄 텍스트 동기화 (유지) */
+
       qsa('.miti-cell').forEach(cell=>{
         const sel  = cell.querySelector('.miti-select');
         const user = cell.querySelector('.miti-user');
@@ -698,35 +839,44 @@
     }catch(e){ /* silent */ }
   }
   function resetBlockScaleAfterPrint(){
-    qsa('.page-block').forEach(block=>{ block.style.transform = ''; block.style.width = ''; });
+    qsa('.page-block').forEach(block=>{
+      block.style.transform = '';
+      block.style.width = '';
+    });
   }
 
-  /*  안전 프린트: 사용자 제스처 내 동기 1회 호출만 수행 (팝업 방지) */
+  /*  모바일 프린트 팝업 방지 로직 (유지): 사용자 제스처 내 동기 1회 호출 */
   function attachSafePrint(btn){
     if(!btn) return;
     let printing = false;
     const handler = (ev)=>{
-      if(printing) return;           // 중복 호출 방지
+      if(printing) return;
       printing = true;
-      try {
-        // 사용자 제스처(클릭) 콜스택에서 동기적으로 1회만 호출
-        window.print();
-      } catch (e) {
-        // (의도적 무시) 비동기 재시도는 차단 팝업 유발 가능성이 있어 수행하지 않음
-      } finally {
-        // 인쇄 UI 종료 후 재사용을 위해 일정 시간 뒤 해제
-        setTimeout(()=>{ printing = false; }, 1200);
-      }
+      try { window.print(); } catch (e) { /* no retry */ }
+      finally { setTimeout(()=>{ printing = false; }, 1200); }
     };
-    //  모바일 중복 호출을 피하기 위해 'click'만 사용 (touchend 바인딩 제거)
     btn.addEventListener("click", handler, {passive:false});
+  }
+
+  /* 확인 헤더 마스터 체크: 확인 열 전체 토글 (비활성화 제외) (유지) */
+  function initConfirmMaster(){
+    const master = byId("chkConfirmAll"); if(!master) return;
+    master.addEventListener("change", ()=>{
+      const state = !!master.checked;
+      qsa('input.riskchk[data-col="done"]').forEach((chk)=>{
+        if(!chk.disabled){ chk.checked = state; }
+      });
+    });
   }
 
   /* 초기화(회사명 제외) + 동적 행/rowSpan 복구 (유지) */
   function resetToMaster(){
     try{
       qsa('.riskchk').forEach((chk)=>{ chk.checked=false; chk.disabled=false; });
-      qsa('input[type="text"], input[type="date"], textarea').forEach((el)=>{ if(el.id === "fCompany") return; el.value = ""; });
+      qsa('input[type="text"], input[type="date"], textarea').forEach((el)=>{
+        if(el.id === "fCompany") return;
+        el.value = "";
+      });
       qsa('.miti-select').forEach((sel)=>{ sel.value=""; });
       qsa('.miti-user').forEach((inp)=>{ inp.value=""; inp.style.display="none"; });
       qsa('.miti-print').forEach((el)=>{ el.textContent=""; });
@@ -744,16 +894,24 @@
       const miscCell = byId("misc-section-cell"); if(miscCell) miscCell.rowSpan = MISC_BASE_ROWS;
 
       setTimeout(equalizeHazardMitiWidth, 50);
-    }catch(e){ console.error(e); alert("초기화 중 오류: " + (e && e.message ? e.message : e)); }
+    }catch(e){
+      console.error(e); alert("초기화 중 오류: " + (e && e.message ? e.message : e));
+    }
   }
 
   /* 인쇄 이벤트 (유지) */
-  window.addEventListener('beforeprint', ()=>{ setPrintOrientationClass(); scalePageBlocksForPrint(); });
-  window.addEventListener('afterprint',  ()=>{ clearPrintOrientationClass(); resetBlockScaleAfterPrint(); });
+  window.addEventListener('beforeprint', ()=>{
+    setPrintOrientationClass();
+    scalePageBlocksForPrint();
+  });
+  window.addEventListener('afterprint', ()=>{
+    clearPrintOrientationClass();
+    resetBlockScaleAfterPrint();
+  });
 
   function initAll(){
     try{
-      /* 선택: 로컬스토리지 복원 (유지, 실패 무시) */
+      /* 선택: 로컬스토리지 복원 (유지) */
       try{
         const raw=localStorage.getItem("hra-risk-mobile-v3");
         if(raw){
@@ -766,17 +924,16 @@
           });
           const c=byId("fCompany"); if(c) c.value = (doc.meta && doc.meta.companyName) || c.value || "LG전자 ES에너지컨설팅팀";
         }
-      }catch(e){}
+      }catch(e){ /* 무시 */ }
 
       const btnPrint   = byId("printPDF"),   btnClear = byId("clearAll");
       const btnPrepAdd = byId("btnPrepAdd"), btnPrepRemove = byId("btnPrepRemove");
       const btnWorksAdd= byId("btnWorksAdd"),btnWorksRemove = byId("btnWorksRemove");
       const btnMiscAdd = byId("addMiscRow"), btnMiscRemove = byId("removeMiscRow");
 
-      /*  모바일 프린트 차단 팝업 방지 로직 연결 */
       attachSafePrint(btnPrint);
-
       if(btnClear){ btnClear.addEventListener("click", ()=>{ if(confirm("초기화 하시겠습니까? 저장된 데이터가 삭제됩니다.")){ resetToMaster(); } }); }
+
       if(btnPrepAdd)   btnPrepAdd  .addEventListener("click", addPrepRow);
       if(btnPrepRemove)btnPrepRemove.addEventListener("click", removePrepRow);
       if(btnWorksAdd)  btnWorksAdd .addEventListener("click", addWorkRow);
@@ -786,6 +943,7 @@
 
       initRiskTable();
       initPrepRowLogic();
+      initConfirmMaster();
 
       initSignature('sigCanvasSafety','clearSigSafety');
       initSignature('sigCanvasW1','clearSigW1');
@@ -797,7 +955,9 @@
       setTimeout(equalizeHazardMitiWidth, 50);
       window.addEventListener("resize", ()=>{ requestAnimationFrame(equalizeHazardMitiWidth); });
       window.addEventListener("orientationchange", equalizeHazardMitiWidth);
-    }catch(e){ console.error(e); alert("기능 초기화 중 오류: " + (e && e.message ? e.message : e)); }
+    }catch(e){
+      console.error(e); alert("기능 초기화 중 오류: " + (e && e.message ? e.message : e));
+    }
   }
 
   window.addEventListener("DOMContentLoaded", initAll);
