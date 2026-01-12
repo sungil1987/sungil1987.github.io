@@ -1,29 +1,3 @@
-
-#Requires -Version 5.1
-[CmdletBinding()]
-param(
-    [string]$OutDir   = 'D:\000. 현장\0000. 진단 보고서\2026\모바일 코딩',
-    [string]$FileName = 'index.html',
-    [switch]$Open,
-    [switch]$Hash
-)
-
-$ErrorActionPreference = 'Stop'
-
-# 출력 폴더 생성/확인
-try {
-    if (-not (Test-Path -LiteralPath $OutDir)) {
-        New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
-    }
-} catch {
-    Write-Error "출력 폴더 생성/확인 중 오류: $($_.Exception.Message)"
-    throw
-}
-
-$indexPath = Join-Path $OutDir $FileName
-
-# HTML 전체(모바일 위험성 평가 웹앱)
-$html = @'
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -32,7 +6,7 @@ $html = @'
 <meta name="color-scheme" content="light" />
 <title>LG전자 ES에너지컨설팅팀 위험성 평가표 (모바일 표 Ver.)</title>
 
-<!-- ✅ html2pdf.js (CDN) 올바른 삽입 -->
+<!--  html2pdf.js (CDN) 올바른 삽입 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
         integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -144,7 +118,7 @@ td.section{
   font-family:inherit; font-size:inherit; padding:6px 8px; outline:none;
   white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; resize:vertical;
 }
-/* ▼ 보완대책 드롭셀/사용자입력 UI */
+/*  보완대책 드롭셀/사용자입력 UI */
 .miti-cell{ padding:6px !important; position:relative; }
 .miti-ui{ display:flex; flex-direction:column; gap:6px; }
 .miti-select,
@@ -171,9 +145,9 @@ td.section{
   border-radius:8px; background:#fff; touch-action:none
 }
 
-/* ─────────────────────────────────────────────────────────
-🖨️ 인쇄 최적화 + 3단락 묶기 + 열폭 동기화
-───────────────────────────────────────────────────────── */
+/* 
+ 인쇄 최적화 + 3단락 묶기 + 열폭 동기화
+ */
 @page{ margin:15mm }  /* 기본 여백 15mm로 확대 */
 @media print{
   html, body{
@@ -210,7 +184,7 @@ td.section{
   .miti-ui{ display:none !important; } .miti-print{ display:block !important; }
 }
 
-/* 🧩 내보내기용 상태: PDF 뷰어로 내보낼 때 UI 숨김 + 텍스트만 출력 */
+/*  내보내기용 상태: PDF 뷰어로 내보낼 때 UI 숨김 + 텍스트만 출력 */
 html.export-mode header,
 html.export-mode .toolbar,
 html.export-mode #printPDF,
@@ -242,7 +216,7 @@ html.export-mode tr,
 html.export-mode th, 
 html.export-mode td { background:#fff !important; }
 
-/* 📱 모바일 전용 UI 조정 */
+/*  모바일 전용 UI 조정 */
 @media (max-width:800px), (pointer:coarse){
   col.c-hazard, col.c-miti { width:182px !important }
   tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal }
@@ -269,7 +243,7 @@ html.export-mode td { background:#fff !important; }
         <button id="clearAll" class="warn" type="button">초기화</button>
         <!-- 새 탭 뷰어로 열기 -->
         <button id="openViewer" class="secondary" type="button" title="PDF 뷰어로 열기">뷰어로 열기</button>
-        <!-- ✅ 공유 버튼 (HTTPS + 지원 브라우저에서 OS 공유 시트로 파일 공유) -->
+        <!--  공유 버튼 (HTTPS + 지원 브라우저에서 OS 공유 시트로 파일 공유) -->
         <button id="sharePDF" class="secondary" type="button" title="공유">공유</button>
       </div>
     </div>
@@ -282,7 +256,7 @@ html.export-mode td { background:#fff !important; }
     <div class="title main-title">수시 위험성 평가표</div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
       <div><label class="hint">업체명</label><input id="fCompany" type="text" value="LG전자 ES에너지컨설팅팀" class="field"></div>
-      <div><label class="hint">현장명</label><input id="fSiteName" type="text" placeholder="예: ○○공장 ○○라인" class="field"></div>
+      <div><label class="hint">현장명</label><input id="fSiteName" type="text" placeholder="예: 공장 라인" class="field"></div>
       <div><label class="hint">진단 시작</label><input id="fDiagStart" type="date" class="field"></div>
       <div><label class="hint">진단 종료</label><input id="fDiagEnd" type="date" class="field"></div>
       <div><label class="hint">작성 일자</label><input id="fWrittenDate" type="date" class="field"></div>
@@ -307,7 +281,7 @@ html.export-mode td { background:#fff !important; }
         <thead>
           <tr>
             <th rowspan="2" class="th-center">작업</th>
-            <th rowspan="2" class="th-center">유해·위험요인 파악</th>
+            <th rowspan="2" class="th-center">유해위험요인 파악</th>
             <th colspan="3" class="th-center">위험성 확인결과</th>
             <th rowspan="2" class="th-center">보완 대책</th>
             <th rowspan="2" class="th-center">
@@ -626,7 +600,7 @@ function removeMiscRow(){
   }
 }
 
-/* ‘해당없음’ 체크 시 사전준비 하이픈 서브행 전체 잠금/해제(확인+보완대책 포함) */
+/* 해당없음 체크 시 사전준비 하이픈 서브행 전체 잠금/해제(확인+보완대책 포함) */
 function setPrepSubRowsDisabled(disabled){
   qsa("#riskTable tbody tr.prep-sub-row").forEach((row)=>{
     ["ok","fix","na","done"].forEach((colKey)=>{
@@ -672,7 +646,7 @@ function initSignature(canvasId, clearBtnId){
   if(btn){ btn.addEventListener('click', ()=>{ ctx.clearRect(0,0,cvs.width,cvs.height); }); }
 }
 
-/* 상단 성명 → 하단 서명란 이름 자동 반영 */
+/* 상단 성명  하단 서명란 이름 자동 반영 */
 function syncSigFromMeta(){
   [
     {src:"fSafety",  dst:"sigNameSafety"},
@@ -686,7 +660,7 @@ function syncSigFromMeta(){
   });
 }
 
-/* 📱 모바일: 유해요인/보완대책 폭 동일 유지 */
+/*  모바일: 유해요인/보완대책 폭 동일 유지 */
 function equalizeHazardMitiWidth(){
   const isMobile = window.matchMedia("(max-width: 800px), (pointer:coarse)").matches;
   const styleId = "dyn-mobile-cols";
@@ -702,7 +676,7 @@ function equalizeHazardMitiWidth(){
   }catch(e){ /* silent */ }
 }
 
-/* 🖨️ 인쇄 시 가로/세로 감지 → 열 폭 클래스 부여 */
+/*  인쇄 시 가로/세로 감지  열 폭 클래스 부여 */
 function setPrintOrientationClass(){
   try{
     const isLandscape = (window.matchMedia && window.matchMedia("(orientation: landscape)").matches) || (window.innerWidth > window.innerHeight);
@@ -717,7 +691,7 @@ function clearPrintOrientationClass(){
   rootEl.classList.remove("print-portrait");
 }
 
-/* 🔧 인쇄 직전: 블록 자동 축소 + 인쇄 텍스트 동기화 */
+/*  인쇄 직전: 블록 자동 축소 + 인쇄 텍스트 동기화 */
 function scalePageBlocksForPrint(){
   try{
     const blocks = qsa('.page-block');
@@ -754,7 +728,7 @@ function resetBlockScaleAfterPrint(){
   });
 }
 
-/* ✅ 모바일 프린트 팝업 방지 로직: 사용자 제스처 내 1회 호출 */
+/*  모바일 프린트 팝업 방지 로직: 사용자 제스처 내 1회 호출 */
 function attachSafePrint(btn){
   if(!btn) return;
   let printing = false;
@@ -814,7 +788,7 @@ window.addEventListener('afterprint', ()=>{
   resetBlockScaleAfterPrint();
 });
 
-/* ✅ PDF Blob 생성 → 새 탭(브라우저 PDF 뷰어)로 열기 — 내보내기 모드 적용 */
+/*  PDF Blob 생성  새 탭(브라우저 PDF 뷰어)로 열기  내보내기 모드 적용 */
 async function openPdfViewerTab(){
   document.documentElement.classList.add('export-mode');
   try{
@@ -850,7 +824,7 @@ async function openPdfViewerTab(){
   }
 }
 
-/* ✅ 공유: 가능하면 OS 공유 시트(카카오톡/메일) → 미지원/HTTP면 뷰어/다운로드 폴백 */
+/*  공유: 가능하면 OS 공유 시트(카카오톡/메일)  미지원/HTTP면 뷰어/다운로드 폴백 */
 async function sharePdfDirect(){
   const isHttps = location.protocol === 'https:';
   document.documentElement.classList.add('export-mode');
@@ -881,7 +855,7 @@ async function sharePdfDirect(){
 
     if (isHttps && 'canShare' in navigator && navigator.canShare(data)) {
       try {
-        await navigator.share(data); // OS 공유 시트 → 카카오톡·메일 선택
+        await navigator.share(data); // OS 공유 시트  카카오톡메일 선택
       } catch(e) {
         if (e.name !== 'AbortError') alert('공유 중 오류: ' + (e.message || e));
       }
@@ -962,38 +936,3 @@ window.addEventListener("DOMContentLoaded", initAll);
 </script>
 </body>
 </html>
-'@
-
-# 파일 쓰기
-Set-Content -Path $indexPath -Value $html -Encoding UTF8
-
-# 폰트 복사(있을 경우)
-$fontFiles = @("LGSmartRegular.woff2","LGSmartRegular.woff")
-foreach($f in $fontFiles){
-  $src = Join-Path $PSScriptRoot $f
-  $dst = Join-Path $OutDir $f
-  if(Test-Path $src){ Copy-Item -LiteralPath $src -Destination $dst -Force }
-}
-
-# 해시 출력(선택)
-if ($Hash) {
-  try {
-    $h = Get-FileHash -LiteralPath $indexPath -Algorithm SHA256
-    Write-Host ("SHA256: " + $h.Hash)
-  } catch {
-    Write-Warning "SHA256 해시 계산 실패: $($_.Exception.Message)"
-  }
-}
-
-# 자동 열기(선택)
-if ($Open) {
-  try {
-    Start-Process $indexPath
-    Write-Host "생성 완료: $indexPath (자동 열기)"
-  } catch {
-    Write-Warning "생성은 완료되었지만 자동 열기에 실패했습니다. 파일을 직접 더블클릭 해주세요."
-  }
-} else {
-  Write-Host "생성 완료: $indexPath"
-}
-``
