@@ -113,7 +113,7 @@
       white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; resize:vertical;
     }
 
-    /*  보완대책 드롭셀/사용자입력 UI  네모 박스(입력칸)과 완전 동일하게 보정 */
+    /*  보완대책 드롭셀/사용자입력 UI  네모 박스(입력칸) 동일 보정 */
     .miti-cell{
       padding:6px !important;
       position:relative; /* 커스텀 화살표 위치 기준 */
@@ -135,8 +135,7 @@
     }
     .miti-user{
       display:none; /* '사용자 입력' 선택 시에만 표시 */
-      padding:6px 8px; /* 입력칸의 실제 텍스트 패딩 */
-      line-height:normal;
+      padding:6px 8px; line-height:normal;
     }
     /* 커스텀 화살표(작은 역삼각형)  박스 내부, 넘침 방지 */
     .miti-cell::after{
@@ -144,7 +143,7 @@
       position:absolute; right:14px; top:50%; margin-top:-4px;
       width:0; height:0;
       border-left:6px solid transparent; border-right:6px solid transparent;
-      border-top:8px solid #6b7280; /* 회색 작은 삼각형 */
+      border-top:8px solid #6b7280;
       pointer-events:none;
     }
     .miti-print{ display:none; min-height:48px; white-space:pre-wrap; word-break:break-word; }
@@ -152,10 +151,10 @@
     .signature{ width:100%; height:130px }
     .sig-box{ position:relative }
 
-    /*  Android Chrome 터치 활성화 보정: 높은 z-index + 포인터 이벤트 명시 */
+    /*  Android Chrome 터치 활성화 보정 */
     #printPDF{
       position:absolute; top:-50px; right:14px;
-      z-index:10000; pointer-events:auto;
+      z-index:10000; pointer-events:auto; /* 레이어/터치 보정 */
       transform:none;
     }
 
@@ -164,46 +163,32 @@
       border-radius:8px; background:#fff; touch-action:none
     }
 
-    /* 
-        인쇄 최적화 + 3단락 묶기 + 열폭 동기화 (변경 없음)
-        */
+    /*  인쇄 최적화 (변경 없음)  */
     @page{ margin:12mm }
     @media print{
       html, body{
-        background:#fff !important;
-        color:#000 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        background:#fff !important; color:#000 !important;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
       }
       .wrap{ transform:none !important; width:auto !important }
       header,.toolbar{ display:none !important }
       .card{
-        box-shadow:none !important;
-        background:#fff !important;
-        border-color:#ddd !important;
+        box-shadow:none !important; background:#fff !important; border-color:#ddd !important;
         transform-origin:top left;
       }
-      .table-wrap, table, thead, tbody, tfoot, tr, th, td,
-      input.field, textarea.field, .signature canvas{
-        background:#fff !important;
-      }
-      thead th{ background:#fff !important }
-      td.section{ background:#fff !important }
+      .table-wrap, table, thead, tbody, tfoot, tr, th, td, input.field, textarea.field, .signature canvas{ background:#fff !important; }
+      thead th{ background:#fff !important } td.section{ background:#fff !important }
 
-      /* 인쇄 시 PDF/Clear/ + /  숨김 (유지) */
-      #printPDF, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3 { display:none !important; }
+      /* 인쇄 시 PDF/Clear/+/ 숨김 */
+      #printPDF, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3{ display:none !important; }
       .section-actions{ display:none !important; }
 
-      /* 짤림 방지/페이지 묍기 (유지) */
-      thead{ display:table-header-group !important }
-      tfoot{ display:table-footer-group !important }
+      /* 짤림 방지/페이지 묶기 */
+      thead{ display:table-header-group !important } tfoot{ display:table-footer-group !important }
       table{ min-width:auto; width:100%; table-layout:auto; border-collapse:collapse }
       .table-wrap{ overflow:visible !important }
-      tr, th, td,
-      .sig-box, .signature, .section-cell,
-      .miti-print, .cell-input, .miti-select, .miti-user{
-        page-break-inside:avoid !important;
-        break-inside:avoid !important;
+      tr, th, td, .sig-box, .signature, .section-cell, .miti-print, .cell-input, .miti-select, .miti-user{
+        page-break-inside:avoid !important; break-inside:avoid !important;
       }
       tbody{ page-break-inside:auto; break-inside:auto }
       p, .cell-input, .miti-print{ orphans:3; widows:3 }
@@ -211,7 +196,7 @@
       .page-block{ page-break-inside:avoid !important; break-inside:avoid !important; }
       .page-start{ page-break-before:always !important; break-before:page !important; }
 
-      /* 인쇄 시 열 폭(유해위험요인 = 보완대책 동일) (유지) */
+      /* 인쇄 시 열 폭(유해위험요인 = 보완대책 동일) */
       html.print-portrait  col.c-task {width:8%!important}  html.print-portrait  col.c-hazard{width:36%!important}
       html.print-portrait  col.c-ok   {width:6%!important}  html.print-portrait  col.c-fix   {width:6%!important}
       html.print-portrait  col.c-na   {width:6%!important}  html.print-portrait  col.c-miti  {width:36%!important}
@@ -222,7 +207,7 @@
       html.print-landscape col.c-na   {width:5%!important}  html.print-landscape col.c-miti  {width:36%!important}
       html.print-landscape col.c-done {width:5%!important}
 
-      /* 인쇄 시: UI 숨기고 텍스트만 출력 (유지) */
+      /* 인쇄 시: UI 숨기고 텍스트만 출력 */
       .miti-ui{ display:none !important; }
       .miti-print{ display:block !important; }
     }
@@ -231,10 +216,11 @@
     @media (max-width:800px), (pointer:coarse){
       col.c-hazard, col.c-miti { width:182px !important }
       tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal }
-      /* 모바일 날짜 UI (유지) */
+
+      /* 모바일 날짜 UI */
       main .card:first-of-type input[type="date"].field{
-        width:100%; min-width:0; -webkit-appearance:none; appearance:none;
-        height:48px; line-height:48px; color:var(--text); caret-color:var(--text);
+        width:100%; min-width:0; -webkit-appearance:none; appearance:none; height:48px; line-height:48px;
+        color:var(--text); caret-color:var(--text);
       }
       main .card:first-of-type input[type="date"].field::-webkit-datetime-edit,
       main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-year-field,
@@ -626,7 +612,7 @@
       }catch(e){ console.error(e); alert("기타 섹션 행 삭제 중 오류: " + (e && e.message ? e.message : e)); }
     }
 
-    /* 해당없음 체크 시 사전준비 하위행 전체 잠금/해제 */
+    /* 사전준비 해당없음  하위행 전체 잠금/해제 */
     function setPrepSubRowsDisabled(disabled){
       qsa("#riskTable tbody tr.prep-sub-row").forEach((row)=>{
         ["ok","fix","na","done"].forEach((colKey)=>{
@@ -765,20 +751,23 @@
       qsa('.page-block').forEach(block=>{ block.style.transform = ''; block.style.width = ''; });
     }
 
-    /*  안전 프린트 + Android Chrome 폴백: click + pointerup (중복 방지 가드 포함) */
+    /*  안전 프린트: 사용자 제스처 콜스택 내 동기 호출 + Android 폴백(pointerup) */
     function attachSafePrint(btn){
       if(!btn) return;
       let printing = false;
       const handler = (ev)=>{
-        if(printing) return; // 중복 호출 방지
+        if(printing) return;            // 중복 호출 방지
         printing = true;
-        try { window.print(); } catch (e) { /* no retry */ }
-        finally { setTimeout(()=>{ printing = false; }, 1200); }
+        try {
+          //  사용자 제스처 콜스택에서 동기적으로 단 1회 호출
+          window.print();
+        } finally {
+          // 모바일 크롬 afterprint 즉시 발화 등 고려해 일정 시간 후 해제
+          setTimeout(()=>{ printing = false; }, 1200);
+        }
       };
-      // 기본: click
-      btn.addEventListener("click", handler, {passive:false});
-      // 폴백: 일부 Android Chrome에서 click 전달 실패 시 pointerup도 허용
-      btn.addEventListener("pointerup", handler, {passive:false});
+      btn.addEventListener("click",     handler, {passive:false}); // 주 이벤트
+      btn.addEventListener("pointerup", handler, {passive:false}); // 폴백(일부 단말 click 누락)
     }
 
     /* 확인 헤더 마스터 체크 */
@@ -808,9 +797,11 @@
         qsa(".prep-extra-row").forEach((r)=>{ r.remove(); });
         qsa(".extra-work-row").forEach((r)=>{ r.remove(); });
         qsa(".misc-extra-row").forEach((r)=>{ r.remove(); });
+
         const prepCell = byId("prep-section-cell");  if(prepCell)  prepCell.rowSpan  = PREP_BASE_ROWS;
         const worksCell= byId("task-works-label");   if(worksCell) worksCell.rowSpan = WORKS_BASE_ROWS;
         const miscCell = byId("misc-section-cell");  if(miscCell)  miscCell.rowSpan  = MISC_BASE_ROWS;
+
         setTimeout(equalizeHazardMitiWidth, 50);
       }catch(e){ console.error(e); alert("초기화 중 오류: " + (e && e.message ? e.message : e)); }
     }
