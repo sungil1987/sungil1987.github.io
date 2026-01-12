@@ -126,14 +126,13 @@
     }
     .miti-user{ display:none; }
     .miti-print{ display:none; min-height:48px; white-space:pre-wrap; word-break:break-word; }
-
     @supports (-webkit-touch-callout: none) { .miti-select{ padding-top:8px; padding-bottom:8px; } }
     @media (pointer:coarse) and (max-width:800px){ .miti-select{ line-height:1.2; } }
 
     .signature{ width:100%; height:130px }
     .sig-box{ position:relative }
     #printPDF{ position:absolute; top:-50px; right:14px; transform:none; z-index:2 }
-    /* 새로 추가: '1' 버튼도 PDF 옆에 고정 */
+    /* '1' 버튼도 PDF 옆에 고정 */
     #makePDF1{ position:absolute; top:-50px; right:72px; transform:none; z-index:2 }
 
     .signature canvas{
@@ -211,7 +210,7 @@
   </div>
 </header>
 
-<main class="wrap" id="print-area">
+<main class="wrap">
   <!-- 1) 현장 정보란 -->
   <section class="card page-block" id="metaCard">
     <div class="title main-title">수시 위험성 평가표</div>
@@ -248,7 +247,7 @@
             <th rowspan="2" class="th-center">유해위험요인 파악</th>
             <th colspan="3" class="th-center">위험성 확인결과</th>
             <th rowspan="2" class="th-center">보완 대책</th>
-            <!--  확인 열 헤더에 마스터 체크박스 -->
+            <!--  확인 열 헤더 마스터 체크박스 -->
             <th rowspan="2" class="th-center">
               확인
               <div class="chk-wrap" style="margin-top:4px">
@@ -354,9 +353,9 @@
         <input id="sigNameW3" type="text" placeholder="성명" class="field">
         <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW3"></canvas></div>
 
-        <!-- 기존 PDF 버튼 옆에 '1' 버튼 추가 -->
+        <!-- 기존 PDF 버튼 (브라우저 인쇄) + Galaxy Chrome 전용 1 버튼 -->
         <button id="printPDF" class="secondary" type="button" title="브라우저 인쇄">PDF</button>
-        <button id="makePDF1" class="secondary" type="button" title="html2canvas로 A4 PDF 생성">1</button>
+        <button id="makePDF1" class="secondary" type="button" title="(Galaxy Chrome) PDF 자동 생성/저장/열기">1</button>
 
         <div style="margin-top:6px"><button class="secondary" id="clearSigW3" type="button">Clear</button></div>
       </div>
@@ -364,7 +363,7 @@
   </section>
 </main>
 
-<!-- html2canvas 1.4.1 (UMD) & jsPDF 4.0.0 (UMD) CDN -->
+<!--  html2canvas & jsPDF UMD CDN (정상 로드 형태) -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.0.0/jspdf.umd.min.js"></script>
 
@@ -453,6 +452,7 @@
     if(!tds[idxMiti].querySelector(".miti-select")) injectMitiInput(tds[idxMiti]);
     if(idxHaz>=0 && tds[idxHaz].textContent.trim()==="" && !tds[idxHaz].querySelector(".cell-input")){ injectTextarea(tds[idxHaz]); }
   }
+
   function initRiskTable(){ document.querySelectorAll("#riskTable tbody tr").forEach(initRiskRow); }
 
   const PREP_BASE_ROWS  = 8;
@@ -466,6 +466,7 @@
     if(next < base) next = base;
     td.rowSpan = next;
   }
+
   function addPrepRow(){
     try{
       const tbody = qs("#riskTable tbody"), lastFixed = byId("prep-last-fixed");
@@ -482,6 +483,7 @@
       adjustRowspan("prep-section-cell", PREP_BASE_ROWS, +1);
     }catch(e){ console.error(e); alert("사전준비 작업 행 추가 중 오류: " + (e && e.message ? e.message : e)); }
   }
+
   function removePrepRow(){
     try{
       const tbody = qs("#riskTable tbody"); if(!tbody) return;
@@ -495,6 +497,7 @@
       adjustRowspan("prep-section-cell", PREP_BASE_ROWS, -1);
     }catch(e){ console.error(e); alert("사전준비 작업 행 삭제 중 오류: " + (e && e.message ? e.message : e)); }
   }
+
   function addWorkRow(){
     try{
       const tbody = qs("#riskTable tbody"), lastFixed = byId("works-last-fixed");
@@ -511,6 +514,7 @@
       adjustRowspan("task-works-label", WORKS_BASE_ROWS, +1);
     }catch(e){ console.error(e); alert("작업시 행 추가 중 오류: " + (e && e.message ? e.message : e)); }
   }
+
   function removeWorkRow(){
     try{
       const tbody = qs("#riskTable tbody"); if(!tbody) return;
@@ -524,6 +528,7 @@
       adjustRowspan("task-works-label", WORKS_BASE_ROWS, -1);
     }catch(e){ console.error(e); alert("작업시 추가 행 삭제 중 오류: " + (e && e.message ? e.message : e)); }
   }
+
   function addMiscRow(){
     try{
       const tbody = qs("#riskTable tbody"), miscHead = byId("misc-section-row");
@@ -540,6 +545,7 @@
       adjustRowspan("misc-section-cell", MISC_BASE_ROWS, +1);
     }catch(e){ console.error(e); alert("기타 섹션 행 추가 중 오류: " + (e && e.message ? e.message : e)); }
   }
+
   function removeMiscRow(){
     try{
       const tbody = qs("#riskTable tbody"); if(!tbody) return;
@@ -753,6 +759,7 @@
       const btnPrepAdd = byId("btnPrepAdd"), btnPrepRemove = byId("btnPrepRemove");
       const btnWorksAdd= byId("btnWorksAdd"),btnWorksRemove = byId("btnWorksRemove");
       const btnMiscAdd = byId("addMiscRow"), btnMiscRemove = byId("removeMiscRow");
+      const btnMakeGalaxy = byId("makePDF1"); //  갤럭시 Chrome 전용 PDF 버튼
 
       attachSafePrint(btnPrint);
       attachDoneMaster();
@@ -764,6 +771,25 @@
       if(btnWorksRemove)btnWorksRemove.addEventListener("click", removeWorkRow);
       if(btnMiscAdd)    btnMiscAdd   .addEventListener("click", addMiscRow);
       if(btnMiscRemove) btnMiscRemove.addEventListener("click", removeMiscRow);
+
+      //  Galaxy Chrome 전용 동작: 자동 저장 + 자동 열기
+      if(btnMakeGalaxy){
+        btnMakeGalaxy.addEventListener("click", async ()=>{
+          const ua = navigator.userAgent || "";
+          const isAndroidChrome =
+            /Android/i.test(ua) && /Chrome/i.test(ua) && !/Edg/i.test(ua) && !/SamsungBrowser/i.test(ua);
+          if(!isAndroidChrome){
+            // iPhone/iOS 또는 기타 브라우저는 적용하지 않음
+            alert("이 기능은 갤럭시(안드로이드 Chrome)에서만 동작합니다.");
+            return;
+          }
+          try{
+            await generatePDF_GalaxyChrome();
+          }catch(e){
+            console.error(e); alert("PDF 생성 중 오류: " + (e && e.message ? e.message : e));
+          }
+        });
+      }
 
       initRiskTable();
       initPrepRowLogic();
@@ -778,34 +804,27 @@
       window.addEventListener("orientationchange", equalizeHazardMitiWidth);
     }catch(e){ console.error(e); alert("기능 초기화 중 오류: " + (e && e.message ? e.message : e)); }
   }
+
   window.addEventListener("DOMContentLoaded", initAll);
-</script>
 
-<!--  html2canvas + jsPDF: '1' 버튼으로 고해상도 A4 PDF 생성(여백 12mm, 헤더/툴바 제외)  -->
-<script>
-  // jsPDF UMD 네임스페이스
-  const { jsPDF } = window.jspdf;
+  /*  Galaxy Chrome 전용: 1 버튼  PDF 자동 생성저장열기
+       - 전체 열 캡처 보정: onclone에서 표/래퍼/본문 폭을 scrollWidth로 확장
+       - 여백 12mm, 다중 페이지 자동 분할, 고해상도(scale4) */
+  async function generatePDF_GalaxyChrome(){
+    const { jsPDF } = window.jspdf;
+    const target = document.getElementById('print-area') || document.querySelector('main.wrap');
+    if(!target) throw new Error("#print-area 없음");
 
-  // '1' 버튼  PDF 생성
-  document.getElementById('makePDF1')?.addEventListener('click', generatePDF);
-
-  async function generatePDF() {
-    const target = document.getElementById('print-area'); // 상단 header/toolbar 밖의 전체 본문
-    if (!target) {
-      alert('캡처 대상 #print-area 를 찾을 수 없습니다.');
-      return;
-    }
-
-    // (모바일 포함) 현재 스크롤 값 안전 확보
+    // 현재 스크롤(모바일 포함) 취득
     const scrollX = (typeof window.scrollX === 'number') ? window.scrollX : (window.pageXOffset || 0);
     const scrollY = (typeof window.scrollY === 'number') ? window.scrollY : (window.pageYOffset || document.documentElement.scrollTop || 0);
 
-    // 고해상도 스케일 (요구사항: scale >= 4)
+    // 고해상도 스케일
     const baseScale = 4;
     const dpr       = (window.devicePixelRatio || 1);
-    const scale     = Math.max(baseScale, dpr * 2); // 레티나 등 고DPI에서 더 선명하게
+    const scale     = Math.max(baseScale, dpr * 2);
 
-    // html2canvas 옵션 (잘림/변형/스크롤 보정 + 헤더/툴바 확실 제외)
+    // 캡처 옵션: 헤더/툴바 제외 + 전체 폭 확장 + overflow/transform 제거
     const opt = {
       scale,
       useCORS: true,
@@ -816,104 +835,102 @@
       scrollY: -scrollY,
       windowWidth:  Math.max(target.scrollWidth,  target.clientWidth),
       windowHeight: Math.max(target.scrollHeight, target.clientHeight),
-      onclone: (doc) => {
-        // 헤더/툴바는 캡처에서 제외
-        doc.querySelectorAll('header, .toolbar').forEach((el) => {
-          el.setAttribute('data-html2canvas-ignore', 'true');
-          el.style.display = 'none';
+      onclone: (doc)=>{
+        // 헤더/툴바 제외
+        doc.querySelectorAll('header, .toolbar').forEach((el)=>{
+          el.setAttribute('data-html2canvas-ignore','true');
+          el.style.display='none';
         });
 
-        const cloned = doc.getElementById('print-area');
-        if (!cloned) return;
+        const cloned = doc.getElementById('print-area') || doc.querySelector('main.wrap');
+        if(!cloned) return;
 
-        // 캡처 영역 전체 펼침 & 잘림 방지
-        cloned.style.overflow = 'visible';
+        // 전체 펼침
+        cloned.style.overflow='visible';
         cloned.style.height   = cloned.scrollHeight + 'px';
+        cloned.style.maxWidth = 'none';
 
-        // transform(scale 등)으로 인한 왜곡 제거
-        const wrap = doc.querySelector('.wrap');
-        if (wrap) {
-          wrap.style.transform = 'none';
-          wrap.style.width     = 'auto';
+        // 표 래퍼/테이블 전체 폭 확장 (열 많아도 안 잘리게)
+        const wrapEl  = cloned.querySelector('.table-wrap');
+        const tableEl = cloned.querySelector('#riskTable');
+        const fullW   = Math.max(
+          cloned.scrollWidth,
+          wrapEl ? wrapEl.scrollWidth : 0,
+          tableEl ? tableEl.scrollWidth : 0
+        );
+        if(fullW > 0){
+          cloned.style.width = fullW + 'px';
+          if(wrapEl){ wrapEl.style.overflow='visible'; wrapEl.style.width = fullW + 'px'; }
+          if(tableEl){ tableEl.style.width = fullW + 'px'; tableEl.style.minWidth = fullW + 'px'; }
+          doc.documentElement.style.width = fullW + 'px';
+          doc.body.style.width = fullW + 'px';
         }
-        cloned.querySelectorAll('*').forEach((el) => {
-          const cs = doc.defaultView.getComputedStyle(el);
-          if (cs.transform && cs.transform !== 'none') el.style.transform = 'none';
-          if (cs.overflow && (cs.overflow.includes('hidden') || cs.overflow.includes('clip'))) {
-            el.style.overflow = 'visible';
-          }
-        });
 
-        // 폭 픽셀 고정(반응형 재흐트 방지)
-        const rect = cloned.getBoundingClientRect();
-        cloned.style.width = rect.width + 'px';
+        // transform/overflow-hidden 제거
+        cloned.querySelectorAll('*').forEach((el)=>{
+          const cs = doc.defaultView.getComputedStyle(el);
+          if(cs.transform && cs.transform!=='none') el.style.transform='none';
+          if(cs.overflow && (cs.overflow.includes('hidden') || cs.overflow.includes('clip'))) el.style.overflow='visible';
+        });
       }
     };
 
-    try {
-      // 1) HTML  Canvas (고해상도 캡처)
-      const canvas = await html2canvas(target, opt); // 옵션 설계: 공식 옵션/사례 참조
+    // HTML  Canvas
+    const canvas = await html2canvas(target, opt);
+    const imgData = canvas.toDataURL('image/png', 1.0);
 
-      // 2) Canvas  이미지 (고화질 PNG)
-      const imgData = canvas.toDataURL('image/png', 1.0);
+    // jsPDF(A4, mm) + 여백 12mm + 자동 방향
+    const orientation = (canvas.width > canvas.height) ? 'landscape' : 'portrait';
+    const pdf = new jsPDF(orientation[0], 'mm', 'a4');
 
-      // 3) jsPDF 문서: A4(mm), 여백 12mm 자동(세로/가로 공통)
-      const orientation = (canvas.width > canvas.height) ? 'landscape' : 'portrait';
-      const pdf = new jsPDF(orientation[0], 'mm', 'a4');
+    const pdfW = pdf.internal.pageSize.getWidth();
+    const pdfH = pdf.internal.pageSize.getHeight();
+    const margin   = 12; // 12mm
+    const contentW = pdfW - margin * 2;
+    const contentH = pdfH - margin * 2;
 
-      const pdfW = pdf.internal.pageSize.getWidth();   // 210mm 또는 297mm
-      const pdfH = pdf.internal.pageSize.getHeight();  // 297mm 또는 210mm
+    const canvasW = canvas.width;
+    const canvasH = canvas.height;
+    const ratio   = contentW / canvasW;
+    const imgHmm  = canvasH * ratio;
 
-      const margin   = 12;                 //  12mm (기존 @page margin과 동일)
-      const contentW = pdfW - margin * 2;
-      const contentH = pdfH - margin * 2;
+    if(imgHmm <= contentH){
+      pdf.addImage(imgData, 'PNG', margin, margin, contentW, imgHmm, '', 'FAST');
+    }else{
+      // 다중 페이지 슬라이스
+      const pagePxH = Math.floor(contentH / ratio);
+      let sY = 0, pageIndex = 0;
 
-      // 비율 유지하여 너비 맞춤
-      const canvasW = canvas.width;   // px
-      const canvasH = canvas.height;  // px
-      const ratio   = contentW / canvasW; // mm/px
-      const imgHmm  = canvasH * ratio;
+      const pageCanvas = document.createElement('canvas');
+      pageCanvas.width  = canvasW;
+      pageCanvas.height = pagePxH;
+      const pageCtx = pageCanvas.getContext('2d');
 
-      if (imgHmm <= contentH) {
-        // 단일 페이지
-        pdf.addImage(imgData, 'PNG', margin, margin, contentW, imgHmm, '', 'FAST');
-      } else {
-        // 다중 페이지: 콘텐츠 높이에 맞춰 슬라이스
-        const pagePxH = Math.floor(contentH / ratio); // 한 페이지 픽셀 높이
-        let sY = 0;
-        let pageIndex = 0;
+      while(sY < canvasH){
+        const sliceHeight = Math.min(pagePxH, canvasH - sY);
+        if(pageCanvas.height !== sliceHeight) pageCanvas.height = sliceHeight;
 
-        // 슬라이스용 임시 캔버스
-        const pageCanvas = document.createElement('canvas');
-        pageCanvas.width  = canvasW;
-        pageCanvas.height = pagePxH;
-        const pageCtx = pageCanvas.getContext('2d');
+        pageCtx.clearRect(0,0,pageCanvas.width,pageCanvas.height);
+        pageCtx.drawImage(canvas, 0, sY, canvasW, sliceHeight, 0, 0, canvasW, sliceHeight);
 
-        while (sY < canvasH) {
-          const sliceHeight = Math.min(pagePxH, canvasH - sY);
-          if (pageCanvas.height !== sliceHeight) pageCanvas.height = sliceHeight;
+        const sliceData = pageCanvas.toDataURL('image/png', 1.0);
+        const sliceHmm  = sliceHeight * ratio;
 
-          pageCtx.clearRect(0, 0, pageCanvas.width, pageCanvas.height);
-          pageCtx.drawImage(canvas, 0, sY, canvasW, sliceHeight, 0, 0, canvasW, sliceHeight);
+        if(pageIndex > 0) pdf.addPage();
+        pdf.addImage(sliceData, 'PNG', margin, margin, contentW, sliceHmm, '', 'FAST');
 
-          const sliceData = pageCanvas.toDataURL('image/png', 1.0);
-          const sliceHmm  = sliceHeight * ratio;
-
-          if (pageIndex > 0) pdf.addPage();
-          pdf.addImage(sliceData, 'PNG', margin, margin, contentW, sliceHmm, '', 'FAST');
-
-          sY += sliceHeight;
-          pageIndex++;
-        }
+        sY += sliceHeight; pageIndex++;
       }
-
-      // 4) 저장
-      pdf.save('위험성평가.pdf');
-    } catch (err) {
-      console.error(err);
-      alert('PDF 생성 중 오류가 발생했습니다: ' + (err && err.message ? err.message : err));
     }
+
+    // 저장 + 자동 열기(새 탭)
+    const blobUrl = pdf.output('bloburl'); // Galaxy Chrome에서 새 탭 PDF 뷰어
+    window.open(blobUrl, '_blank');        // 자동 열기
+    pdf.save('위험성평가.pdf');            // 자동 저장
   }
+
+  // 브라우저 인쇄 버튼(기존)
+  byId('printPDF')?.addEventListener('click', ()=>{ window.print(); });
 </script>
 </body>
 </html>
