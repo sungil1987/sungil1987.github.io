@@ -6,10 +6,8 @@
 <meta name="color-scheme" content="light" />
 <title>LG전자 ES에너지컨설팅팀 위험성 평가표 (모바일 표 Ver.)</title>
 
-<!--  최소 변경 : html2pdf.js 추가 (CDN) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-        integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!--  html2pdf.js (CDN) 올바른 삽입 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
 @font-face{
@@ -208,7 +206,7 @@ td.section{
     <div class="toolbar">
       <div class="toolbar-left">
         <button id="clearAll" class="warn" type="button">초기화</button>
-        <!--  최소 변경 : 뷰어로 열기 버튼 추가 -->
+        <!--  새 탭 뷰어로 열기 -->
         <button id="openViewer" class="secondary" type="button" title="PDF 뷰어로 열기">뷰어로 열기</button>
       </div>
     </div>
@@ -753,14 +751,16 @@ window.addEventListener('afterprint', ()=>{
   resetBlockScaleAfterPrint();
 });
 
-/*  최소 변경 : PDF Blob  새 탭(뷰어) 열기 */
+/*  PDF Blob 생성  새 탭(브라우저 PDF 뷰어)로 열기 */
 async function openPdfViewerTab(){
   try{
-    // 인쇄용 보정(텍스트 동기화 포함)
+    // 인쇄 레이아웃 보정(텍스트 동기화 포함)
     setPrintOrientationClass();
     scalePageBlocksForPrint();
 
-    const source = document.body; // 필요한 경우 특정 래퍼로 변경 가능
+    // 내보낼 범위: 전체 문서(필요시 특정 래퍼로 조정 가능)
+    const source = document.body;
+
     const opt = {
       margin:       0,
       filename:     '위험성_평가표.pdf',
@@ -769,10 +769,11 @@ async function openPdfViewerTab(){
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
+    // PDF Blob 생성
     const blob = await html2pdf().set(opt).from(source).toPdf().output('blob');
     const url  = URL.createObjectURL(blob);
 
-    //  크롬/엣지/삼성인터넷에서 새 탭으로 열기 (내장 PDF 뷰어 또는 다운로드/열기)
+    // 새 탭(내장 PDF 뷰어 또는 시스템 처리)으로 열기
     window.open(url, '_blank');
 
     // 원상복구
@@ -816,7 +817,7 @@ function initAll(){
     if(btnMiscAdd)    btnMiscAdd   .addEventListener("click", addMiscRow);
     if(btnMiscRemove) btnMiscRemove.addEventListener("click", removeMiscRow);
 
-    //  새 탭 뷰어 열기 버튼 연결
+    // 새 탭 뷰어 열기 버튼 연결
     if(btnOpenViewer){ btnOpenViewer.addEventListener("click", openPdfViewerTab); }
 
     initRiskTable();
