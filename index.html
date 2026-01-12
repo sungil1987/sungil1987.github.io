@@ -934,3 +934,34 @@
 </script>
 </body>
 </html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+document.getElementById("savePDF").addEventListener("click", async () => {
+    try {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("p", "mm", "a4");
+        
+        const source = document.getElementById("content");
+
+        pdf.html(source, {
+            callback: function (pdf) {
+                const pdfBlob = pdf.output("blob");
+
+                // Blob을 다운로드 후 자동 열기
+                const blobUrl = URL.createObjectURL(pdfBlob);
+                window.open(blobUrl, "_blank");
+
+                // 자동 다운로드
+                pdf.save("result.pdf");
+            },
+            margin: [10, 10, 10, 10],
+            autoPaging: "text"
+        });
+
+    } catch (err) {
+        alert("PDF 생성 오류: " + err.message);
+    }
+});
+</script>
