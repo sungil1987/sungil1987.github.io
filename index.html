@@ -7,8 +7,8 @@
   <title>LG전자 ES에너지컨설팅팀 위험성 평가표 (모바일 표 Ver.)</title>
 
   <!--  클라이언트 PDF 생성용 라이브러리 (CDN). 로드 실패 시 print() 폴백 처리 -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     @font-face {
@@ -157,7 +157,9 @@
       border-radius:8px; background:#fff; touch-action:none
     }
 
-    /*  인쇄 최적화 (변경 없음)  */
+    /* 
+        인쇄 최적화 (기존 유지)
+        */
     @page{ margin:12mm }
     @media print{
       html, body{
@@ -173,11 +175,9 @@
       .table-wrap, table, thead, tbody, tfoot, tr, th, td, input.field, textarea.field, .signature canvas{ background:#fff !important; }
       thead th{ background:#fff !important } td.section{ background:#fff !important }
 
-      /* 인쇄 시 PDF/Clear/+/ 숨김 */
       #printPDF, #sharePDF, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3{ display:none !important; }
       .section-actions{ display:none !important; }
 
-      /* 짤림 방지/페이지 묶기 */
       thead{ display:table-header-group !important } tfoot{ display:table-footer-group !important }
       table{ min-width:auto; width:100%; table-layout:auto; border-collapse:collapse }
       .table-wrap{ overflow:visible !important }
@@ -201,7 +201,6 @@
       html.print-landscape col.c-na   {width:5%!important}  html.print-landscape col.c-miti  {width:36%!important}
       html.print-landscape col.c-done {width:5%!important}
 
-      /* 인쇄 시: UI 숨기고 텍스트만 출력 */
       .miti-ui{ display:none !important; }
       .miti-print{ display:block !important; }
     }
@@ -228,11 +227,41 @@
 
     #approvalSection > h2{ font-size:calc(var(--fs-h2) - 4px + 3px) }
 
-    /* 캡쳐용 프린트 강제 클래스: @media print 규칙 일부를 화면에 적용 */
+    /* 
+        공유용 캡쳐 모드: 인쇄 규칙을 화면에 강제 적용 (세로 기준)
+        */
     html.capture-print header, html.capture-print .toolbar{ display:none !important; }
     html.capture-print .card{ box-shadow:none !important; background:#fff !important; border-color:#ddd !important; }
-    html.capture-print .section-actions{ display:none !important; }
     html.capture-print .wrap{ transform:none !important; width:auto !important }
+    html.capture-print #printPDF, html.capture-print #sharePDF,
+    html.capture-print #clearAll, html.capture-print #clearSigSafety,
+    html.capture-print #clearSigW1, html.capture-print #clearSigW2, html.capture-print #clearSigW3{ display:none !important; }
+    html.capture-print .section-actions{ display:none !important; }
+
+    /* 테이블/오버플로우/헤더 고정: 인쇄 규칙과 동일 */
+    html.capture-print .table-wrap{ overflow:visible !important }
+    html.capture-print thead{ display:table-header-group !important }
+    html.capture-print table{
+      min-width:auto; width:100%; table-layout:auto; border-collapse:collapse;
+      background:#fff !important;
+    }
+    html.capture-print td.section{ background:#fff !important }
+    html.capture-print tr, html.capture-print th, html.capture-print td,
+    html.capture-print .sig-box, html.capture-print .signature,
+    html.capture-print .section-cell, html.capture-print .miti-print,
+    html.capture-print .cell-input, html.capture-print .miti-select, html.capture-print .miti-user{
+      page-break-inside:avoid !important; break-inside:avoid !important;
+      background:#fff !important;
+    }
+
+    /* 세로 열폭(인쇄 동일) */
+    html.capture-print.print-portrait  col.c-task {width:8%!important}
+    html.capture-print.print-portrait  col.c-hazard{width:36%!important}
+    html.capture-print.print-portrait  col.c-ok   {width:6%!important}
+    html.capture-print.print-portrait  col.c-fix  {width:6%!important}
+    html.capture-print.print-portrait  col.c-na   {width:6%!important}
+    html.capture-print.print-portrait  col.c-miti {width:36%!important}
+    html.capture-print.print-portrait  col.c-done {width:2%!important}
   </style>
 </head>
 <body>
@@ -808,17 +837,16 @@
     window.addEventListener('beforeprint', ()=>{ setPrintOrientationClass(); scalePageBlocksForPrint(); });
     window.addEventListener('afterprint',  ()=>{ clearPrintOrientationClass(); resetBlockScaleAfterPrint(); });
 
-    /* ===================== PDF 생성 + 공유 ===================== */
+    /* ===================== PDF 생성 + 공유 (세로 인쇄 최적화 동일 적용) ===================== */
 
-    // A4 크기(mm), 여백(인쇄 규칙과 동일 12mm) 적용
     const PDF_MM = { w: 210, h: 297, margin: 12 };
 
-    // 세로 인쇄 규칙을 화면 캡쳐에도 적용하기 위한 보조
+    // 캡쳐 모드 적용/해제: 인쇄 규칙을 화면에 강제 적용
     function applyCapturePrintMode(){
-      document.documentElement.classList.add('capture-print');     // 일부 print 규칙 강제
-      document.documentElement.classList.remove('print-landscape');
-      document.documentElement.classList.add('print-portrait');    // 열폭 규칙도 세로 기준
-      scalePageBlocksForPrint();                                   // 블록 스케일(짤림 방지)
+      document.documentElement.classList.add('capture-print');
+      document.documentElement.classList.add('print-portrait');  // 세로 고정
+      // 인쇄와 동일한 블록 스케일/폭 조정
+      scalePageBlocksForPrint();
     }
     function clearCapturePrintMode(){
       document.documentElement.classList.remove('capture-print');
@@ -831,13 +859,12 @@
       try{
         applyCapturePrintMode();
 
-        // 라이브러리 로드 확인
         const hasH2C  = !!window.html2canvas;
         const hasJsPDF= !!window.jspdf && !!window.jspdf.jsPDF;
 
         if(!hasH2C || !hasJsPDF){
-          // 폴백: 라이브러리 없으면 print()로 현재 문서 인쇄
-          window.print();
+          window.print(); // 폴백
+          clearCapturePrintMode();
           return null;
         }
 
@@ -847,11 +874,13 @@
         const blocks = qsa('.page-block');
         for(let i=0;i<blocks.length;i++){
           const el = blocks[i];
-          // 캡쳐: 고해상도 스케일(디바이스 픽셀 비율 반영)
-          const canvas = await html2canvas(el, { scale: Math.max(window.devicePixelRatio||1, 2), useCORS:true, background:'#ffffff' });
+          const canvas = await html2canvas(el, {
+            scale: Math.max(window.devicePixelRatio||1, 2),
+            useCORS:true,
+            background:'#ffffff'
+          });
           const imgData = canvas.toDataURL('image/jpeg', 0.92);
 
-          // 이미지 비율대로 A4에 맞춰 배치(여백 고려)
           const pageW = PDF_MM.w - PDF_MM.margin*2;
           const pageH = PDF_MM.h - PDF_MM.margin*2;
           const imgWpx = canvas.width, imgHpx = canvas.height;
@@ -866,7 +895,7 @@
                        drawW, drawH);
         }
 
-        const blob = doc.output('blob');  // PDF Blob 생성
+        const blob = doc.output('blob');
         clearCapturePrintMode();
         return blob;
 
@@ -881,26 +910,20 @@
     async function sharePdfFromButton(){
       try{
         const blob = await makePdfBlob();
-        if(!blob){
-          // 이미 print() 폴백했거나 실패
-          return;
-        }
+        if(!blob){ return; }
         const fileName = `위험성평가_${new Date().toISOString().slice(0,10)}.pdf`;
         const file = new File([blob], fileName, { type:'application/pdf' });
 
         const canShare = !!navigator.canShare && navigator.canShare({ files:[file] });
         if(canShare && navigator.share){
-          // 사용자 제스처 내 동기 컨텍스트에서 호출
           await navigator.share({
             title: '위험성 평가 PDF',
             text: '위험성 평가표 (모바일 표 Ver.)',
             files: [file]
-          }); // 성공 시 OS 공유 시트 표시
+          });
         }else{
-          // 폴백: 새 탭/뷰어로 열어 iOS/Android에서 공유 버튼 접근
           const url = URL.createObjectURL(blob);
           const w = window.open(url, '_blank');
-          // 메모리 정리
           setTimeout(()=>URL.revokeObjectURL(url), 60*1000);
         }
       }catch(err){
@@ -930,16 +953,12 @@
         const btnWorksAdd= byId("btnWorksAdd"),btnWorksRemove = byId("btnWorksRemove");
         const btnMiscAdd = byId("addMiscRow"), btnMiscRemove = byId("removeMiscRow");
 
-        // 프린트 버튼: 사용자 제스처 내 동기 호출(팝업 차단 회피)
         attachSafePrint(btnPrint);
 
-        // 공유 버튼: 클릭 제스처 안에서 PDF 생성 + 공유 시트
         if(btnShare){
-          const handler = async (ev)=>{
-            await sharePdfFromButton();
-          };
+          const handler = async (ev)=>{ await sharePdfFromButton(); };
           btnShare.addEventListener("click", handler, {passive:false});
-          btnShare.addEventListener("pointerup", handler, {passive:false}); // 일부 단말 폴백
+          btnShare.addEventListener("pointerup", handler, {passive:false});
         }
 
         if(btnClear){ btnClear.addEventListener("click", ()=>{ if(confirm("초기화 하시겠습니까? 저장된 데이터가 삭제됩니다.")){ resetToMaster(); } }); }
