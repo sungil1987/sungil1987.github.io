@@ -1,1449 +1,894 @@
 <!DOCTYPE html>
-
-<html lang="en">
-
+<html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport" />
-  <title>LGE SAC Commissioning Report</title>
-  <style>
-    :root {
-      --bg: #f7f9fc;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #475569;
-      --accent: #A50034;
-      /* LG Red */
-      --accent-2: #6b0022;
-      --danger: #b91c1c;
-      --ok: #16a34a;
-      --ng: #dc2626;
-      --border: #e2e8f0;
-    }
-
-    html,
-    body {
-      height: 100%;
-    }
-
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 12px;
-    }
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: var(--bg);
-      backdrop-filter: blur(6px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 8px 0;
-    }
-
-    h1.title {
-      font-size: 1.25rem;
-      margin: 0;
-      font-weight: 700;
-    }
-
-    .toggle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: var(--card);
-    }
-
-    .pill button {
-      border: none;
-      background: transparent;
-      padding: 6px 10px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .pill button.active {
-      background: var(--accent);
-      color: white;
-    }
-
-    .pill .divider {
-      width: 1px;
-      height: 18px;
-      background: var(--border);
-    }
-
-    /* Toggle Switch */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 24px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-    }
-
-    input:checked+.slider {
-      background-color: var(--accent);
-    }
-
-    input:checked+.slider:before {
-      transform: translateX(20px);
-    }
-
-    .mode-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--muted);
-      margin-right: 8px;
-    }
-
-    .icon-btn {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-    }
-
-    .icon-btn:hover {
-      color: var(--text);
-    }
-
-    .icon-btn svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    .btn {
-      appearance: none;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-weight: 600;
-      cursor: pointer;
-      background: var(--accent);
-      color: white;
-    }
-
-    .btn.secondary {
-      background: #64748b;
-      /* Gray */
-    }
-
-    .btn.muted {
-      background: #94a3b8;
-      /* Lighter Gray */
-    }
-
-    .btn.danger {
-      background: var(--danger);
-    }
-
-    .btn.link {
-      background: transparent;
-      color: var(--accent);
-      padding: 0;
-      display: inline-block;
-    }
-
-    .grid {
-      display: grid;
-      gap: 12px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
-      padding: 12px;
-    }
-
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-    }
-
-    label {
-      font-weight: 600;
-      color: var(--muted);
-    }
-
-    input[type=text],
-    select,
-    textarea,
-    input[type=date] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: white;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-
-    textarea {
-      min-height: 40px;
-      resize: vertical;
-      overflow: hidden;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th,
-    td {
-      border: 1px solid var(--border);
-      padding: 8px;
-      font-size: 14px;
-    }
-
-    th {
-      background: #f1f5f9;
-      text-align: left;
-    }
-
-    .category {
-      break-inside: avoid;
-      page-break-inside: avoid;
-    }
-
-    .category-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .category-title {
-      font-size: 1rem;
-      font-weight: 700;
-      width: 100%;
-      box-sizing: border-box;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px;
-      background: white;
-    }
-
-    .user-mode .category-title {
-      border: none;
-      background: transparent;
-      pointer-events: none;
-      padding: 0 0 0 2px;
-      /* Add small padding to prevent first letter cutoff */
-    }
-
-    .checklist-item {
-      border: 1px dashed var(--border);
-      border-radius: 10px;
-      padding: 10px;
-      margin-top: 8px;
-    }
-
-    .product-type-label {
-      font-weight: 700;
-      color: #334155;
-    }
-
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .status .ok {
-      color: var(--text);
-      font-weight: 700;
-    }
-
-    .status .ng {
-      color: var(--text);
-      font-weight: 700;
-    }
-
-    .img-strip {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-    }
-
-
-    .img-thumb {
-      width: 120px;
-      height: 90px;
-      object-fit: cover;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: #f8fafc;
-    }
-
-    .signature-pad {
-      border: 1px dashed var(--border);
-      background: white;
-      border-radius: 8px;
-      height: 140px;
-      touch-action: none;
-      width: 100%;
-    }
-
-    .footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin: 16px 0;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Mobile-first adjustments */
-    @media (min-width: 640px) {
-      .two-cols {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-
-      .three-cols {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 12px;
-      }
-    }
-
-    /* Unified Print Styles */
-    @media print {
-      @page {
-        size: A4 portrait;
-        margin: 12mm;
-      }
-
-      body {
-        background: white;
-        margin: 0;
-        padding: 0;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-
-      /* Hide interactive elements */
-      .controls,
-      .btn,
-      .pill,
-      .mode-indicator,
-      .edit-only,
-      .interactive-only,
-      .product-type-inline,
-      .ref-btn,
-      .add-image-btn,
-      .switch,
-      .icon-btn {
-        display: none !important;
-      }
-
-      /* Header: Show Title, Hide Controls */
-      header {
-        display: block !important;
-        position: static;
-        border-bottom: none;
-        margin: 0 0 10px 0;
-        padding: 0;
-      }
-
-      header .toggle {
-        display: none !important;
-      }
-
-      /* Layout Reset */
-      .container {
-        max-width: 100%;
-        margin: 0;
-        padding: 0;
-      }
-
-      .card {
-        box-shadow: none;
-        border: none;
-        padding: 0;
-        margin-bottom: 10px;
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
-
-      /* Use Flex/Block instead of Grid for better page breaks */
-      .grid {
-        display: block;
-      }
-
-      .row {
-        display: flex;
-        flex-wrap: wrap;
-      }
-
-      .two-cols,
-      .three-cols {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-      }
-
-      .two-cols>div,
-      .three-cols>div {
-        flex: 1;
-        min-width: 200px;
-      }
-
-      /* Specific Elements */
-      .category {
-        page-break-inside: avoid;
-        break-inside: avoid;
-        margin-bottom: 10px;
-      }
-
-      .checklist-item {
-        border: 1px solid #ddd;
-        page-break-inside: avoid;
-        break-inside: avoid;
-        margin-bottom: 5px;
-      }
-
-      .signature-section {
-        page-break-inside: avoid;
-        break-inside: avoid;
-        margin-top: 20px;
-      }
-
-      .img-thumb {
-        width: 140px;
-        height: 105px;
-      }
-
-      .signature-pad {
-        border: 1px solid #ddd;
-      }
-
-      /* Badges */
-      .product-type-badge {
-        display: inline-block !important;
-        border: 1px solid #ccc;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 0.8em;
-        color: #555;
-        margin-right: 6px;
-      }
-    }
-
-    /* PDF Mode (Duplicate of Print Styles for html2pdf) */
-    .pdf-mode body {
-      background: white;
-      margin: 0;
-      padding: 0;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-
-    .pdf-mode .controls,
-    .pdf-mode .btn,
-    .pdf-mode .pill,
-    .pdf-mode .mode-indicator,
-    .pdf-mode .edit-only,
-    .pdf-mode .interactive-only,
-    .pdf-mode .product-type-inline,
-    .pdf-mode .ref-btn,
-    .pdf-mode .add-image-btn,
-    .pdf-mode .switch,
-    .pdf-mode .icon-btn {
-      display: none !important;
-    }
-
-    .pdf-mode header {
-      display: block !important;
-      position: static;
-      border-bottom: none;
-      margin: 0 0 10px 0;
-      padding: 0;
-    }
-
-    .pdf-mode header .toggle {
-      display: none !important;
-    }
-
-    .pdf-mode .container {
-      max-width: 100%;
-      margin: 0;
-      padding: 0;
-    }
-
-    .pdf-mode .card {
-      box-shadow: none;
-      border: none;
-      padding: 0;
-      margin-bottom: 10px;
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-
-    .pdf-mode .grid {
-      display: block;
-    }
-
-    .pdf-mode .row {
-      display: flex;
-      flex-wrap: wrap;
-    }
-
-    .pdf-mode .two-cols,
-    .pdf-mode .three-cols {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .pdf-mode .two-cols>div,
-    .pdf-mode .three-cols>div {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .pdf-mode .category {
-      page-break-inside: avoid;
-      break-inside: avoid;
-      margin-bottom: 10px;
-    }
-
-    .pdf-mode .checklist-item {
-      border: 1px solid #ddd;
-      page-break-inside: avoid;
-      break-inside: avoid;
-      margin-bottom: 5px;
-    }
-
-    .pdf-mode .signature-section {
-      page-break-inside: avoid;
-      break-inside: avoid;
-      margin-top: 20px;
-    }
-
-    .pdf-mode .img-thumb {
-      width: 140px;
-      height: 105px;
-    }
-
-    .pdf-mode .signature-pad {
-      border: 1px solid #ddd;
-    }
-
-    .pdf-mode .product-type-badge {
-      display: inline-block !important;
-      border: 1px solid #ccc;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.8em;
-      color: #555;
-      margin-right: 6px;
-    }
-
-
-    .product-type-badge {
-      display: none;
-    }
-
-    .user-mode .product-type-badge {
-      display: inline-block;
-      background: #f1f5f9;
-      color: #475569;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      margin-right: 6px;
-      vertical-align: middle;
-    }
-
-    .user-mode .item-text {
-      border: none;
-      background: transparent;
-      resize: none;
-      pointer-events: none;
-      /* Optional: prevents clicking/focusing if desired, but readOnly is enough for editing */
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light" />
+<title>LG전자 ES에너지컨설팅팀 위험성 평가표 (모바일 표 Ver.)</title>
+
+<!--  html2pdf.js (CDN) 올바른 삽입 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+        integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<style>
+@font-face{
+  font-family: "LG스마트체";
+  src: url("LGSmartRegular.woff2") format("woff2"),
+       url("LGSmartRegular.woff") format("woff");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+:root{
+  --bg:#f6f7fb; --card:#fff; --text:#111827; --border:#e5e7eb; --primary:#111827;
+  --fs-body: clamp(15.6px, 2.04vw, 18px);
+  --fs-label: clamp(14.4px, 1.92vw, 16.8px);
+  --fs-title: clamp(21.6px, 4.32vw, 26.4px);
+  --fs-h2: clamp(16.8px, 3.12vw, 19.2px);
+  --fs-btn: clamp(15.6px, 2.88vw, 18px);
+  --line:1.45; --radius:12px; --table-pad:6px;
+  --radius-input:10px; --focus:#3b82f6; --shadow:0 2px 6px rgba(0,0,0,.06); --title-accent:#8B1B3D;
+}
+*{ box-sizing:border-box }
+html,body{
+  margin:0; padding:0; width:100%; min-height:100vh; overflow-x:hidden;
+  -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent;
+  background:var(--bg); color:var(--text);
+  font-family:"LG스마트체","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:var(--fs-body); line-height:var(--line);
+}
+header{
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:10;
+  backdrop-filter:saturate(120%) blur(6px);
+}
+.wrap{max-width:1000px; margin:0 auto; padding:12px}
+.brand{display:flex; align-items:center; justify-content:space-between; gap:8px}
+.title{font-weight:800;}
+.main-title{
+  color:var(--title-accent);
+  font-size:calc(var(--fs-title) + 8px);
+  text-shadow:0 1px 0 rgba(0,0,0,.05);
+  letter-spacing:2px;
+  transform:translateY(-4px);
+  text-align:center;
+  line-height:1.25;
+  margin:6px 0 10px 0;
+}
+.toolbar{display:flex; gap:8px; margin-top:8px}
+.toolbar-left{display:flex; gap:8px; margin-right:auto}
+button{
+  border:1px solid var(--border); background:var(--primary); color:#fff;
+  border-radius:var(--radius); padding:9px 12px; font-size:var(--fs-btn);
+  min-height:40px; cursor:pointer; font-family:inherit;
+}
+button.secondary{background:#374151}
+button.warn{background:#b91c1c}
+button.mini{ padding:6px 8px; min-height:32px; font-size:calc(var(--fs-btn) - 2px); border-radius:10px }
+@media (pointer:coarse){
+  button{min-height:44px}
+  input,select,textarea{min-height:48px; font-family:inherit}
+  .table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+  button.mini{ min-height:36px }
+}
+main{padding:12px 0}
+.card{
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px; margin:12px auto; box-shadow:var(--shadow)
+}
+.field{
+  width:100%; padding:10px 12px;
+  border:1px solid var(--border); border-radius:var(--radius-input);
+  outline:none; font-family:inherit; font-size:inherit; background:#fff;
+  transition:border-color .15s ease, box-shadow .15s ease;
+  min-height:48px;
+}
+.field:focus{ border-color:var(--focus); box-shadow:0 0 0 3px rgba(59,130,246,.15) }
+.field.textarea{ min-height:72px; resize:vertical }
+.table-wrap{
+  width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;
+  border:1px solid var(--border); border-radius:var(--radius); background:#fff;
+}
+table{
+  width:100%; border-collapse:collapse; min-width:920px; table-layout:fixed;
+  word-break:keep-all; font-family:inherit;
+}
+/* 화면용 열 폭 */
+col.c-task{ width:72px }
+col.c-hazard{ width:364px }
+col.c-ok{ width:72px }
+col.c-fix{ width:72px }
+col.c-na{ width:88px }
+col.c-miti{ width:220px }
+col.c-done{ width:56px }
+th,td{ border:1px solid var(--border); padding:var(--table-pad); font-size:var(--fs-body); vertical-align:top }
+thead th{ background:#f3f4f6; text-align:center; white-space:nowrap }
+td{ text-align:left }
+td.section{
+  text-align:center !important; vertical-align:middle !important; font-weight:600; background:#f8fafc;
+}
+.section-cell{ display:flex; flex-direction:column; align-items:center; justify-content:space-between; min-height:100%; gap:8px }
+.section-title{ font-weight:700 }
+.section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap } /* + / - 버튼 컨테이너 */
+.chk-wrap{ display:flex; align-items:center; justify-content:center; min-height:32px; }
+.riskchk{ width:18px; height:18px; accent-color:#111827; cursor:pointer; }
+@media(pointer:coarse){ .riskchk{ width:21px; height:21px } }
+.cell-input{
+  width:100%; min-height:40px; border:1px solid var(--border); border-radius:8px; background:#fff;
+  font-family:inherit; font-size:inherit; padding:6px 8px; outline:none;
+  white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; resize:vertical;
+}
+/*  보완대책 드롭셀/사용자입력 UI */
+.miti-cell{ padding:6px !important; position:relative; }
+.miti-ui{ display:flex; flex-direction:column; gap:6px; }
+.miti-select,
+.miti-user{
+  box-sizing:border-box; width:100%; height:48px;
+  padding:0 34px 0 10px; border:1px solid var(--border); border-radius:8px; background:#fff;
+  font-family:inherit; font-size:inherit; line-height:48px; outline:none;
+  -webkit-appearance:none; appearance:none; background-image:none;
+}
+.miti-user{ display:none; padding:6px 8px; line-height:normal; }
+.miti-cell::after{
+  content:""; position:absolute; right:14px; top:50%; margin-top:-4px; width:0; height:0;
+  border-left:6px solid transparent; border-right:6px solid transparent; border-top:8px solid #6b7280;
+}
+@supports (-webkit-touch-callout: none){ .miti-select{ line-height:48px; } }
+@media (pointer:coarse) and (max-width:800px){ .miti-select{ line-height:48px; } }
+.miti-print{ display:none; min-height:48px; white-space:pre-wrap; word-break:break-word; }
+
+.signature{ width:100%; height:130px }
+.sig-box{ position:relative }
+#printPDF{ position:absolute; top:-50px; right:14px; transform:none; z-index:2 }
+.signature canvas{
+  width:100%; height:100%; display:block; border:1px dashed var(--border);
+  border-radius:8px; background:#fff; touch-action:none
+}
+
+/* 
+ 인쇄 최적화 + 3단락 묶기 + 열폭 동기화
+ */
+@page{ margin:15mm }  /* 기본 여백 15mm로 확대 */
+@media print{
+  html, body{
+    background:#fff !important; color:#000 !important;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .wrap{ transform:none !important; width:auto !important }
+  header,.toolbar{ display:none !important }
+  .card{ box-shadow:none !important; background:#fff !important; border-color:#ddd !important; transform-origin:top left; }
+  .table-wrap, table, thead, tbody, tfoot, tr, th, td,
+  input.field, textarea.field, .signature canvas{ background:#fff !important; }
+  thead th{ background:#fff !important } td.section{ background:#fff !important }
+  #printPDF, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3 { display:none !important; }
+  .section-actions{ display:none !important; }
+  thead{ display:table-header-group !important } tfoot{ display:table-footer-group !important }
+  table{ min-width:auto; width:100%; table-layout:auto; border-collapse:collapse }
+  .table-wrap{ overflow:visible !important }
+  tr, th, td, .sig-box, .signature, .section-cell, .miti-print, .cell-input, .miti-select, .miti-user{
+    page-break-inside:avoid !important; break-inside:avoid !important;
+  }
+  tbody{ page-break-inside:auto; break-inside:auto }
+  p, .cell-input, .miti-print{ orphans:3; widows:3 }
+  h1,h2,h3, .main-title, .section-title{ page-break-after:avoid; break-after:avoid }
+  .page-block{ page-break-inside:avoid !important; break-inside:avoid !important; }
+  .page-start{ page-break-before:always !important; break-before:page !important; }
+  html.print-portrait  col.c-task{width:8%!important}  html.print-portrait  col.c-hazard{width:36%!important}
+  html.print-portrait  col.c-ok{width:6%!important}   html.print-portrait  col.c-fix{width:6%!important}
+  html.print-portrait  col.c-na{width:6%!important}   html.print-portrait  col.c-miti{width:36%!important}
+  html.print-portrait  col.c-done{width:2%!important}
+  html.print-landscape col.c-task{width:8%!important}  html.print-landscape col.c-hazard{width:36%!important}
+  html.print-landscape col.c-ok{width:5%!important}   html.print-landscape col.c-fix{width:5%!important}
+  html.print-landscape col.c-na{width:5%!important}   html.print-landscape col.c-miti{width:36%!important}
+  html.print-landscape col.c-done{width:5%!important}
+  .miti-ui{ display:none !important; } .miti-print{ display:block !important; }
+}
+
+/*  내보내기용 상태: PDF 뷰어로 내보낼 때 UI 숨김 + 텍스트만 출력 */
+html.export-mode header,
+html.export-mode .toolbar,
+html.export-mode #printPDF,
+html.export-mode #clearAll,
+html.export-mode #clearSigSafety,
+html.export-mode #clearSigW1,
+html.export-mode #clearSigW2,
+html.export-mode #clearSigW3,
+html.export-mode .section-actions,
+html.export-mode button { display:none !important; }
+
+/* 표/입력 UI는 감추고 값만 보이도록 */
+html.export-mode .miti-ui    { display:none !important; }
+html.export-mode .miti-print { display:block !important; }
+
+/* 배경/경계 보정(내보내기 시 흰 배경) */
+html.export-mode .card{
+  box-shadow:none !important;
+  background:#fff !important;
+  border-color:#ddd !important;
+}
+html.export-mode html,
+html.export-mode body,
+html.export-mode .table-wrap, 
+html.export-mode table, 
+html.export-mode thead, 
+html.export-mode tbody, 
+html.export-mode tr, 
+html.export-mode th, 
+html.export-mode td { background:#fff !important; }
+
+/*  모바일 전용 UI 조정 */
+@media (max-width:800px), (pointer:coarse){
+  col.c-hazard, col.c-miti { width:182px !important }
+  tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal }
+  main .card:first-of-type input[type="date"].field{
+    width:100%; min-width:0; -webkit-appearance:none; appearance:none;
+    height:48px; line-height:48px; color:var(--text); caret-color:var(--text);
+  }
+  main .card:first-of-type input[type="date"].field::-webkit-calendar-picker-indicator{
+    margin:0 6px 0 0; padding:0; width:18px; height:18px;
+  }
+  .wrap{ transform:scale(.8); transform-origin:top left; width:calc(100%/.8) }
+}
+#approvalSection > h2{ font-size:calc(var(--fs-h2) - 4px + 3px) }
+</style>
 </head>
-
 <body>
-  <header>
-    <div class="container header-inner">
-      <h1 class="title" id="docTitle">LGE SAC Commissioning Report</h1>
-      <div class="toggle">
-        <span class="mode-label" id="modeLabel">User</span>
-        <label class="switch">
-          <input type="checkbox" id="modeToggle">
-          <span class="slider"></span>
-        </label>
-        <button class="icon-btn edit-only" id="changePasswordBtn" type="button" aria-label="Change Password">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-          </svg>
-        </button>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <div class="title">LG전자 ES에너지컨설팅팀 위험성 평가표 (모바일 표 Ver.)</div>
+    </div>
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button id="clearAll" class="warn" type="button">초기화</button>
+        <!-- 새 탭 뷰어로 열기 -->
+        <button id="openViewer" class="secondary" type="button" title="PDF 뷰어로 열기">뷰어로 열기</button>
       </div>
     </div>
-  </header>
-  <main class="container grid" id="appRoot">
+  </div>
+</header>
 
-    <!-- Project Information -->
-    <section class="card">
-      <h2 style="font-size:1rem; margin:0 0 6px 0;">Project information</h2>
-      <div class="two-cols">
-        <div>
-          <label>Project name</label>
-          <input id="projectName" type="text" />
-        </div>
-        <div>
-          <label>Opportunity No.</label>
-          <input id="opportunityNo" type="text" />
-        </div>
+<main class="wrap">
+  <!-- 1) 현장 정보란 -->
+  <section class="card page-block" id="metaCard">
+    <div class="title main-title">수시 위험성 평가표</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+      <div><label class="hint">업체명</label><input id="fCompany" type="text" value="LG전자 ES에너지컨설팅팀" class="field"></div>
+      <div><label class="hint">현장명</label><input id="fSiteName" type="text" placeholder="예: 공장 라인" class="field"></div>
+      <div><label class="hint">진단 시작</label><input id="fDiagStart" type="date" class="field"></div>
+      <div><label class="hint">진단 종료</label><input id="fDiagEnd" type="date" class="field"></div>
+      <div><label class="hint">작성 일자</label><input id="fWrittenDate" type="date" class="field"></div>
+      <div><label class="hint">현장관리자</label><input id="fSafety" type="text" placeholder="성명" class="field"></div>
+      <div><label class="hint">실무자1</label><input id="fWorker1" type="text" placeholder="성명" class="field"></div>
+      <div><label class="hint">실무자2</label><input id="fWorker2" type="text" placeholder="성명" class="field"></div>
+      <div><label class="hint">실무자3</label><input id="fWorker3" type="text" placeholder="성명" class="field"></div>
+      <div style="grid-column:1/-1"><label class="hint">비고</label>
+        <textarea id="fRemark" class="field textarea" placeholder="특이사항/참고사항"></textarea>
       </div>
-
-      <div class="row" style="align-items: flex-end; margin-top: 12px;">
-        <div style="flex:1 1 320px;">
-          <label>Address</label>
-          <input id="addressInput" placeholder="" type="text" />
-        </div>
-        <div>
-          <button class="btn secondary" id="getLocationBtn" type="button">Get location</button>
-        </div>
-      </div>
-
-      <div class="row" style="margin-top: 12px;">
-        <div style="flex:1 1 220px;">
-          <label>Product Type</label>
-          <select id="globalProductType"></select>
-        </div>
-      </div>
-
-      <h2 style="font-size:1rem; margin:16px 0 6px 0;">Product list</h2>
-      <div style="width:100%;">
-        <div>
-          <div>
-            <table>
-              <thead>
-                <tr>
-                  <th style="width:30%">Product</th>
-                  <th>Model name</th>
-                  <th style="width:20%">Quantity</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>ODU</td>
-                  <td><input id="oduModel" type="text" style="width:100%; box-sizing:border-box;" /></td>
-                  <td><input id="oduQty" type="text" style="width:100%; box-sizing:border-box;" /></td>
-                </tr>
-                <tr>
-                  <td>IDU</td>
-                  <td><input id="iduModel" type="text" style="width:100%; box-sizing:border-box;" /></td>
-                  <td><input id="iduQty" type="text" style="width:100%; box-sizing:border-box;" /></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- Categories container -->
-    <section class="grid" id="categoriesContainer"></section>
-
-    <!-- Add Category Button (Edit Mode Only) -->
-    <div class="row edit-only" style="justify-content: center; margin: 10px 0;">
-      <button class="btn secondary" id="addCategoryBtn" type="button" style="width: 100%;">Add Category</button>
-    </div>
-
-    <!-- Date & signatures -->
-    <section class="card">
-      <div class="row">
-        <div style="flex:1 1 220px;">
-          <label>Inspection date</label>
-          <input id="inspectionDate" type="date" />
-        </div>
-      </div>
-      <div class="three-cols signature-section" style="margin-top:8px;">
-        <div>
-          <label>Commissioner Signature</label>
-          <canvas class="signature-pad" id="sigCommissioner"></canvas>
-          <div class="row interactive-only" style="margin-top:6px;">
-            <button class="btn muted" data-clear="sigCommissioner" type="button">Clear</button>
-          </div>
-        </div>
-        <div>
-          <label>Installer Signature</label>
-          <canvas class="signature-pad" id="sigInstaller"></canvas>
-          <div class="row interactive-only" style="margin-top:6px;">
-            <button class="btn muted" data-clear="sigInstaller" type="button">Clear</button>
-          </div>
-        </div>
-        <div>
-          <label>Customer Signature</label>
-          <canvas class="signature-pad" id="sigCustomer"></canvas>
-          <div class="row interactive-only" style="margin-top:6px;">
-            <button class="btn muted" data-clear="sigCustomer" type="button">Clear</button>
-          </div>
-        </div>
-      </div>
-    </section>
-    <div class="footer">
-      <button class="btn" id="printBtn" type="button">PDF Export</button>
-    </div>
-  </main>
-  <!-- Password Modal -->
-  <dialog id="passwordModal">
-    <form method="dialog" style="min-width:280px;">
-      <h3 style="margin-top:0;">Enter admin password</h3>
-      <input id="passwordInput" placeholder="Password" type="password" />
-      <div class="row" style="margin-top:10px; justify-content:flex-end;">
-        <button class="btn muted" value="cancel">Cancel</button>
-        <button class="btn" id="passwordSubmit" type="button" value="ok">Enter</button>
-      </div>
-    </form>
-  </dialog>
-  <!-- Change Password Modal -->
-  <dialog id="changePasswordModal">
-    <form method="dialog" style="min-width:300px;">
-      <h3 style="margin-top:0;">Change admin password</h3>
-      <input id="newPassword1" placeholder="New password" type="password" />
-      <input id="newPassword2" placeholder="Confirm new password" style="margin-top:8px;" type="password" />
-      <div class="row" style="margin-top:10px; justify-content:flex-end;">
-        <button class="btn muted" value="cancel">Cancel</button>
-        <button class="btn" id="changePasswordSubmit" type="button" value="ok">Change</button>
-      </div>
-    </form>
-  </dialog>
-  <template id="categoryTemplate">
-    <section class="card category">
-      <div class="category-header">
-        <input class="category-title" type="text" />
-        <div class="row edit-only">
-          <button class="btn danger" data-action="delete-category" type="button">Delete</button>
-        </div>
-      </div>
-      <div class="checklists"></div>
-      <div class="row edit-only" style="margin-top:8px;">
-        <button class="btn secondary" data-action="add-checklist" type="button">Add Checklist</button>
-      </div>
-    </section>
-  </template>
-  <template id="checklistTemplate">
-    <div class="checklist-item">
-      <div class="row" style="align-items:flex-start;">
-        <div style="flex:1 1 100%;">
-          <div class="product-type-inline">
-            <label>Product type</label>
-            <select class="item-product-type"></select>
-          </div>
-          <div style="display:flex; align-items:flex-start;">
-            <span class="product-type-badge" style="margin-top: 6px;"></span>
-            <textarea class="item-text" rows="1"
-              style="font-weight:500; flex:1; resize:none; overflow:hidden; min-height:38px; font-family:inherit;"></textarea>
-          </div>
-        </div>
-      </div>
-      <div style="margin-top:6px;">
-        <label>Issue</label>
-        <textarea class="item-issue" placeholder="Describe issue (optional)" rows="1"></textarea>
-      </div>
-      <div class="row" style="margin-top:6px; align-items: center;">
-        <div aria-label="status" class="status" style="margin-right: auto;">
-          <label><input class="okBox" type="checkbox" /> <span class="ok">OK</span></label>
-          <label><input class="ngBox" type="checkbox" /> <span class="ng">NG</span></label>
-        </div>
-        <input accept="image/*" capture="environment" class="add-image-input" style="display:none;" type="file" />
-        <button class="btn add-image-btn interactive-only" type="button">Add image</button>
-        <button class="btn muted ref-btn interactive-only" type="button">Ref.</button>
-        <button class="btn secondary edit-only" data-action="move-up" type="button" title="Move Up">↑</button>
-        <button class="btn secondary edit-only" data-action="move-down" type="button" title="Move Down">↓</button>
-        <button class="btn danger edit-only" data-action="delete-checklist" type="button">Delete</button>
-      </div>
-      <div class="img-strip item-images"></div>
-      <div class="img-strip item-ref-images"></div>
-    </div>
-  </template>
-  <section class="container card edit-only controls" id="editorControls">
-    <div class="row" style="align-items:center;">
-      <div style="flex:1 1 auto;">
-        <label>Report title</label>
-        <input id="titleInput" type="text" />
-      </div>
-    </div>
-    <div style="margin-top:8px;">
-      <label>Manage Product Types</label>
-      <div class="row" id="productTypesEditor"></div>
     </div>
   </section>
-  <script>
-    // ---- Persistence helpers ----
-    const LS_CONFIG_KEY = 'sacConfig.v1';
-    const LS_DATA_KEY = 'sacData.v1';
-    const LS_PASS_KEY = 'sacPasswordHash.v1';
 
-    function clone(obj) { return JSON.parse(JSON.stringify(obj)); }
+  <!-- 2) 체크리스트 -->
+  <section class="card page-block page-start" id="checklistCard">
+    <h2 style="display:none">작업별 유해위험요인 평가</h2>
+    <div class="table-wrap">
+      <table id="riskTable">
+        <colgroup>
+          <col class="c-task"/><col class="c-hazard"/><col class="c-ok"/><col class="c-fix"/><col class="c-na"/><col class="c-miti"/><col class="c-done"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th rowspan="2" class="th-center">작업</th>
+            <th rowspan="2" class="th-center">유해위험요인 파악</th>
+            <th colspan="3" class="th-center">위험성 확인결과</th>
+            <th rowspan="2" class="th-center">보완 대책</th>
+            <th rowspan="2" class="th-center">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:4px">
+                <span>확인</span>
+                <label class="chk-wrap" title="전체 확인 체크/해제">
+                  <input id="chkConfirmAll" type="checkbox" class="riskchk" style="width:18px;height:18px">
+                </label>
+              </div>
+            </th>
+          </tr>
+          <tr>
+            <th>적정</th><th>보완</th><th>해당없음</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 사전준비 작업 -->
+          <tr id="prep-master-row">
+            <td id="prep-section-cell" class="section" rowspan="8">
+              <div class="section-cell">
+                <div class="section-title">사전준비 작업</div>
+                <div class="section-actions">
+                  <button type="button" class="secondary mini" id="btnPrepAdd">+</button>
+                  <button type="button" class="warn mini" id="btnPrepRemove">-</button>
+                </div>
+              </div>
+            </td>
+            <td>작업 장소 (기계실, 전기실, 옥상 등)까지 또는 장소 내 이동 및 작업에 있어 유해, 위험 요인이 있는가? 있다면 아래 점검.</td>
+            <td class="no-ok"></td><td class="no-fix"></td><td></td>
+            <td class="miti-cell"></td><td></td>
+          </tr>
+          <tr class="prep-sub-row"><td>- 작업장 또는 통로에 배관 등 머리 부딪힘 가능</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr class="prep-sub-row"><td>- 작업장 또는 통로에 추락 가능 장소 있음</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr class="prep-sub-row"><td>- 작업장 또는 통로에 떨어짐 가능 장소 있음</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr class="prep-sub-row"><td>- 작업장 또는 통로에 고전압 주의 장소 있음</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr class="prep-sub-row"><td>- 작업장 또는 통로에 회전장비가 있음</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr><td>측정장비의 현장 운반까지 유해, 위험 요인이 있는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr id="prep-last-fixed"><td>작업 공간이 밀폐되거나, 소통이 어려운 환경인가? Ex. 긴급, 응급상황 대처</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
 
-    const defaultConfig = {
-      title: 'LGE SAC Commissioning Report',
-      productTypes: ['Common', 'Multi V', 'AHU', 'Water', 'H/kit', 'ISC'],
-      categories: [
-        {
-          name: 'Installation', items: [
-            { productType: 'Common', text: 'Is SVC area secured?' },
-            { productType: 'Common', text: 'Is equipment anchored and leveled?' }
-          ]
-        },
-        {
-          name: 'Piping', items: [
-            { productType: 'Common', text: 'Are refrigerant lines insulated properly?' },
-            { productType: 'Common', text: 'Leak test performed and passed?' }
-          ]
-        },
-        {
-          name: 'Control', items: [
-            { productType: 'Common', text: 'Controller wiring verified?' },
-            { productType: 'Common', text: 'BMS integration tested?' }
-          ]
+          <!-- 작업시 -->
+          <tr>
+            <td id="task-works-label" class="section" rowspan="5">
+              <div class="section-cell">
+                <div class="section-title">작업시</div>
+                <div class="section-actions">
+                  <button type="button" class="secondary mini" id="btnWorksAdd">+</button>
+                  <button type="button" class="warn mini" id="btnWorksRemove">-</button>
+                </div>
+              </div>
+            </td>
+            <td>보온재 탈거/제거, 각종 측정 등의 작업이 바닥에 서서 할 수 있는가? Ex. 사다리 필요여부</td>
+            <td></td><td></td><td></td><td class="miti-cell"></td><td></td>
+          </tr>
+          <tr><td>보온재 탈거 및 제거를 고객측 또는 전문점측 인원이 수행하는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr><td>직접 탈거 및 제거를 할 경우 베임방지 장갑 착용, 보안경 착용 등 안전규정을 지키는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr><td>기존 온도센서 제거 및 자사 온도센서 부착 시 배관 내 압력에 의해 문제가 생길 수 있는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr id="works-last-fixed"><td>220V 이상 전원이 있는 장소에서 작업을 하는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+
+          <!-- 기타 -->
+          <tr id="misc-section-row">
+            <td id="misc-section-cell" class="section" rowspan="1">
+              <div class="section-cell">
+                <div class="section-title">기타</div>
+                <div class="section-actions">
+                  <button id="addMiscRow" class="secondary mini" type="button">+</button>
+                  <button id="removeMiscRow" class="warn mini" type="button">-</button>
+                </div>
+              </div>
+            </td>
+            <td></td><td></td><td></td><td></td>
+            <td class="miti-cell"></td><td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 3) 서명란 -->
+  <section id="approvalSection" class="card page-block page-start">
+    <h2>현장 확인 및 승인 서명</h2>
+    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px">
+      <div class="sig-box">
+        <label>현장관리자</label>
+        <input id="sigNameSafety" type="text" placeholder="성명" class="field">
+        <div class="signature" style="margin-top:6px"><canvas id="sigCanvasSafety"></canvas></div>
+        <div style="margin-top:6px"><button class="secondary" id="clearSigSafety" type="button">Clear</button></div>
+      </div>
+      <div class="sig-box">
+        <label>실무자1</label>
+        <input id="sigNameW1" type="text" placeholder="성명" class="field">
+        <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW1"></canvas></div>
+        <div style="margin-top:6px"><button class="secondary" id="clearSigW1" type="button">Clear</button></div>
+      </div>
+      <div class="sig-box">
+        <label>실무자2</label>
+        <input id="sigNameW2" type="text" placeholder="성명" class="field">
+        <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW2"></canvas></div>
+        <div style="margin-top:6px"><button class="secondary" id="clearSigW2" type="button">Clear</button></div>
+      </div>
+      <div class="sig-box">
+        <label>실무자3</label>
+        <input id="sigNameW3" type="text" placeholder="성명" class="field">
+        <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW3"></canvas></div>
+        <button id="printPDF" class="secondary" type="button" title="PDF로 내보내기">PDF</button>
+        <div style="margin-top:6px"><button class="secondary" id="clearSigW3" type="button">Clear</button></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const byId = (id)=>document.getElementById(id);
+const qs = (sel)=>document.querySelector(sel);
+const qsa = (sel)=>Array.from(document.querySelectorAll(sel));
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.querySelectorAll('thead th.th-center').forEach((th)=>{ th.style.textAlign = 'center'; });
+});
+
+function injectCheckbox(cell, colKey, labelText){
+  const input=document.createElement("input");
+  input.type="checkbox"; input.className="riskchk";
+  input.setAttribute("data-col", colKey); input.setAttribute("title", labelText);
+  const wrap=document.createElement("label");
+  wrap.className="chk-wrap"; wrap.appendChild(input);
+  cell.innerHTML=""; cell.appendChild(wrap);
+  return input;
+}
+function injectTextarea(cell){
+  const ta=document.createElement("textarea");
+  ta.className="cell-input"; ta.setAttribute("rows","1");
+  function autosize(){ ta.style.height="auto"; ta.style.height=(ta.scrollHeight)+"px"; }
+  ta.addEventListener("input", autosize); setTimeout(autosize,0);
+  cell.innerHTML=""; cell.appendChild(ta);
+  return ta;
+}
+function injectMitiInput(cell){
+  cell.innerHTML=""; cell.classList.add("miti-cell");
+  const ui=document.createElement("div"); ui.className="miti-ui";
+  const sel=document.createElement("select"); sel.className="miti-select";
+  sel.innerHTML = `
+    <option value="">선택</option>
+    <option value="완료">안전 조치 완료</option>
+    <option value="입력">사용자 입력</option>
+  `;
+  const user=document.createElement("input");
+  user.type="text"; user.className="miti-user"; user.placeholder=""; user.style.display="none";
+  const printDiv=document.createElement("div"); printDiv.className="miti-print";
+  function sync(){
+    const v = sel.value;
+    if(v === "완료"){
+      user.style.display="none";
+      printDiv.textContent = "안전 조치 완료";
+    }else if(v === "입력"){
+      user.style.display="block";
+      printDiv.textContent = user.value || "";
+    }else{
+      user.style.display="none";
+      printDiv.textContent = ""; // 디폴트 '선택'은 인쇄/내보내기에서 공백
+    }
+  }
+  sel.addEventListener("change", sync);
+  user.addEventListener("input", sync);
+  setTimeout(sync,0);
+  ui.appendChild(sel); ui.appendChild(user);
+  cell.appendChild(ui); cell.appendChild(printDiv);
+  return sel;
+}
+function initRiskRow(tr){
+  const tds=tr.querySelectorAll("td"); const len=tds.length; if(len<6) return;
+  const idxHaz = (len===7 ? 1 : 0);
+  const idxOk  = idxHaz + 1;
+  const idxFix = idxHaz + 2;
+  const idxNa  = idxHaz + 3;
+  const idxMiti= idxHaz + 4;
+  const idxDone= idxHaz + 5;
+
+  const isPrepMaster = tr.id === "prep-master-row";
+  if(isPrepMaster){
+    if(!tds[idxNa].querySelector(".riskchk")) injectCheckbox(tds[idxNa], "na", "해당없음");
+  } else {
+    if(!tds[idxOk ].querySelector(".riskchk")) injectCheckbox(tds[idxOk ], "ok",  "적정");
+    if(!tds[idxFix].querySelector(".riskchk")) injectCheckbox(tds[idxFix], "fix", "보완");
+    if(!tds[idxNa ].querySelector(".riskchk")) injectCheckbox(tds[idxNa ], "na",  "해당없음");
+    const rowChks=tr.querySelectorAll(".riskchk");
+    rowChks.forEach((chk)=>{
+      chk.addEventListener("change", ()=>{
+        if(chk.checked && (chk.dataset.col==="ok" || chk.dataset.col==="fix" || chk.dataset.col==="na")){
+          rowChks.forEach((other)=>{
+            if(other!==chk && (other.dataset.col==="ok" || other.dataset.col==="fix" || other.dataset.col==="na")) other.checked=false;
+          });
         }
-      ]
+      });
+    });
+  }
+  if(!tds[idxDone].querySelector(".riskchk")) injectCheckbox(tds[idxDone], "done", "확인");
+  if(!tds[idxMiti].querySelector(".miti-select")) injectMitiInput(tds[idxMiti]);
+  if(idxHaz>=0 && tds[idxHaz].textContent.trim()==="" && !tds[idxHaz].querySelector(".cell-input")){
+    injectTextarea(tds[idxHaz]);
+  }
+}
+function initRiskTable(){ document.querySelectorAll("#riskTable tbody tr").forEach(initRiskRow); }
+
+const PREP_BASE_ROWS  = 8;
+const WORKS_BASE_ROWS = 5;
+const MISC_BASE_ROWS  = 1;
+
+function adjustRowspan(cellId, base, delta){
+  const td = byId(cellId); if(!td) return;
+  const cur = td.rowSpan || base;
+  let next = cur + delta;
+  if(next < base) next = base;
+  td.rowSpan = next;
+}
+function addPrepRow(){
+  try{
+    const tbody = qs("#riskTable tbody"), lastFixed = byId("prep-last-fixed");
+    if(!tbody || !lastFixed) return;
+    let insertAfter = lastFixed;
+    while(insertAfter.nextElementSibling &&
+          insertAfter.nextElementSibling.classList &&
+          insertAfter.nextElementSibling.classList.contains("prep-extra-row")){
+      insertAfter = insertAfter.nextElementSibling;
+    }
+    const tr = document.createElement("tr"); tr.className = "prep-extra-row";
+    tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
+    tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
+    const tds = tr.querySelectorAll("td");
+    injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
+    adjustRowspan("prep-section-cell", PREP_BASE_ROWS, +1);
+  }catch(e){
+    console.error(e);
+    alert("사전준비 작업 행 추가 중 오류: " + (e && e.message ? e.message : e));
+  }
+}
+function removePrepRow(){
+  try{
+    const tbody = qs("#riskTable tbody"); if(!tbody) return;
+    let lastExtra = null, node = tbody.lastElementChild;
+    while(node){
+      if(node.classList && node.classList.contains("prep-extra-row")){ lastExtra = node; break; }
+      node = node.previousElementSibling;
+    }
+    if(!lastExtra){ alert("사전준비 섹션에 삭제할 추가 행이 없습니다."); return; }
+    tbody.removeChild(lastExtra);
+    adjustRowspan("prep-section-cell", PREP_BASE_ROWS, -1);
+  }catch(e){
+    console.error(e);
+    alert("사전준비 작업 행 삭제 중 오류: " + (e && e.message ? e.message : e));
+  }
+}
+function addWorkRow(){
+  try{
+    const tbody = qs("#riskTable tbody"), lastFixed = byId("works-last-fixed");
+    if(!tbody || !lastFixed) return;
+    let insertAfter = lastFixed;
+    while(insertAfter.nextElementSibling &&
+          insertAfter.nextElementSibling.classList &&
+          insertAfter.nextElementSibling.classList.contains("extra-work-row")){
+      insertAfter = insertAfter.nextElementSibling;
+    }
+    const tr = document.createElement("tr"); tr.className = "extra-work-row";
+    tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
+    tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
+    const tds = tr.querySelectorAll("td");
+    injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
+    adjustRowspan("task-works-label", WORKS_BASE_ROWS, +1);
+  }catch(e){ console.error(e); alert("작업시 행 추가 중 오류: " + (e && e.message ? e.message : e)); }
+}
+function removeWorkRow(){
+  try{
+    const tbody = qs("#riskTable tbody"); if(!tbody) return;
+    let lastExtra = null, node = tbody.lastElementChild;
+    while(node){
+      if(node.classList && node.classList.contains("extra-work-row")){ lastExtra = node; break; }
+      node = node.previousElementSibling;
+    }
+    if(!lastExtra){ alert("작업시 섹션에 삭제할 추가 행이 없습니다."); return; }
+    tbody.removeChild(lastExtra);
+    adjustRowspan("task-works-label", WORKS_BASE_ROWS, -1);
+  }catch(e){
+    console.error(e); alert("작업시 추가 행 삭제 중 오류: " + (e && e.message ? e.message : e));
+  }
+}
+function addMiscRow(){
+  try{
+    const tbody = qs("#riskTable tbody"), miscHead = byId("misc-section-row");
+    if(!tbody || !miscHead) return;
+    let insertAfter = miscHead;
+    while(insertAfter.nextElementSibling &&
+          insertAfter.nextElementSibling.classList &&
+          insertAfter.nextElementSibling.classList.contains("misc-extra-row")){
+      insertAfter = insertAfter.nextElementSibling;
+    }
+    const tr = document.createElement("tr"); tr.className = "misc-extra-row";
+    tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
+    tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
+    const tds = tr.querySelectorAll("td");
+    injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
+    adjustRowspan("misc-section-cell", MISC_BASE_ROWS, +1);
+  }catch(e){ console.error(e); alert("기타 섹션 행 추가 중 오류: " + (e && e.message ? e.message : e)); }
+}
+function removeMiscRow(){
+  try{
+    const tbody = qs("#riskTable tbody"); if(!tbody) return;
+    let lastExtra = null, node = tbody.lastElementChild;
+    while(node){
+      if(node.classList && node.classList.contains("misc-extra-row")){ lastExtra = node; break; }
+      node = node.previousElementSibling;
+    }
+    if(!lastExtra){ alert("기타 섹션에 삭제할 추가 행이 없습니다."); return; }
+    tbody.removeChild(lastExtra);
+    adjustRowspan("misc-section-cell", MISC_BASE_ROWS, -1);
+  }catch(e){
+    console.error(e); alert("기타 섹션 행 삭제 중 오류: " + (e && e.message ? e.message : e));
+  }
+}
+
+/* 해당없음 체크 시 사전준비 하이픈 서브행 전체 잠금/해제(확인+보완대책 포함) */
+function setPrepSubRowsDisabled(disabled){
+  qsa("#riskTable tbody tr.prep-sub-row").forEach((row)=>{
+    ["ok","fix","na","done"].forEach((colKey)=>{
+      const chk=row.querySelector('input.riskchk[data-col="'+colKey+'"]');
+      if(chk){ if(disabled){ chk.checked=false; } chk.disabled=!!disabled; }
+    });
+    const sel=row.querySelector('.miti-select');
+    const user=row.querySelector('.miti-user');
+    if(sel){ sel.disabled=!!disabled; }
+    if(user){ user.disabled=!!disabled; }
+  });
+}
+function initPrepRowLogic(){
+  const master=byId("prep-master-row"); if(!master) return;
+  function evalState(){
+    const na = master.querySelector('input.riskchk[data-col="na"]');
+    const disabled = !!(na && na.checked);
+    setPrepSubRowsDisabled(disabled);
+  }
+  qsa('#prep-master-row input.riskchk[data-col="na"]').forEach((chk)=>{ chk.addEventListener("change", evalState); });
+  evalState();
+}
+
+/* 서명 패드 */
+function initSignature(canvasId, clearBtnId){
+  const cvs=byId(canvasId), btn=byId(clearBtnId); if(!cvs) return;
+  const ctx=cvs.getContext('2d');
+  function resize(){
+    const ratio=Math.max((window.devicePixelRatio || 1), 1);
+    const rect=cvs.getBoundingClientRect(); const w=Math.floor(rect.width*ratio), h=Math.floor(rect.height*ratio);
+    cvs.width=w; cvs.height=h; ctx.setTransform(1,0,0,1,0,0); ctx.scale(ratio,ratio);
+    ctx.lineWidth=2; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.strokeStyle='#111827';
+    ctx.clearRect(0,0,w,h);
+  }
+  let drawing=false, last=null;
+  function getPos(e){ const r=cvs.getBoundingClientRect(); const t=(e.touches&&e.touches[0]) || null; return t?{x:t.clientX-r.left, y:t.clientY-r.top}:{x:e.clientX-r.left, y:e.clientY-r.top}; }
+  function start(e){ if(e&&e.preventDefault) e.preventDefault(); drawing=true; last=getPos(e); }
+  function move (e){ if(!drawing) return; if(e&&e.preventDefault) e.preventDefault(); const p=getPos(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; }
+  function end (){ drawing=false; last=null; }
+  cvs.addEventListener('mousedown',start); cvs.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+  cvs.addEventListener('touchstart',start,{passive:false}); cvs.addEventListener('touchmove',move,{passive:false}); cvs.addEventListener('touchend',end);
+  window.addEventListener('resize',resize); resize();
+  if(btn){ btn.addEventListener('click', ()=>{ ctx.clearRect(0,0,cvs.width,cvs.height); }); }
+}
+
+/* 상단 성명  하단 서명란 이름 자동 반영 */
+function syncSigFromMeta(){
+  [
+    {src:"fSafety",  dst:"sigNameSafety"},
+    {src:"fWorker1", dst:"sigNameW1"},
+    {src:"fWorker2", dst:"sigNameW2"},
+    {src:"fWorker3", dst:"sigNameW3"}
+  ].forEach((m)=>{
+    const s=byId(m.src), d=byId(m.dst); if(!s || !d) return;
+    d.value = s.value || "";
+    ["input","change"].forEach((ev)=>{ s.addEventListener(ev, ()=>{ d.value = s.value || ""; }); });
+  });
+}
+
+/*  모바일: 유해요인/보완대책 폭 동일 유지 */
+function equalizeHazardMitiWidth(){
+  const isMobile = window.matchMedia("(max-width: 800px), (pointer:coarse)").matches;
+  const styleId = "dyn-mobile-cols";
+  let styleEl = document.getElementById(styleId);
+  if(!styleEl){ styleEl = document.createElement("style"); styleEl.id = styleId; document.head.appendChild(styleEl); }
+  if(!isMobile){ styleEl.textContent=""; return; }
+  try{
+    const tb = document.getElementById("riskTable"); if(!tb || !tb.tBodies.length) return;
+    const firstRow = tb.tBodies[0].rows[0]; if(!firstRow || firstRow.cells.length < 2) return;
+    const hazardCell = firstRow.cells[1];
+    const width = Math.round(hazardCell.getBoundingClientRect().width);
+    if(width>0){ styleEl.textContent = `@media (max-width:800px), (pointer:coarse){ col.c-miti{ width:${width}px !important; } }`; }
+  }catch(e){ /* silent */ }
+}
+
+/*  인쇄 시 가로/세로 감지  열 폭 클래스 부여 */
+function setPrintOrientationClass(){
+  try{
+    const isLandscape = (window.matchMedia && window.matchMedia("(orientation: landscape)").matches) || (window.innerWidth > window.innerHeight);
+    const rootEl = document.documentElement;
+    if(isLandscape){ rootEl.classList.add("print-landscape"); rootEl.classList.remove("print-portrait"); }
+    else{           rootEl.classList.add("print-portrait");  rootEl.classList.remove("print-landscape"); }
+  }catch(e){ /* silent */ }
+}
+function clearPrintOrientationClass(){
+  const rootEl = document.documentElement;
+  rootEl.classList.remove("print-landscape");
+  rootEl.classList.remove("print-portrait");
+}
+
+/*  인쇄 직전: 블록 자동 축소 + 인쇄 텍스트 동기화 */
+function scalePageBlocksForPrint(){
+  try{
+    const blocks = qsa('.page-block');
+    const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
+    const marginComp = 40;
+    const usableH = Math.max(0, viewportH - marginComp);
+    blocks.forEach(block=>{
+      block.style.transform = ''; block.style.width = '';
+      const rect = block.getBoundingClientRect(); const h = rect.height;
+      if(usableH > 0 && h > usableH){
+        let scale = usableH / h;
+        scale = Math.max(0.8, Math.min(1.0, scale));
+        block.style.transform = `scale(${scale})`;
+        block.style.transformOrigin = 'top left';
+        block.style.width = `calc(100% / ${scale})`;
+      }
+    });
+    qsa('.miti-cell').forEach(cell=>{
+      const sel = cell.querySelector('.miti-select');
+      const user = cell.querySelector('.miti-user');
+      const p = cell.querySelector('.miti-print');
+      if(!p || !sel) return;
+      const v = sel.value;
+      if(v === '완료'){ p.textContent = '안전 조치 완료'; }
+      else if(v === '입력'){ p.textContent = (user && user.value) ? user.value : ''; }
+      else { p.textContent = ''; }
+    });
+  }catch(e){ /* silent */ }
+}
+function resetBlockScaleAfterPrint(){
+  qsa('.page-block').forEach(block=>{
+    block.style.transform = '';
+    block.style.width = '';
+  });
+}
+
+/*  모바일 프린트 팝업 방지 로직: 사용자 제스처 내 1회 호출 */
+function attachSafePrint(btn){
+  if(!btn) return;
+  let printing = false;
+  const handler = (ev)=>{
+    if(printing) return;
+    printing = true;
+    try { window.print(); } catch (e) { /* no retry */ }
+    finally { setTimeout(()=>{ printing = false; }, 1200); }
+  };
+  btn.addEventListener("click", handler, {passive:false});
+}
+
+/* 확인 헤더 마스터 체크: 확인 열 전체 토글 (비활성화 제외) */
+function initConfirmMaster(){
+  const master = byId("chkConfirmAll"); if(!master) return;
+  master.addEventListener("change", ()=>{
+    const state = !!master.checked;
+    qsa('input.riskchk[data-col="done"]').forEach((chk)=>{
+      if(!chk.disabled){ chk.checked = state; }
+    });
+  });
+}
+
+/* 초기화(회사명 제외) + 동적 행/rowSpan 복구 */
+function resetToMaster(){
+  try{
+    qsa('.riskchk').forEach((chk)=>{ chk.checked=false; chk.disabled=false; });
+    qsa('input[type="text"], input[type="date"], textarea').forEach((el)=>{
+      if(el.id === "fCompany") return;
+      el.value = "";
+    });
+    qsa('.miti-select').forEach((sel)=>{ sel.value=""; });
+    qsa('.miti-user').forEach((inp)=>{ inp.value=""; inp.style.display="none"; });
+    qsa('.miti-print').forEach((el)=>{ el.textContent=""; });
+    ["sigCanvasSafety","sigCanvasW1","sigCanvasW2","sigCanvasW3"].forEach((cid)=>{
+      const cvs=byId(cid); if(!cvs) return; const ctx=cvs.getContext('2d'); ctx.clearRect(0,0,cvs.width,cvs.height);
+    });
+    qsa(".prep-extra-row").forEach((r)=>{ r.remove(); });
+    qsa(".extra-work-row").forEach((r)=>{ r.remove(); });
+    qsa(".misc-extra-row").forEach((r)=>{ r.remove(); });
+    const prepCell = byId("prep-section-cell");  if(prepCell)  prepCell.rowSpan  = PREP_BASE_ROWS;
+    const worksCell= byId("task-works-label");   if(worksCell) worksCell.rowSpan = WORKS_BASE_ROWS;
+    const miscCell = byId("misc-section-cell");  if(miscCell)  miscCell.rowSpan  = MISC_BASE_ROWS;
+    setTimeout(equalizeHazardMitiWidth, 50);
+  }catch(e){
+    console.error(e); alert("초기화 중 오류: " + (e && e.message ? e.message : e));
+  }
+}
+
+/* 인쇄 이벤트 */
+window.addEventListener('beforeprint', ()=>{
+  setPrintOrientationClass();
+  scalePageBlocksForPrint();
+});
+window.addEventListener('afterprint', ()=>{
+  clearPrintOrientationClass();
+  resetBlockScaleAfterPrint();
+});
+
+/*  PDF Blob 생성  새 탭(브라우저 PDF 뷰어)로 열기  내보내기 모드 적용 */
+async function openPdfViewerTab(){
+  // 1) 내보내기 모드 진입: UI 숨김 + 텍스트만 출력
+  document.documentElement.classList.add('export-mode');
+
+  try{
+    // 2) 레이아웃 보정(인쇄용과 동일하게 적용하여 줄바꿈/폭 안정화)
+    setPrintOrientationClass();
+    scalePageBlocksForPrint();
+
+    // 3) 보완대책 셀 텍스트 동기화
+    qsa('.miti-cell').forEach(cell=>{
+      const sel  = cell.querySelector('.miti-select');
+      const user = cell.querySelector('.miti-user');
+      const p    = cell.querySelector('.miti-print');
+      if(!p || !sel) return;
+      const v = sel.value;
+      if(v === '완료'){ p.textContent = '안전 조치 완료'; }
+      else if(v === '입력'){ p.textContent = (user && user.value) ? user.value : ''; }
+      else { p.textContent = ''; } // '선택'은 출력하지 않음
+    });
+
+    const source = document.body;
+
+    // 4) html2pdf 옵션 (여백 15mm)
+    const opt = {
+      margin:       15,
+      filename:     '위험성_평가표.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    const defaultData = {
-      projectName: '',
-      opportunityNo: '',
-      address: '',
-      globalProductType: 'All',
-      productList: { oduModel: '', oduQty: '', iduModel: '', iduQty: '' },
-      inspectionDate: '',
-      categories: [] // parallel to config categories by index
-    };
+    // 5) PDF Blob 생성
+    const blob = await html2pdf().set(opt).from(source).toPdf().output('blob');
+    const url  = URL.createObjectURL(blob);
 
-    // Initialize password with 'admin' (hashed) if none
-    async function ensurePassword() {
-      const stored = localStorage.getItem(LS_PASS_KEY);
-      if (!stored) {
-        const hash = await sha256('admin');
-        localStorage.setItem(LS_PASS_KEY, hash);
-      }
-    }
+    // 6) 새 탭(브라우저 PDF 뷰어)로 열기
+    window.open(url, '_blank');
+  }catch(e){
+    console.error(e);
+    alert('PDF 뷰어 열기 중 오류: ' + (e && e.message ? e.message : e));
+  }finally{
+    // 7) 원상복구
+    document.documentElement.classList.remove('export-mode');
+    clearPrintOrientationClass();
+    resetBlockScaleAfterPrint();
+  }
+}
 
-    async function sha256(str) {
-      const data = new TextEncoder().encode(str);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      return hashHex;
-    }
-
-    // ---- State ----
-    let CONFIG = null; // structure defining categories/items
-    let DATA = null;   // user inputs incl. statuses and images
-    let EDIT_MODE = false;
-
-    function loadConfig() {
-      const raw = localStorage.getItem(LS_CONFIG_KEY);
-      CONFIG = raw ? JSON.parse(raw) : clone(defaultConfig);
-    }
-    function saveConfig() { localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(CONFIG)); }
-
-    function loadData() {
-      const raw = localStorage.getItem(LS_DATA_KEY);
-      DATA = raw ? JSON.parse(raw) : clone(defaultData);
-      // Ensure categories data matches config length
-      if (!Array.isArray(DATA.categories) || DATA.categories.length !== CONFIG.categories.length) {
-        DATA.categories = CONFIG.categories.map(cat => ({ items: cat.items.map(_ => ({ status: null, issue: '', images: [], refImages: [] })) }));
-      }
-    }
-    function saveData() { localStorage.setItem(LS_DATA_KEY, JSON.stringify(DATA)); }
-
-    // ---- UI rendering ----
-    const docTitleEl = document.getElementById('docTitle');
-    const categoriesContainer = document.getElementById('categoriesContainer');
-    const projectNameInput = document.getElementById('projectName');
-    const opportunityNoInput = document.getElementById('opportunityNo');
-    const globalProductTypeSel = document.getElementById('globalProductType');
-    const addressInput = document.getElementById('addressInput');
-    const oduModel = document.getElementById('oduModel');
-    const oduQty = document.getElementById('oduQty');
-    const iduModel = document.getElementById('iduModel');
-    const iduQty = document.getElementById('iduQty');
-    const inspectionDate = document.getElementById('inspectionDate');
-
-    function syncTopSection() {
-      docTitleEl.textContent = CONFIG.title;
-      // product types
-      globalProductTypeSel.innerHTML = '';
-      // Add 'All' option first
-      const allOpt = document.createElement('option'); allOpt.value = 'All'; allOpt.textContent = 'All'; globalProductTypeSel.appendChild(allOpt);
-
-      CONFIG.productTypes.forEach(pt => {
-        if (pt === 'Common') return; // Skip Common in list as it's covered by 'All' or implicit logic
-        const opt = document.createElement('option'); opt.value = pt; opt.textContent = pt; globalProductTypeSel.appendChild(opt);
-      });
-      // If current selection is not in list and not 'All', default to 'All'
-      if (DATA.globalProductType !== 'All' && !CONFIG.productTypes.includes(DATA.globalProductType)) DATA.globalProductType = 'All';
-      globalProductTypeSel.value = DATA.globalProductType;
-
-      projectNameInput.value = DATA.projectName || '';
-      opportunityNoInput.value = DATA.opportunityNo || '';
-      addressInput.value = DATA.address || '';
-      oduModel.value = DATA.productList.oduModel || '';
-      oduQty.value = DATA.productList.oduQty || '';
-      iduModel.value = DATA.productList.iduModel || '';
-      iduQty.value = DATA.productList.iduQty || '';
-
-      inspectionDate.value = DATA.inspectionDate || formatDate(new Date());
-    }
-
-    function renderCategories() {
-      categoriesContainer.innerHTML = '';
-      CONFIG.categories.forEach((cat, ci) => {
-        // Check if category has any visible items
-        const visibleItems = cat.items.filter(item =>
-          DATA.globalProductType === 'All' ||
-          item.productType === 'Common' ||
-          item.productType === DATA.globalProductType
-        );
-
-        // In User mode, hide category if no visible items
-        if (!EDIT_MODE && visibleItems.length === 0) return;
-
-        const catTpl = document.getElementById('categoryTemplate');
-        const catEl = catTpl.content.cloneNode(true);
-        const sec = catEl.querySelector('section.category');
-        sec.dataset.idx = ci;
-        const titleInput = sec.querySelector('.category-title');
-        titleInput.value = cat.name;
-
-        // Auto-expand/resize not strictly needed for single line input but good to have binding
-        titleInput.addEventListener('input', () => {
-          cat.name = titleInput.value;
-          saveConfig();
+function initAll(){
+  try{
+    /* 선택: 로컬스토리지 복원 */
+    try{
+      const raw=localStorage.getItem("hra-risk-mobile-v3");
+      if(raw){
+        const doc=JSON.parse(raw);
+        ["fSiteName","fDiagStart","fDiagEnd","fWrittenDate","fSafety","fWorker1","fWorker2","fWorker3","fRemark"].forEach((id)=>{
+          const el=byId(id); if(!el) return;
+          const keyMap={fSiteName:"siteName",fDiagStart:"diagStart",fDiagEnd:"diagEnd",fWrittenDate:"writtenDate",fSafety:"safetyManager",
+                        fWorker1:"worker1",fWorker2:"worker2",fWorker3:"worker3",fRemark:"remark"};
+          const k=keyMap[id]; el.value = (doc.meta && doc.meta[k]) || "";
         });
-        const checklistsContainer = catEl.querySelector('.checklists');
-
-        cat.items.forEach((item, ii) => {
-          // Filter by global product type: 
-          // If global is 'All', show ALL. Otherwise show matching type OR item is 'Common'.
-          const show = DATA.globalProductType === 'All' || item.productType === 'Common' || item.productType === DATA.globalProductType;
-          if (!show) return;
-          const itemTpl = document.getElementById('checklistTemplate');
-          const itemEl = itemTpl.content.cloneNode(true);
-          const root = itemEl.querySelector('.checklist-item');
-          root.dataset.idx = ii;
-
-          const ptSel = itemEl.querySelector('.item-product-type');
-          const textInput = itemEl.querySelector('.item-text');
-          const okBox = itemEl.querySelector('.okBox');
-          const ngBox = itemEl.querySelector('.ngBox');
-          const issueArea = itemEl.querySelector('.item-issue');
-          const addImgBtn = itemEl.querySelector('.add-image-btn');
-          const addImgInput = itemEl.querySelector('.add-image-input');
-          const refBtn = itemEl.querySelector('.ref-btn');
-          const imagesStrip = itemEl.querySelector('.item-images');
-          const refImagesStrip = itemEl.querySelector('.item-ref-images');
-
-          // populate product types
-          CONFIG.productTypes.forEach(pt => {
-            const opt = document.createElement('option'); opt.value = pt; opt.textContent = pt; ptSel.appendChild(opt);
-          });
-          ptSel.value = item.productType;
-          itemEl.querySelector('.product-type-badge').textContent = item.productType;
-          textInput.value = item.text;
-
-          // data binding
-          const datum = (DATA.categories[ci] && DATA.categories[ci].items[ii]) ? DATA.categories[ci].items[ii] : { status: null, issue: '', images: [], refImages: [] };
-          okBox.checked = datum.status === 'OK';
-          ngBox.checked = datum.status === 'NG';
-          issueArea.value = datum.issue || '';
-
-          okBox.addEventListener('change', () => { if (okBox.checked) { ngBox.checked = false; datum.status = 'OK'; } else { datum.status = null; } saveData(); });
-          ngBox.addEventListener('change', () => { if (ngBox.checked) { okBox.checked = false; datum.status = 'NG'; } else { datum.status = null; } saveData(); });
-
-          // Auto-expand textarea for Issue
-          function autoResizeIssue() {
-            issueArea.style.height = 'auto';
-            issueArea.style.height = issueArea.scrollHeight + 'px';
-          }
-          issueArea.addEventListener('input', () => {
-            datum.issue = issueArea.value;
-            autoResizeIssue();
-            saveData();
-          });
-          // Init height
-          if (datum.issue) setTimeout(autoResizeIssue, 0);
-
-          // Auto-expand textarea for Item Text
-          function autoResizeText() {
-            textInput.style.height = 'auto';
-            textInput.style.height = (textInput.scrollHeight + 2) + 'px'; // Add buffer
-          }
-          textInput.addEventListener('input', () => {
-            item.text = textInput.value;
-            autoResizeText();
-            saveConfig();
-          });
-          // Init height
-          setTimeout(autoResizeText, 0);
-
-          // Add to global resize list
-          if (!window.resizeListeners) window.resizeListeners = [];
-          window.resizeListeners.push(autoResizeText);
-
-
-          addImgBtn.addEventListener('click', () => addImgInput.click());
-          addImgInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0]; if (!file) return;
-            const dataUrl = await resizeImageFile(file, 1600, 1600, 0.8);
-            datum.images.push(dataUrl);
-            saveData();
-            renderImages(imagesStrip, datum.images);
-          });
-
-          refBtn.addEventListener('click', async () => {
-            if (EDIT_MODE) {
-              // Upload refs in edit mode
-              const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*'; input.multiple = true;
-              input.onchange = async (e) => {
-                const files = Array.from(e.target.files || []);
-                for (const f of files) {
-                  const url = await resizeImageFile(f, 2000, 2000, 0.9); // higher res for refs
-                  datum.refImages.push(url);
-                }
-                saveData();
-                renderImages(refImagesStrip, datum.refImages);
-              };
-              input.click();
-            } else {
-              // View refs in user mode: open a simple gallery dialog
-              const dlg = document.createElement('dialog');
-              dlg.style.maxWidth = '90vw'; dlg.style.padding = '0';
-              const wrap = document.createElement('div'); wrap.style.padding = '12px'; wrap.style.background = 'white';
-              const h = document.createElement('h3'); h.textContent = 'Reference images'; h.style.margin = '0 0 8px 0'; wrap.appendChild(h);
-              const strip = document.createElement('div'); strip.style.display = 'flex'; strip.style.flexWrap = 'wrap'; strip.style.gap = '8px';
-              datum.refImages.forEach(url => { const img = document.createElement('img'); img.src = url; img.style.maxWidth = '42vw'; img.style.maxHeight = '60vh'; img.style.border = '1px solid #e2e8f0'; img.style.borderRadius = '8px'; strip.appendChild(img); });
-              if (datum.refImages.length === 0) { const p = document.createElement('p'); p.textContent = 'No reference images.'; strip.appendChild(p); }
-              wrap.appendChild(strip);
-              const row = document.createElement('div'); row.style.display = 'flex'; row.style.justifyContent = 'flex-end'; row.style.gap = '8px'; row.style.marginTop = '8px';
-              const closeBtn = document.createElement('button'); closeBtn.textContent = 'Close'; closeBtn.className = 'btn muted'; closeBtn.addEventListener('click', () => dlg.close()); row.appendChild(closeBtn);
-              wrap.appendChild(row);
-              dlg.appendChild(wrap);
-              document.body.appendChild(dlg);
-              dlg.addEventListener('close', () => dlg.remove());
-              dlg.showModal();
-            }
-          });
-
-          renderImages(imagesStrip, datum.images);
-          renderImages(refImagesStrip, datum.refImages);
-
-          // Edit bindings
-          ptSel.addEventListener('change', () => { item.productType = ptSel.value; saveConfig(); rerender(); });
-          // textInput listener is already added above with autoResizeText
-
-          // delete checklist in edit mode
-          const delBtn = itemEl.querySelector('[data-action="delete-checklist"]');
-          delBtn.addEventListener('click', () => {
-            if (!EDIT_MODE) return; cat.items.splice(ii, 1); saveConfig(); // also remove data
-            DATA.categories[ci].items.splice(ii, 1); saveData(); rerender();
-          });
-
-          // Reorder buttons
-          const upBtn = itemEl.querySelector('[data-action="move-up"]');
-          const downBtn = itemEl.querySelector('[data-action="move-down"]');
-
-          upBtn.addEventListener('click', () => {
-            if (!EDIT_MODE || ii === 0) return;
-            // Swap in CONFIG
-            [cat.items[ii - 1], cat.items[ii]] = [cat.items[ii], cat.items[ii - 1]];
-            saveConfig();
-            // Swap in DATA
-            [DATA.categories[ci].items[ii - 1], DATA.categories[ci].items[ii]] = [DATA.categories[ci].items[ii], DATA.categories[ci].items[ii - 1]];
-            saveData();
-            rerender();
-          });
-
-          downBtn.addEventListener('click', () => {
-            if (!EDIT_MODE || ii === cat.items.length - 1) return;
-            // Swap in CONFIG
-            [cat.items[ii], cat.items[ii + 1]] = [cat.items[ii + 1], cat.items[ii]];
-            saveConfig();
-            // Swap in DATA
-            [DATA.categories[ci].items[ii], DATA.categories[ci].items[ii + 1]] = [DATA.categories[ci].items[ii + 1], DATA.categories[ci].items[ii]];
-            saveData();
-            rerender();
-          });
-
-          checklistsContainer.appendChild(itemEl);
-        });
-
-        // Add checklist button
-        const addBtn = catEl.querySelector('[data-action="add-checklist"]');
-        addBtn.addEventListener('click', () => {
-          if (!EDIT_MODE) return; cat.items.push({ productType: CONFIG.productTypes[0] || 'Common', text: 'New checklist' }); saveConfig(); // add data row
-          DATA.categories[ci].items.push({ status: null, issue: '', images: [], refImages: [] }); saveData(); rerender();
-        });
-
-        // Delete category
-        const delCatBtn = catEl.querySelector('[data-action="delete-category"]');
-        delCatBtn.addEventListener('click', () => { if (!EDIT_MODE) return; CONFIG.categories.splice(ci, 1); saveConfig(); DATA.categories.splice(ci, 1); saveData(); rerender(); });
-
-        categoriesContainer.appendChild(catEl);
-      });
-    }
-
-    function renderImages(strip, arr) {
-
-      strip.innerHTML = '';
-      arr.forEach((url, idx) => {
-        const img = document.createElement('img'); img.src = url; img.className = 'img-thumb'; img.alt = 'image';
-        strip.appendChild(img);
-      });
-    }
-
-    function rerender() {
-      syncTopSection();
-      renderCategories();
-      applyModeClasses();
-    }
-
-    // ---- Event wiring ----
-    const modeToggle = document.getElementById('modeToggle');
-    const modeLabel = document.getElementById('modeLabel');
-
-    modeToggle.addEventListener('change', () => {
-      if (modeToggle.checked) {
-        // User wants to enter Edit Mode
-        passwordModal.showModal();
-      } else {
-        // User wants to leave Edit Mode
-        setEditMode(false);
+        const c=byId("fCompany"); if(c) c.value = (doc.meta && doc.meta.companyName) || c.value || "LG전자 ES에너지컨설팅팀";
       }
-    });
+    }catch(e){ /* 무시 */ }
 
-    const passwordModal = document.getElementById('passwordModal');
-    const changePasswordModal = document.getElementById('changePasswordModal');
+    const btnPrint     = byId("printPDF"),        btnClear      = byId("clearAll");
+    const btnPrepAdd   = byId("btnPrepAdd"),      btnPrepRemove = byId("btnPrepRemove");
+    const btnWorksAdd  = byId("btnWorksAdd"),     btnWorksRemove= byId("btnWorksRemove");
+    const btnMiscAdd   = byId("addMiscRow"),      btnMiscRemove = byId("removeMiscRow");
+    const btnOpenViewer= byId("openViewer");
 
-    // Password modal cancel -> revert toggle
-    passwordModal.addEventListener('close', () => {
-      if (passwordModal.returnValue !== 'ok') {
-        modeToggle.checked = false; // Revert
-      }
-    });
+    attachSafePrint(btnPrint);
+    if(btnClear){ btnClear.addEventListener("click", ()=>{ if(confirm("초기화 하시겠습니까? 저장된 데이터가 삭제됩니다.")){ resetToMaster(); } }); }
+    if(btnPrepAdd)    btnPrepAdd   .addEventListener("click", addPrepRow);
+    if(btnPrepRemove) btnPrepRemove.addEventListener("click", removePrepRow);
+    if(btnWorksAdd)   btnWorksAdd  .addEventListener("click", addWorkRow);
+    if(btnWorksRemove)btnWorksRemove.addEventListener("click", removeWorkRow);
+    if(btnMiscAdd)    btnMiscAdd   .addEventListener("click", addMiscRow);
+    if(btnMiscRemove) btnMiscRemove.addEventListener("click", removeMiscRow);
 
-    document.getElementById('passwordSubmit').addEventListener('click', async () => {
-      const pwd = document.getElementById('passwordInput').value || '';
-      const inputHash = await sha256(pwd);
-      const stored = localStorage.getItem(LS_PASS_KEY);
-      if (inputHash === stored) {
-        passwordModal.returnValue = 'ok';
-        passwordModal.close();
-        setEditMode(true);
-        document.getElementById('passwordInput').value = '';
-      } else {
-        alert('Incorrect password.');
-        // Do not close, let user try again or cancel
-      }
-    });
+    // 새 탭 뷰어 열기 버튼 연결
+    if(btnOpenViewer){ btnOpenViewer.addEventListener("click", openPdfViewerTab); }
 
-    document.getElementById('changePasswordBtn').addEventListener('click', () => {
-      if (!EDIT_MODE) return; changePasswordModal.showModal();
-    });
+    initRiskTable();
+    initPrepRowLogic();
+    initConfirmMaster();
 
-    document.getElementById('changePasswordSubmit').addEventListener('click', async () => {
-      const p1 = document.getElementById('newPassword1').value || '';
-      const p2 = document.getElementById('newPassword2').value || '';
-      if (p1.length < 4) { alert('Use at least 4 characters.'); return; }
-      if (p1 !== p2) { alert('Passwords do not match.'); return; }
-      const hash = await sha256(p1);
-      localStorage.setItem(LS_PASS_KEY, hash);
-      alert('Password updated.');
-      changePasswordModal.close();
-      document.getElementById('newPassword1').value = '';
-      document.getElementById('newPassword2').value = '';
-    });
+    initSignature('sigCanvasSafety','clearSigSafety');
+    initSignature('sigCanvasW1','clearSigW1');
+    initSignature('sigCanvasW2','clearSigW2');
+    initSignature('sigCanvasW3','clearSigW3');
 
-    function setEditMode(flag) {
-      EDIT_MODE = !!flag;
-      modeToggle.checked = EDIT_MODE;
-      modeLabel.textContent = EDIT_MODE ? 'Edit' : 'User';
-      rerender(); // Rerender to show/hide empty categories
-    }
-    function applyModeClasses() {
-      document.querySelectorAll('.edit-only').forEach(el => { el.style.display = EDIT_MODE ? '' : 'none'; });
-      document.querySelectorAll('.interactive-only').forEach(el => { el.style.display = EDIT_MODE ? '' : ''; });
-
-      // Show/hide per-item product type editor in edit mode
-      document.querySelectorAll('.product-type-inline').forEach(el => {
-        el.style.display = EDIT_MODE ? '' : 'none';
-      });
-
-      // Toggle readOnly for checklist item text
-      document.querySelectorAll('.item-text').forEach(el => {
-        el.readOnly = !EDIT_MODE;
-      });
-
-      // Toggle readOnly for category titles
-      document.querySelectorAll('.category-title').forEach(el => {
-        el.readOnly = !EDIT_MODE;
-      });
-
-      // Toggle user-mode class on body for specific styles
-      if (EDIT_MODE) document.body.classList.remove('user-mode');
-      else document.body.classList.add('user-mode');
-    }
-
-    // Title editor
-    const titleInput = document.getElementById('titleInput');
-    titleInput.addEventListener('input', () => { CONFIG.title = titleInput.value; saveConfig(); docTitleEl.textContent = CONFIG.title; });
-
-    // Product type editor
-    const productTypesEditor = document.getElementById('productTypesEditor');
-    function renderProductTypesEditor() {
-      productTypesEditor.innerHTML = '';
-      CONFIG.productTypes.forEach((pt, idx) => {
-        const wrap = document.createElement('div'); wrap.className = 'row'; wrap.style.alignItems = 'center';
-        wrap.style.gap = '6px';
-        const input = document.createElement('input'); input.type = 'text'; input.value = pt; input.style.flex = '1 1 160px';
-
-        if (pt === 'Common') {
-          input.disabled = true;
-          input.title = "Cannot modify Common type";
-          wrap.appendChild(input);
-          // No delete button for Common
-        } else {
-          input.addEventListener('input', () => { CONFIG.productTypes[idx] = input.value; saveConfig(); rerender(); });
-          const del = document.createElement('button'); del.className = 'btn danger'; del.type = 'button'; del.textContent = 'Delete';
-          del.addEventListener('click', () => { CONFIG.productTypes.splice(idx, 1); saveConfig(); rerender(); renderProductTypesEditor(); });
-          wrap.appendChild(input); wrap.appendChild(del);
-        }
-        productTypesEditor.appendChild(wrap);
-      });
-      const add = document.createElement('button'); add.className = 'btn secondary'; add.type = 'button'; add.textContent = 'Add Product Type';
-      add.addEventListener('click', () => { CONFIG.productTypes.push('NewType'); saveConfig(); rerender(); renderProductTypesEditor(); });
-      productTypesEditor.appendChild(add);
-    }
-
-    // Global bindings
-    projectNameInput.addEventListener('input', () => { DATA.projectName = projectNameInput.value; saveData(); });
-    opportunityNoInput.addEventListener('input', () => { DATA.opportunityNo = opportunityNoInput.value; saveData(); });
-    globalProductTypeSel.addEventListener('change', () => { DATA.globalProductType = globalProductTypeSel.value; saveData(); rerender(); });
-    addressInput.addEventListener('input', () => { DATA.address = addressInput.value; saveData(); });
-    oduModel.addEventListener('input', () => { DATA.productList.oduModel = oduModel.value; saveData(); });
-    oduQty.addEventListener('input', () => { DATA.productList.oduQty = oduQty.value; saveData(); });
-    iduModel.addEventListener('input', () => { DATA.productList.iduModel = iduModel.value; saveData(); });
-    iduQty.addEventListener('input', () => { DATA.productList.iduQty = iduQty.value; saveData(); });
-    inspectionDate.addEventListener('input', () => { DATA.inspectionDate = inspectionDate.value; saveData(); });
-
-    // Geolocation + reverse geocode via Nominatim (with fallback to lat/lon)
-    document.getElementById('getLocationBtn').addEventListener('click', () => {
-      if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        const { latitude, longitude } = pos.coords;
-        try {
-          const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
-          const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-          const json = await res.json();
-          const addr = json.display_name || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-          addressInput.value = addr; DATA.address = addr; saveData();
-        } catch (e) {
-          const coords = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-          addressInput.value = coords; DATA.address = coords; saveData();
-        }
-      }, (err) => { alert('Failed to get location: ' + err.message); });
-    });
-
-    // Signature pads
-    const sigPads = ['sigCommissioner', 'sigInstaller', 'sigCustomer'].map(id => document.getElementById(id));
-    const sigCtxs = sigPads.map(c => c.getContext('2d'));
-    sigCtxs.forEach((ctx, i) => { ctx.lineWidth = 2; ctx.strokeStyle = '#111'; });
-
-    function resizeCanvasToDisplaySize(canvas) {
-      const { width, height } = canvas.getBoundingClientRect();
-      if (canvas.width !== Math.round(width) || canvas.height !== Math.round(height)) {
-        const imgData = canvas.toDataURL('image/png');
-        canvas.width = Math.round(width); canvas.height = Math.round(height);
-        // restore previous drawing
-        const img = new Image(); img.onload = () => canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height); img.src = imgData;
-      }
-    }
-
-    function initSignaturePad(canvas) {
-      resizeCanvasToDisplaySize(canvas);
-      let drawing = false, lastX = 0, lastY = 0;
-      function pos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-        const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-        return { x, y };
-      }
-      const ctx = canvas.getContext('2d');
-      function start(e) { drawing = true; const p = pos(e); lastX = p.x; lastY = p.y; e.preventDefault(); }
-      function move(e) { if (!drawing) return; const p = pos(e); ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke(); lastX = p.x; lastY = p.y; e.preventDefault(); }
-      function end() { drawing = false; saveSignatures(); }
-      canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); canvas.addEventListener('mouseup', end); canvas.addEventListener('mouseleave', end);
-      canvas.addEventListener('touchstart', start, { passive: false }); canvas.addEventListener('touchmove', move, { passive: false }); canvas.addEventListener('touchend', end);
-    }
-
-    function saveSignatures() {
-      const urls = sigPads.map(c => c.toDataURL('image/png'));
-      DATA.signatures = urls; saveData();
-    }
-
-    function restoreSignatures() {
-      if (!DATA.signatures) return;
-      DATA.signatures.forEach((url, i) => {
-        const img = new Image();
-        img.onload = () => { const ctx = sigPads[i].getContext('2d'); ctx.clearRect(0, 0, sigPads[i].width, sigPads[i].height); ctx.drawImage(img, 0, 0, sigPads[i].width, sigPads[i].height); };
-        img.src = url;
-      });
-    }
-
-    document.querySelectorAll('[data-clear]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.getAttribute('data-clear');
-        const canvas = document.getElementById(id); const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        saveSignatures();
-      });
-    });
-
-    // Print
-    document.getElementById('printBtn').addEventListener('click', () => {
-      window.print();
-    });
-
-    // Date formatting with ordinal
-    function formatDate(d) {
-      // Return YYYY-MM-DD for date input
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
-
-    // Image resize to dataURL
-    function resizeImageFile(file, maxW, maxH, quality = 0.85) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const img = new Image();
-          img.onload = () => {
-            let { width: w, height: h } = img;
-            const ratio = Math.min(maxW / w, maxH / h, 1);
-            const canvas = document.createElement('canvas');
-            canvas.width = Math.round(w * ratio);
-            canvas.height = Math.round(h * ratio);
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            resolve(canvas.toDataURL('image/jpeg', quality));
-          };
-          img.src = reader.result;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    // Add Category (edit)
-    document.getElementById('addCategoryBtn').addEventListener('click', () => {
-      if (!EDIT_MODE) return;
-      CONFIG.categories.push({ name: 'New Category', items: [] });
-      saveConfig();
-      DATA.categories.push({ items: [] });
-      saveData();
-      rerender();
-    });
-
-    // Init
-    (async function init() {
-      await ensurePassword();
-      loadConfig(); loadData();
-      titleInput.value = CONFIG.title;
-      rerender();
-      renderProductTypesEditor();
-      sigPads.forEach(initSignaturePad);
-      restoreSignatures();
-      window.addEventListener('resize', () => {
-        sigPads.forEach(resizeCanvasToDisplaySize);
-        if (window.resizeListeners) window.resizeListeners.forEach(fn => fn());
-      });
-      // Ensure canvas sizes initially
-      setTimeout(() => {
-        sigPads.forEach(resizeCanvasToDisplaySize);
-        if (window.resizeListeners) window.resizeListeners.forEach(fn => fn());
-      }, 100);
-    })();
-  </script>
+    syncSigFromMeta();
+    setTimeout(equalizeHazardMitiWidth, 50);
+    window.addEventListener("resize", ()=>{ requestAnimationFrame(equalizeHazardMitiWidth); });
+    window.addEventListener("orientationchange", equalizeHazardMitiWidth);
+  }catch(e){
+    console.error(e); alert("기능 초기화 중 오류: " + (e && e.message ? e.message : e));
+  }
+}
+window.addEventListener("DOMContentLoaded", initAll);
+</script>
 </body>
-
 </html>
