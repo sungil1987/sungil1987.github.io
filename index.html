@@ -108,7 +108,11 @@
 
   .signature{ width:100%; height:130px }
   .sig-box{ position:relative }
+  /* PDF 버튼(기존) */
   #printPDF{ position:absolute; top:-50px; right:14px; transform:none; z-index:2 }
+  /*  캡쳐공유 버튼을 PDF 왼쪽에 절대 위치 */
+  #btnShareCapture{ position:absolute; top:-50px; right:84px; transform:none; z-index:2 }
+
   .signature canvas{
     width:100%; height:100%; display:block; border:1px dashed var(--border); border-radius:8px; background:#fff; touch-action:none
   }
@@ -123,7 +127,8 @@
     .table-wrap, table, thead, tbody, tfoot, tr, th, td, input.field, textarea.field, .signature canvas{ background:#fff !important; }
     thead th{ background:#fff !important }
     td.section{ background:#fff !important }
-    #printPDF, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3{ display:none !important; }
+    /*  인쇄 시 PDF/공유/클리어 버튼 숨김 유지 */
+    #printPDF, #btnShareCapture, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3{ display:none !important; }
     .section-actions{ display:none !important; }
     thead{ display:table-header-group !important }
     tfoot{ display:table-footer-group !important }
@@ -152,7 +157,7 @@
     html.print-landscape col.c-miti{width:36%!important}
     html.print-landscape col.c-done{width:5%!important}
 
-    .miti-ui{ display:none !important; }
+    .miti-ui{ display:block !important; } /* 화면과 동일 동작  필요 시 유지/표시 */
     .miti-print{ display:block !important; }
   }
 
@@ -175,7 +180,7 @@
   #approvalSection > h2{ font-size:calc(var(--fs-h2) - 4px + 3px) }
 </style>
 
-<!--  html2canvas 로더 (정상 표기) -->
+<!--  html2canvas 로더 (정상) -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <!-- (필요 시) html2canvas-pro는 아래 JS에서 동적 로드 -->
 
@@ -189,7 +194,7 @@
     <div class="toolbar">
       <div class="toolbar-left">
         <button id="clearAll" class="warn" type="button">초기화</button>
-        <button id="btnShareCapture" class="secondary" type="button" title="전체 화면을 캡쳐하여 공유">캡쳐공유</button>
+        <!--  기존 헤더의 캡쳐공유 버튼은 제거(아래 서명란으로 이동) -->
       </div>
     </div>
   </div>
@@ -324,6 +329,8 @@
         <label>작업자3</label>
         <input id="sigNameW3" type="text" placeholder="성명" class="field">
         <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW3"></canvas></div>
+        <!--  캡쳐공유 버튼을 PDF 왼쪽으로 이동 -->
+        <button id="btnShareCapture" class="secondary" type="button" title="전체 화면을 캡쳐하여 공유">캡쳐공유</button>
         <button id="printPDF" class="secondary" type="button" title="PDF로 내보내기">PDF</button>
         <div style="margin-top:6px"><button class="secondary" id="clearSigW3" type="button">Clear</button></div>
       </div>
@@ -332,11 +339,12 @@
 </main>
 
 <script>
-/* ========= [1] 유틸 & 공용 함수 (모든 attach/초기화보다 먼저 선언) ========= */
+/* ========= [1] 유틸 & 공용 함수 (초기화 전에 선언) ========= */
 var byId = function(id){ return document.getElementById(id); };
 var qs  = function(sel){ return document.querySelector(sel); };
 var qsa = function(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); };
 
+/* (이하 모든 JS 로직은 이전 확정본과 동일) */
 /* 체크박스/입력 UI */
 function injectCheckbox(cell, colKey, labelText){
   var input=document.createElement("input");
@@ -594,7 +602,7 @@ function scalePageBlocksForPrint(){
 }
 function resetBlockScaleAfterPrint(){ qsa('.page-block').forEach(function(block){ block.style.transform=''; block.style.width=''; }); }
 
-/*  안전 프린트(초기화보다 먼저 정의) */
+/*  안전 프린트 */
 function attachSafePrint(btn){
   if(!btn) return; var printing=false;
   var handler=function(){ if(printing) return; printing=true; try{ window.print(); } finally { setTimeout(function(){ printing=false; }, 1200); } };
@@ -702,9 +710,7 @@ function captureFullPageToBlob(){
       });
 
       renderWithH2C(document.body).then(function(canvas){
-        // 원복
         backup.forEach(function(b){ b.el.style.overflow = b.overflow; b.el.style.width = b.width; });
-
         var scale = Math.min(2, window.devicePixelRatio || 2);
         var cropHeightPx = Math.min(canvas.height, Math.max(1, Math.round(limitBottomCss * scale)));
         var outCanvas = canvas;
@@ -716,7 +722,6 @@ function captureFullPageToBlob(){
         }
         outCanvas.toBlob(function(b){ resolve(b); }, 'image/png', 1.0);
       }).catch(function(err){
-        // color()/oklab 등 오류  pro 폴백
         var msg = (err && (err.message||err)).toString().toLowerCase();
         if(msg.indexOf('unsupported color function')>=0 || msg.indexOf('color(')>=0 || msg.indexOf('oklab')>=0 || msg.indexOf('oklch')>=0 || msg.indexOf('lch(')>=0 || msg.indexOf('lab(')>=0){
           loadHtml2CanvasPro().then(function(){
@@ -768,11 +773,10 @@ function shareBlobPNG(blob){
           done(true); return;
         }
         if(navigator.share){
-          // 일부 브라우저는 files 미지원  폴백
+          // files 미지원 시 아래 폴백 진행
         }
       }catch(e){ /* 사용자 취소 등 */ }
 
-      // 폴백: 새 탭으로 Blob URL 열기(차단 시 다운로드)
       var url = URL.createObjectURL(blob);
       var win = window.open(url, '_blank');
       if(!win){
@@ -785,7 +789,7 @@ function shareBlobPNG(blob){
   });
 }
 
-/* 캡쳐공유 버튼 연결 */
+/* 캡쳐공유 버튼 연결 (id 동일) */
 function attachCaptureShare(btn){
   if(!btn) return;
   btn.addEventListener('click', function(){
@@ -801,13 +805,11 @@ function attachCaptureShare(btn){
   }, {passive:false});
 }
 
-/* ========= [3] 초기화 루틴 (모든 함수 정의 후에만 실행) ========= */
+/* ========= [3] 초기화 ========= */
 function initAll(){
   try{
-    // 화면 헤더 센터 정렬 유지
     document.querySelectorAll('thead th.th-center').forEach(function(th){ th.style.textAlign = 'center'; });
 
-    // (선택) 로컬스토리지 복원
     try{
       var raw=localStorage.getItem("hra-risk-mobile-v3");
       if(raw){
