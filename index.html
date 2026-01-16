@@ -1,188 +1,213 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="color-scheme" content="light" />
-  <title>LG전자 ES에너지컨설팅팀 위험성 평가표 (모바일 표 Ver.)</title>
-  <style>
-    @font-face {
-      font-family: "LG스마트체";
-      src: url("LGSmartRegular.woff2") format("woff2"),
-           url("LGSmartRegular.woff") format("woff");
-      font-weight: 400; font-style: normal; font-display: swap;
-    }
-    :root{
-      /* 120% 글자 확대 유지 */
-      --bg:#f6f7fb; --card:#fff; --text:#111827; --border:#e5e7eb; --primary:#111827;
-      --fs-body: clamp(15.6px, 2.04vw, 18px);
-      --fs-label: clamp(14.4px, 1.92vw, 16.8px);
-      --fs-title: clamp(21.6px, 4.32vw, 26.4px);
-      --fs-h2: clamp(16.8px, 3.12vw, 19.2px);
-      --fs-btn: clamp(15.6px, 2.88vw, 18px);
-      --line:1.45; --radius:12px; --table-pad:6px;
-      --radius-input:10px; --focus:#3b82f6; --shadow:0 2px 6px rgba(0,0,0,.06); --title-accent:#8B1B3D;
-    }
-    *{ box-sizing:border-box }
-    html,body{
-      margin:0; padding:0; width:100%; min-height:100vh; overflow-x:hidden;
-      -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent;
-      background:var(--bg); color:var(--text);
-      font-family:"LG스마트체","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-      font-size:var(--fs-body); line-height:var(--line);
-    }
-    header{
-      background:var(--card);
-      border-bottom:1px solid var(--border);
-      position:sticky; top:0; z-index:10;
-      backdrop-filter:saturate(120%) blur(6px);
-    }
-    .wrap{max-width:1000px; margin:0 auto; padding:12px}
-    .brand{display:flex; align-items:center; justify-content:space-between; gap:8px}
-    .title{font-weight:800;}
-    .main-title{
-      color:var(--title-accent);
-      font-size:calc(var(--fs-title) + 8px);
-      text-shadow:0 1px 0 rgba(0,0,0,.05);
-      letter-spacing:2px;
-      transform:translateY(-4px);
-      text-align:center;
-      line-height:1.25;
-      margin:6px 0 10px 0;
-    }
-    .toolbar{display:flex; gap:8px; margin-top:8px}
-    .toolbar-left{display:flex; gap:8px; margin-right:auto}
-    button{
-      border:1px solid var(--border); background:var(--primary); color:#fff;
-      border-radius:var(--radius); padding:9px 12px; font-size:var(--fs-btn);
-      min-height:40px; cursor:pointer; font-family:inherit;
-    }
-    button.secondary{background:#374151}
-    button.warn{background:#b91c1c}
-    button.mini{ padding:6px 8px; min-height:32px; font-size:calc(var(--fs-btn) - 2px); border-radius:10px }
-    @media (pointer:coarse){
-      button{min-height:44px}
-      input,select,textarea{min-height:48px; font-family:inherit}
-      .table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
-      button.mini{ min-height:36px }
-    }
-    main{padding:12px 0}
-    .card{
-      background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-      padding:18px; margin:12px auto; box-shadow:var(--shadow)
-    }
-    .field{
-      width:100%; padding:10px 12px;
-      border:1px solid var(--border); border-radius:var(--radius-input);
-      outline:none; font-family:inherit; font-size:inherit; background:#fff;
-      transition:border-color .15s ease, box-shadow .15s ease;
-      min-height:48px;
-    }
-    .field:focus{ border-color:var(--focus); box-shadow:0 0 0 3px rgba(59,130,246,.15) }
-    .field.textarea{ min-height:72px; resize:vertical }
-    .table-wrap{
-      width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;
-      border:1px solid var(--border); border-radius:var(--radius); background:#fff;
-    }
-    table{
-      width:100%; border-collapse:collapse; min-width:920px; table-layout:fixed;
-      word-break:keep-all; font-family:inherit;
-    }
-    /* 화면용 열 폭 */
-    col.c-task { width:72px }
-    col.c-hazard{ width:364px }
-    col.c-ok { width:72px }
-    col.c-fix { width:72px }
-    col.c-na { width:88px }
-    col.c-miti { width:220px }
-    col.c-done { width:56px }
-    th,td{ border:1px solid var(--border); padding:var(--table-pad); font-size:var(--fs-body); vertical-align:top }
-    thead th{ background:#f3f4f6; text-align:center; white-space:nowrap }
-    td{ text-align:left }
-    td.section{
-      text-align:center !important; vertical-align:middle !important; font-weight:600; background:#f8fafc;
-    }
-    .section-cell{ display:flex; flex-direction:column; align-items:center; justify-content:space-between; min-height:100%; gap:8px }
-    .section-title{ font-weight:700 }
-    .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap } /* + / - 컨테이너 */
-    .chk-wrap{ display:flex; align-items:center; justify-content:center; min-height:32px; }
-    .riskchk{ width:18px; height:18px; accent-color:#111827; cursor:pointer; }
-    @media(pointer:coarse){ .riskchk{ width:21px; height:21px } }
-    .cell-input{
-      width:100%; min-height:40px; border:1px solid var(--border); border-radius:8px; background:#fff;
-      font-family:inherit; font-size:inherit; padding:6px 8px; outline:none;
-      white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; resize:vertical;
-    }
-    /* 보완대책 드롭셀/사용자입력 UI */
-    .miti-cell{ padding:6px !important; }
-    .miti-ui{ display:flex; flex-direction:column; gap:6px; }
-    .miti-select, .miti-user{
-      box-sizing:border-box; width:100%;
-      min-height:48px; padding:6px 8px;
-      border:1px solid var(--border); border-radius:8px; background:#fff;
-      font-family:inherit; font-size:inherit; line-height:normal; outline:none;
-      -webkit-appearance:none; appearance:none;
-    }
-    .miti-user{ display:none; }
-    .miti-print{ display:none; min-height:48px; white-space:pre-wrap; word-break:break-word; }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light" />
+<title>LG전자 ES에너지컨설팅팀 위험성 평가표 (모바일 표 Ver.)</title>
+<style>
+  @font-face {
+    font-family: "LG스마트체";
+    src: url("LGSmartRegular.woff2") format("woff2"),
+         url("LGSmartRegular.woff") format("woff");
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
 
-    @supports (-webkit-touch-callout: none) { .miti-select{ padding-top:8px; padding-bottom:8px; } }
-    @media (pointer:coarse) and (max-width:800px){ .miti-select{ line-height:1.2; } }
+  :root{
+    /* 120% 글자 확대 유지 */
+    --bg:#f6f7fb; --card:#fff; --text:#111827; --border:#e5e7eb; --primary:#111827;
+    --fs-body: clamp(15.6px, 2.04vw, 18px);
+    --fs-label: clamp(14.4px, 1.92vw, 16.8px);
+    --fs-title: clamp(21.6px, 4.32vw, 26.4px);
+    --fs-h2: clamp(16.8px, 3.12vw, 19.2px);
+    --fs-btn: clamp(15.6px, 2.88vw, 18px);
+    --line:1.45; --radius:12px; --table-pad:6px;
+    --radius-input:10px; --focus:#3b82f6; --shadow:0 2px 6px rgba(0,0,0,.06); --title-accent:#8B1B3D;
+  }
+  *{ box-sizing:border-box }
+  html,body{
+    margin:0; padding:0; width:100%; min-height:100vh; overflow-x:hidden;
+    -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent;
+    background:var(--bg); color:var(--text);
+    font-family:"LG스마트체","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:var(--fs-body); line-height:var(--line);
+  }
+  header{
+    background:var(--card);
+    border-bottom:1px solid var(--border);
+    position:sticky; top:0; z-index:10;
+    backdrop-filter:saturate(120%) blur(6px);
+  }
+  .wrap{max-width:1000px; margin:0 auto; padding:12px}
+  .brand{display:flex; align-items:center; justify-content:space-between; gap:8px}
+  .title{font-weight:800;}
+  .main-title{
+    color:var(--title-accent);
+    font-size:calc(var(--fs-title) + 8px);
+    text-shadow:0 1px 0 rgba(0,0,0,.05);
+    letter-spacing:2px;
+    transform:translateY(-4px);
+    text-align:center;
+    line-height:1.25;
+    margin:6px 0 10px 0;
+  }
+  .toolbar{display:flex; gap:8px; margin-top:8px}
+  .toolbar-left{display:flex; gap:8px; margin-right:auto}
 
-    .signature{ width:100%; height:130px }
-    .sig-box{ position:relative }
-    #printPDF{ position:absolute; top:-50px; right:14px; transform:none; z-index:2 }
-    .signature canvas{
-      width:100%; height:100%; display:block; border:1px dashed var(--border);
-      border-radius:8px; background:#fff; touch-action:none
-    }
+  button{
+    border:1px solid var(--border); background:var(--primary); color:#fff;
+    border-radius:var(--radius); padding:9px 12px; font-size:var(--fs-btn);
+    min-height:40px; cursor:pointer; font-family:inherit;
+  }
+  button.secondary{background:#374151}
+  button.warn{background:#b91c1c}
+  button.mini{ padding:6px 8px; min-height:32px; font-size:calc(var(--fs-btn) - 2px); border-radius:10px }
 
-    /*  인쇄 최적화 (유지)  */
-    @page{ margin:12mm }
-    @media print{
-      html, body{ background:#fff !important; color:#000 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-      .wrap{ transform:none !important; width:auto !important }
-      header,.toolbar{ display:none !important }
-      .card{ box-shadow:none !important; background:#fff !important; border-color:#ddd !important; transform-origin:top left; }
-      .table-wrap, table, thead, tbody, tfoot, tr, th, td, input.field, textarea.field, .signature canvas{ background:#fff !important; }
-      thead th{ background:#fff !important } td.section{ background:#fff !important }
-      #printPDF, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3{ display:none !important; }
-      .section-actions{ display:none !important; }
-      thead{ display:table-header-group !important } tfoot{ display:table-footer-group !important }
-      table{ min-width:auto; width:100%; table-layout:auto; border-collapse:collapse }
-      .table-wrap{ overflow:visible !important }
-      tr, th, td, .sig-box, .signature, .section-cell, .miti-print, .cell-input, .miti-select, .miti-user{ page-break-inside:avoid !important; break-inside:avoid !important; }
-      tbody{ page-break-inside:auto; break-inside:auto }
-      p, .cell-input, .miti-print{ orphans:3; widows:3 }
-      h1,h2,h3, .main-title, .section-title{ page-break-after:avoid; break-after:avoid }
-      .page-block{ page-break-inside:avoid !important; break-inside:avoid !important; }
-      .page-start{ page-break-before:always !important; break-before:page !important; }
-      html.print-portrait col.c-task{width:8%!important} html.print-portrait col.c-hazard{width:36%!important}
-      html.print-portrait col.c-ok{width:6%!important} html.print-portrait col.c-fix{width:6%!important}
-      html.print-portrait col.c-na{width:6%!important} html.print-portrait col.c-miti{width:36%!important}
-      html.print-portrait col.c-done{width:2%!important}
-      html.print-landscape col.c-task{width:8%!important} html.print-landscape col.c-hazard{width:36%!important}
-      html.print-landscape col.c-ok{width:5%!important} html.print-landscape col.c-fix{width:5%!important}
-      html.print-landscape col.c-na{width:5%!important} html.print-landscape col.c-miti{width:36%!important}
-      html.print-landscape col.c-done{width:5%!important}
-      .miti-ui{ display:none !important; }
-      .miti-print{ display:block !important; }
-    }
+  @media (pointer:coarse){
+    button{min-height:44px}
+    input,select,textarea{min-height:48px; font-family:inherit}
+    .table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+    button.mini{ min-height:36px }
+  }
 
-    @media (max-width:800px), (pointer:coarse){
-      col.c-hazard, col.c-miti { width:182px !important }
-      tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal }
-      main .card:first-of-type input[type="date"].field{ width:100%; min-width:0; -webkit-appearance:none; appearance:none; height:48px; line-height:48px; color:var(--text); caret-color:var(--text); }
-      main .card:first-of-type input[type="date"].field::-webkit-datetime-edit,
-      main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-year-field,
-      main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-month-field,
-      main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-day-field,
-      main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-text{ color:var(--text) }
-      main .card:first-of-type input[type="date"].field::-webkit-calendar-picker-indicator{ margin:0 6px 0 0; padding:0; width:18px; height:18px; }
-      .wrap{ transform:scale(.8); transform-origin:top left; width:calc(100%/.8) }
+  main{padding:12px 0}
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; margin:12px auto; box-shadow:var(--shadow)
+  }
+  .field{
+    width:100%; padding:10px 12px;
+    border:1px solid var(--border); border-radius:var(--radius-input);
+    outline:none; font-family:inherit; font-size:inherit; background:#fff;
+    transition:border-color .15s ease, box-shadow .15s ease;
+    min-height:48px;
+  }
+  .field:focus{ border-color:var(--focus); box-shadow:0 0 0 3px rgba(59,130,246,.15) }
+  .field.textarea{ min-height:72px; resize:vertical }
+
+  .table-wrap{
+    width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    border:1px solid var(--border); border-radius:var(--radius); background:#fff;
+  }
+  table{
+    width:100%; border-collapse:collapse; min-width:920px; table-layout:fixed;
+    word-break:keep-all; font-family:inherit;
+  }
+  /* 화면용 열 폭 */
+  col.c-task { width:72px }
+  col.c-hazard{ width:364px }
+  col.c-ok { width:72px }
+  col.c-fix { width:72px }
+  col.c-na  { width:88px }
+  col.c-miti{ width:220px }
+  col.c-done{ width:56px }
+
+  th,td{ border:1px solid var(--border); padding:var(--table-pad); font-size:var(--fs-body); vertical-align:top }
+  thead th{ background:#f3f4f6; text-align:center; white-space:nowrap }
+  td{ text-align:left }
+  td.section{
+    text-align:center !important; vertical-align:middle !important; font-weight:600; background:#f8fafc;
+  }
+  .section-cell{ display:flex; flex-direction:column; align-items:center; justify-content:space-between; min-height:100%; gap:8px }
+  .section-title{ font-weight:700 }
+  .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap }
+  .chk-wrap{ display:flex; align-items:center; justify-content:center; min-height:32px; }
+  .riskchk{ width:18px; height:18px; accent-color:#111827; cursor:pointer; }
+  @media(pointer:coarse){ .riskchk{ width:21px; height:21px } }
+
+  .cell-input{
+    width:100%; min-height:40px; border:1px solid var(--border); border-radius:8px; background:#fff;
+    font-family:inherit; font-size:inherit; padding:6px 8px; outline:none;
+    white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; resize:vertical;
+  }
+
+  /* 보완대책 드롭셀/사용자입력 UI */
+  .miti-cell{ padding:6px !important; }
+  .miti-ui{ display:flex; flex-direction:column; gap:6px; }
+  .miti-select, .miti-user{
+    box-sizing:border-box; width:100%;
+    min-height:48px; padding:6px 8px;
+    border:1px solid var(--border); border-radius:8px; background:#fff;
+    font-family:inherit; font-size:inherit; line-height:normal; outline:none;
+    -webkit-appearance:none; appearance:none;
+  }
+  .miti-user{ display:none; }
+  .miti-print{ display:none; min-height:48px; white-space:pre-wrap; word-break:break-word; }
+
+  @supports (-webkit-touch-callout: none) {
+    .miti-select{ padding-top:8px; padding-bottom:8px; }
+  }
+  @media (pointer:coarse) and (max-width:800px){
+    .miti-select{ line-height:1.2; }
+  }
+
+  .signature{ width:100%; height:130px }
+  .sig-box{ position:relative }
+  #printPDF{ position:absolute; top:-50px; right:14px; transform:none; z-index:2 }
+  .signature canvas{
+    width:100%; height:100%; display:block; border:1px dashed var(--border);
+    border-radius:8px; background:#fff; touch-action:none
+  }
+
+  /*  인쇄 최적화 (유지)  */
+  @page{ margin:12mm }
+  @media print{
+    html, body{ background:#fff !important; color:#000 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .wrap{ transform:none !important; width:auto !important }
+    header,.toolbar{ display:none !important }
+    .card{ box-shadow:none !important; background:#fff !important; border-color:#ddd !important; transform-origin:top left; }
+    .table-wrap, table, thead, tbody, tfoot, tr, th, td, input.field, textarea.field, .signature canvas{ background:#fff !important; }
+    thead th{ background:#fff !important } td.section{ background:#fff !important }
+    #printPDF, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3{ display:none !important; }
+    .section-actions{ display:none !important; }
+    thead{ display:table-header-group !important } tfoot{ display:table-footer-group !important }
+    table{ min-width:auto; width:100%; table-layout:auto; border-collapse:collapse }
+    .table-wrap{ overflow:visible !important }
+    tr, th, td, .sig-box, .signature, .section-cell, .miti-print, .cell-input, .miti-select, .miti-user{ page-break-inside:avoid !important; break-inside:avoid !important; }
+    tbody{ page-break-inside:auto; break-inside:auto }
+    p, .cell-input, .miti-print{ orphans:3; widows:3 }
+    h1,h2,h3, .main-title, .section-title{ page-break-after:avoid; break-after:avoid }
+    .page-block{ page-break-inside:avoid !important; break-inside:avoid !important; }
+    .page-start{ page-break-before:always !important; break-before:page !important; }
+
+    /* A4 세로/가로에 맞춘 열 폭 */
+    html.print-portrait col.c-task{width:8%!important}  html.print-portrait col.c-hazard{width:36%!important}
+    html.print-portrait col.c-ok{width:6%!important}     html.print-portrait col.c-fix{width:6%!important}
+    html.print-portrait col.c-na{width:6%!important}     html.print-portrait col.c-miti{width:36%!important}
+    html.print-portrait col.c-done{width:2%!important}
+
+    html.print-landscape col.c-task{width:8%!important}  html.print-landscape col.c-hazard{width:36%!important}
+    html.print-landscape col.c-ok{width:5%!important}    html.print-landscape col.c-fix{width:5%!important}
+    html.print-landscape col.c-na{width:5%!important}    html.print-landscape col.c-miti{width:36%!important}
+    html.print-landscape col.c-done{width:5%!important}
+
+    .miti-ui{ display:none !important; }
+    .miti-print{ display:block !important; }
+  }
+
+  @media (max-width:800px), (pointer:coarse){
+    col.c-hazard, col.c-miti { width:182px !important }
+    tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal }
+    main .card:first-of-type input[type="date"].field{
+      width:100%; min-width:0; -webkit-appearance:none; appearance:none; height:48px; line-height:48px; color:var(--text); caret-color:var(--text);
     }
-    #approvalSection > h2{ font-size:calc(var(--fs-h2) - 4px + 3px) }
-  </style>
+    main .card:first-of-type input[type="date"].field::-webkit-datetime-edit,
+    main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-year-field,
+    main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-month-field,
+    main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-day-field,
+    main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-text{ color:var(--text) }
+    main .card:first-of-type input[type="date"].field::-webkit-calendar-picker-indicator{ margin:0 6px 0 0; padding:0; width:18px; height:18px; }
+
+    /* 화면 축소 비율(모바일 테이블 가시성) */
+    .wrap{ transform:scale(.8); transform-origin:top left; width:calc(100%/.8) }
+  }
+
+  #approvalSection > h2{ font-size:calc(var(--fs-h2) - 4px + 3px) }
+</style>
+
+<!--  html2canvas (캡쳐용) -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 </head>
 <body>
 <header>
@@ -193,6 +218,8 @@
     <div class="toolbar">
       <div class="toolbar-left">
         <button id="clearAll" class="warn" type="button">초기화</button>
+        <!--  추가: 전체 캡쳐 후 공유 -->
+        <button id="btnShareCapture" class="secondary" type="button" title="전체 화면을 캡쳐하여 공유">캡쳐공유</button>
       </div>
     </div>
   </div>
@@ -208,11 +235,13 @@
       <div><label class="hint">진단 시작</label><input id="fDiagStart" type="date" class="field"></div>
       <div><label class="hint">진단 종료</label><input id="fDiagEnd" type="date" class="field"></div>
       <div><label class="hint">작성 일자</label><input id="fWrittenDate" type="date" class="field"></div>
+
       <!-- 라벨만 변경, ID/데이터 흐름 유지 -->
       <div><label class="hint">작업관리자</label><input id="fSafety" type="text" placeholder="성명" class="field"></div>
       <div><label class="hint">작업자1</label><input id="fWorker1" type="text" placeholder="성명" class="field"></div>
       <div><label class="hint">작업자2</label><input id="fWorker2" type="text" placeholder="성명" class="field"></div>
       <div><label class="hint">작업자3</label><input id="fWorker3" type="text" placeholder="성명" class="field"></div>
+
       <div style="grid-column:1/-1"><label class="hint">비고</label>
         <textarea id="fRemark" class="field textarea" placeholder="특이사항/참고사항"></textarea>
       </div>
@@ -228,22 +257,22 @@
           <col class="c-task"/><col class="c-hazard"/><col class="c-ok"/><col class="c-fix"/><col class="c-na"/><col class="c-miti"/><col class="c-done"/>
         </colgroup>
         <thead>
-          <tr>
-            <th rowspan="2" class="th-center">작업</th>
-            <th rowspan="2" class="th-center">유해위험요인 파악</th>
-            <th colspan="3" class="th-center">위험성 확인결과</th>
-            <th rowspan="2" class="th-center">보완 대책</th>
-            <!--  여기(확인 열 헤더)에만 마스터 체크박스 배치 -->
-            <th rowspan="2" class="th-center">
-              확인
-              <div class="chk-wrap" style="margin-top:4px">
-                <input id="doneMasterChk" type="checkbox" class="riskchk" title="전체 확인 체크/해제">
-              </div>
-            </th>
-          </tr>
-          <tr>
-            <th>적정</th><th>보완</th><th>해당없음</th>
-          </tr>
+        <tr>
+          <th rowspan="2" class="th-center">작업</th>
+          <th rowspan="2" class="th-center">유해위험요인 파악</th>
+          <th colspan="3" class="th-center">위험성 확인결과</th>
+          <th rowspan="2" class="th-center">보완 대책</th>
+          <!--  확인 열 헤더에만 마스터 체크박스 -->
+          <th rowspan="2" class="th-center">
+            확인
+            <div class="chk-wrap" style="margin-top:4px">
+              <input id="doneMasterChk" type="checkbox" class="riskchk" title="전체 확인 체크/해제">
+            </div>
+          </th>
+        </tr>
+        <tr>
+          <th>적정</th><th>보완</th><th>해당없음</th>
+        </tr>
         </thead>
         <tbody>
           <!-- 사전준비 -->
@@ -322,21 +351,18 @@
         <div class="signature" style="margin-top:6px"><canvas id="sigCanvasSafety"></canvas></div>
         <div style="margin-top:6px"><button class="secondary" id="clearSigSafety" type="button">Clear</button></div>
       </div>
-
       <div class="sig-box">
         <label>작업자1</label>
         <input id="sigNameW1" type="text" placeholder="성명" class="field">
         <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW1"></canvas></div>
         <div style="margin-top:6px"><button class="secondary" id="clearSigW1" type="button">Clear</button></div>
       </div>
-
       <div class="sig-box">
         <label>작업자2</label>
         <input id="sigNameW2" type="text" placeholder="성명" class="field">
         <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW2"></canvas></div>
         <div style="margin-top:6px"><button class="secondary" id="clearSigW2" type="button">Clear</button></div>
       </div>
-
       <div class="sig-box">
         <label>작업자3</label>
         <input id="sigNameW3" type="text" placeholder="성명" class="field">
@@ -350,7 +376,7 @@
 
 <script>
   const byId = (id)=>document.getElementById(id);
-  const qs = (sel)=>document.querySelector(sel);
+  const qs  = (sel)=>document.querySelector(sel);
   const qsa = (sel)=>Array.from(document.querySelectorAll(sel));
 
   document.addEventListener('DOMContentLoaded', ()=>{
@@ -366,6 +392,7 @@
     cell.innerHTML=""; cell.appendChild(wrap);
     return input;
   }
+
   function injectTextarea(cell){
     const ta=document.createElement("textarea");
     ta.className="cell-input"; ta.setAttribute("rows","1");
@@ -387,6 +414,7 @@
     `;
     const user=document.createElement("input"); user.type="text"; user.className="miti-user"; user.style.display="none";
     const printDiv=document.createElement("div"); printDiv.className="miti-print";
+
     function sync(){
       const v = sel.value;
       if(v === "완료"){ user.style.display="none"; printDiv.textContent = "안전 조치 완료"; }
@@ -395,6 +423,7 @@
     }
     sel.addEventListener("change", sync);
     user.addEventListener("input", sync);
+
     ui.appendChild(sel); ui.appendChild(user);
     cell.appendChild(ui); cell.appendChild(printDiv);
     setTimeout(sync,0);
@@ -404,18 +433,20 @@
   function initRiskRow(tr){
     const tds=tr.querySelectorAll("td"); const len=tds.length; if(len<6) return;
     const idxHaz = (len===7 ? 1 : 0);
-    const idxOk = idxHaz + 1;
+    const idxOk  = idxHaz + 1;
     const idxFix = idxHaz + 2;
-    const idxNa = idxHaz + 3;
+    const idxNa  = idxHaz + 3;
     const idxMiti= idxHaz + 4;
     const idxDone= idxHaz + 5;
+
     const isPrepMaster = tr.id === "prep-master-row";
     if(isPrepMaster){
       if(!tds[idxNa].querySelector(".riskchk")) injectCheckbox(tds[idxNa], "na", "해당없음");
     } else {
-      if(!tds[idxOk ].querySelector(".riskchk")) injectCheckbox(tds[idxOk ], "ok", "적정");
+      if(!tds[idxOk ].querySelector(".riskchk")) injectCheckbox(tds[idxOk ], "ok",  "적정");
       if(!tds[idxFix].querySelector(".riskchk")) injectCheckbox(tds[idxFix], "fix", "보완");
-      if(!tds[idxNa ].querySelector(".riskchk")) injectCheckbox(tds[idxNa ], "na", "해당없음");
+      if(!tds[idxNa ].querySelector(".riskchk")) injectCheckbox(tds[idxNa ], "na",  "해당없음");
+
       const rowChks=tr.querySelectorAll(".riskchk");
       rowChks.forEach((chk)=>{
         chk.addEventListener("change", ()=>{
@@ -431,11 +462,13 @@
     if(!tds[idxMiti].querySelector(".miti-select")) injectMitiInput(tds[idxMiti]);
     if(idxHaz>=0 && tds[idxHaz].textContent.trim()==="" && !tds[idxHaz].querySelector(".cell-input")){ injectTextarea(tds[idxHaz]); }
   }
+
   function initRiskTable(){ document.querySelectorAll("#riskTable tbody tr").forEach(initRiskRow); }
 
-  const PREP_BASE_ROWS = 8;
+  const PREP_BASE_ROWS  = 8;
   const WORKS_BASE_ROWS = 5;
-  const MISC_BASE_ROWS = 1;
+  const MISC_BASE_ROWS  = 1;
+
   function adjustRowspan(cellId, base, delta){
     const td = byId(cellId); if(!td) return;
     const cur = td.rowSpan || base;
@@ -443,10 +476,12 @@
     if(next < base) next = base;
     td.rowSpan = next;
   }
+
   function addPrepRow(){
     try{
       const tbody = qs("#riskTable tbody"), lastFixed = byId("prep-last-fixed");
       if(!tbody || !lastFixed) return;
+
       let insertAfter = lastFixed;
       while(insertAfter.nextElementSibling && insertAfter.nextElementSibling.classList && insertAfter.nextElementSibling.classList.contains("prep-extra-row")){
         insertAfter = insertAfter.nextElementSibling;
@@ -454,11 +489,13 @@
       const tr = document.createElement("tr"); tr.className = "prep-extra-row";
       tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
       tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
+
       const tds = tr.querySelectorAll("td");
       injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
       adjustRowspan("prep-section-cell", PREP_BASE_ROWS, +1);
     }catch(e){ console.error(e); alert("사전준비 작업 행 추가 중 오류: " + (e && e.message ? e.message : e)); }
   }
+
   function removePrepRow(){
     try{
       const tbody = qs("#riskTable tbody"); if(!tbody) return;
@@ -472,10 +509,12 @@
       adjustRowspan("prep-section-cell", PREP_BASE_ROWS, -1);
     }catch(e){ console.error(e); alert("사전준비 작업 행 삭제 중 오류: " + (e && e.message ? e.message : e)); }
   }
+
   function addWorkRow(){
     try{
       const tbody = qs("#riskTable tbody"), lastFixed = byId("works-last-fixed");
       if(!tbody || !lastFixed) return;
+
       let insertAfter = lastFixed;
       while(insertAfter.nextElementSibling && insertAfter.nextElementSibling.classList && insertAfter.nextElementSibling.classList.contains("extra-work-row")){
         insertAfter = insertAfter.nextElementSibling;
@@ -483,11 +522,13 @@
       const tr = document.createElement("tr"); tr.className = "extra-work-row";
       tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
       tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
+
       const tds = tr.querySelectorAll("td");
       injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
       adjustRowspan("task-works-label", WORKS_BASE_ROWS, +1);
     }catch(e){ console.error(e); alert("작업시 행 추가 중 오류: " + (e && e.message ? e.message : e)); }
   }
+
   function removeWorkRow(){
     try{
       const tbody = qs("#riskTable tbody"); if(!tbody) return;
@@ -501,10 +542,12 @@
       adjustRowspan("task-works-label", WORKS_BASE_ROWS, -1);
     }catch(e){ console.error(e); alert("작업시 추가 행 삭제 중 오류: " + (e && e.message ? e.message : e)); }
   }
+
   function addMiscRow(){
     try{
       const tbody = qs("#riskTable tbody"), miscHead = byId("misc-section-row");
       if(!tbody || !miscHead) return;
+
       let insertAfter = miscHead;
       while(insertAfter.nextElementSibling && insertAfter.nextElementSibling.classList && insertAfter.nextElementSibling.classList.contains("misc-extra-row")){
         insertAfter = insertAfter.nextElementSibling;
@@ -512,11 +555,13 @@
       const tr = document.createElement("tr"); tr.className = "misc-extra-row";
       tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
       tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
+
       const tds = tr.querySelectorAll("td");
       injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
       adjustRowspan("misc-section-cell", MISC_BASE_ROWS, +1);
     }catch(e){ console.error(e); alert("기타 섹션 행 추가 중 오류: " + (e && e.message ? e.message : e)); }
   }
+
   function removeMiscRow(){
     try{
       const tbody = qs("#riskTable tbody"); if(!tbody) return;
@@ -544,6 +589,7 @@
       if(user){ user.disabled=!!disabled; }
     });
   }
+
   function initPrepRowLogic(){
     const master=byId("prep-master-row"); if(!master) return;
     function evalState(){
@@ -555,32 +601,58 @@
     evalState();
   }
 
-  /* 서명 패드 (유지) */
+  /* 
+      서명패드: 화면 이동 시 지워지는 문제 수정 (resize 제거)
+     - 초기 1회만 크기 설정
+     - 화면 회전 시, 기존 서명을 데이터URL로 보관 후 리사이즈재그리기
+      */
   function initSignature(canvasId, clearBtnId){
     const cvs=byId(canvasId), btn=byId(clearBtnId); if(!cvs) return;
     const ctx=cvs.getContext('2d');
-    function resize(){
+
+    function internalResize(init){
       const ratio=Math.max((window.devicePixelRatio || 1), 1);
       const rect=cvs.getBoundingClientRect(); const w=Math.floor(rect.width*ratio), h=Math.floor(rect.height*ratio);
-      cvs.width=w; cvs.height=h; ctx.setTransform(1,0,0,1,0,0); ctx.scale(ratio,ratio);
+
+      let prevURL=null;
+      if(!init){
+        try{ prevURL = cvs.toDataURL('image/png'); }catch(e){}
+      }
+      cvs.width=w; cvs.height=h;
+      ctx.setTransform(1,0,0,1,0,0); ctx.scale(ratio,ratio);
       ctx.lineWidth=2; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.strokeStyle='#111827';
-      ctx.clearRect(0,0,w,h);
+
+      if(prevURL){
+        const img=new Image();
+        img.onload=()=>{ ctx.drawImage(img, 0,0, cvs.width, cvs.height); };
+        img.src=prevURL;
+      } else {
+        ctx.clearRect(0,0,w,h);
+      }
     }
+
     let drawing=false, last=null;
     function getPos(e){ const r=cvs.getBoundingClientRect(); const t=(e.touches&&e.touches[0])||null; return t?{x:t.clientX-r.left,y:t.clientY-r.top}:{x:e.clientX-r.left,y:e.clientY-r.top}; }
     function start(e){ if(e&&e.preventDefault) e.preventDefault(); drawing=true; last=getPos(e); }
     function move (e){ if(!drawing) return; if(e&&e.preventDefault) e.preventDefault(); const p=getPos(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; }
-    function end (){ drawing=false; last=null; }
+    function end  (){ drawing=false; last=null; }
+
     cvs.addEventListener('mousedown',start); cvs.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
     cvs.addEventListener('touchstart',start,{passive:false}); cvs.addEventListener('touchmove',move,{passive:false}); cvs.addEventListener('touchend',end);
-    window.addEventListener('resize',resize); resize();
+
+    //  window.resize 이벤트 미사용  주소창 show/hide 등으로 인한 캔버스 초기화 차단
+    //  화면 회전 시에만 보존 리사이즈
+    window.addEventListener('orientationchange', ()=>internalResize(false), {passive:true});
+
+    internalResize(true);
+
     if(btn){ btn.addEventListener('click', ()=>{ ctx.clearRect(0,0,cvs.width,cvs.height); }); }
   }
 
   /* 상단 성명  하단 서명란 자동 반영 (유지) */
   function syncSigFromMeta(){
     [
-      {src:"fSafety", dst:"sigNameSafety"},
+      {src:"fSafety",  dst:"sigNameSafety"},
       {src:"fWorker1", dst:"sigNameW1"},
       {src:"fWorker2", dst:"sigNameW2"},
       {src:"fWorker3", dst:"sigNameW3"}
@@ -598,6 +670,7 @@
     let styleEl = document.getElementById(styleId);
     if(!styleEl){ styleEl = document.createElement("style"); styleEl.id = styleId; document.head.appendChild(styleEl); }
     if(!isMobile){ styleEl.textContent=""; return; }
+
     try{
       const tb = document.getElementById("riskTable");
       if(!tb || !tb.tBodies.length) return;
@@ -631,6 +704,7 @@
       const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
       const marginComp = 40;
       const usableH = Math.max(0, viewportH - marginComp);
+
       blocks.forEach(block=>{
         block.style.transform = ''; block.style.width = '';
         const rect = block.getBoundingClientRect(); const h = rect.height;
@@ -641,6 +715,7 @@
           block.style.width = `calc(100% / ${scale})`;
         }
       });
+
       qsa('.miti-cell').forEach(cell=>{
         const sel = cell.querySelector('.miti-select');
         const user = cell.querySelector('.miti-user');
@@ -669,15 +744,15 @@
     btn.addEventListener("click", handler, {passive:false});
   }
 
-  /*  확인 헤더 마스터 체크박스 로직 */
+  /*  확인 헤더 마스터 체크박스 로직 (유지) */
   function attachDoneMaster(){
     const master = byId("doneMasterChk");
     if(!master) return;
     master.addEventListener("change", ()=>{
       const targets = qsa('#riskTable tbody input.riskchk[data-col="done"]');
       targets.forEach(chk=>{
-        if(chk.disabled) return;      // 비활성화는 건너뜀
-        chk.checked = master.checked; // 전체 체크/전체 해제
+        if(chk.disabled) return;
+        chk.checked = master.checked;
       });
     });
   }
@@ -690,15 +765,19 @@
       qsa('.miti-select').forEach((sel)=>{ sel.value=""; });
       qsa('.miti-user').forEach((inp)=>{ inp.value=""; inp.style.display="none"; });
       qsa('.miti-print').forEach((el)=>{ el.textContent=""; });
+
       ["sigCanvasSafety","sigCanvasW1","sigCanvasW2","sigCanvasW3"].forEach((cid)=>{
         const cvs=byId(cid); if(!cvs) return; const ctx=cvs.getContext('2d'); ctx.clearRect(0,0,cvs.width,cvs.height);
       });
+
       qsa(".prep-extra-row").forEach((r)=>{ r.remove(); });
       qsa(".extra-work-row").forEach((r)=>{ r.remove(); });
       qsa(".misc-extra-row").forEach((r)=>{ r.remove(); });
+
       const prepCell = byId("prep-section-cell"); if(prepCell) prepCell.rowSpan = PREP_BASE_ROWS;
       const worksCell= byId("task-works-label"); if(worksCell) worksCell.rowSpan = WORKS_BASE_ROWS;
       const miscCell = byId("misc-section-cell"); if(miscCell) miscCell.rowSpan = MISC_BASE_ROWS;
+
       setTimeout(equalizeHazardMitiWidth, 50);
     }catch(e){ console.error(e); alert("초기화 중 오류: " + (e && e.message ? e.message : e)); }
   }
@@ -706,6 +785,96 @@
   /* 인쇄 이벤트 (유지) */
   window.addEventListener('beforeprint', ()=>{ setPrintOrientationClass(); scalePageBlocksForPrint(); });
   window.addEventListener('afterprint',  ()=>{ clearPrintOrientationClass(); resetBlockScaleAfterPrint(); });
+
+  /* 
+      전체 페이지 캡쳐  공유(내보내기)
+     - 열이 많은 표가 잘리지 않도록 .table-wrap 폭을 scrollWidth로 임시 확장
+     - Web Share API 파일공유(가능시)  불가 시 새 탭 열기/다운로드
+      */
+  async function captureFullPageToBlob(){
+    if(typeof html2canvas === 'undefined'){ throw new Error("html2canvas 로딩 실패"); }
+
+    // 1) 표 래퍼 확장(가로 스크롤 전체 포함)
+    const wraps = qsa('.table-wrap');
+    const backup = wraps.map(el => ({ el, overflow: el.style.overflow, width: el.style.width }));
+    wraps.forEach(el => {
+      el.style.overflow = 'visible';
+      const w = el.scrollWidth || el.getBoundingClientRect().width;
+      if(w && w > 0) el.style.width = w + 'px';
+    });
+
+    // 2) 전체 문서 크기 계산
+    const root = document.documentElement, body = document.body;
+    const w = Math.max(root.scrollWidth, body.scrollWidth, window.innerWidth);
+    const h = Math.max(root.scrollHeight, body.scrollHeight, window.innerHeight);
+
+    // 3) 캡쳐
+    const scale = Math.min(2, window.devicePixelRatio || 2); // 고해상도 제한(성능/용량 밸런스)
+    const canvas = await html2canvas(body, {
+      backgroundColor:'#ffffff',
+      useCORS:true,
+      windowWidth: w,
+      windowHeight: h,
+      scrollX: 0,
+      scrollY: 0,
+      scale
+    });
+
+    // 4) 원복
+    backup.forEach(({el,overflow,width})=>{ el.style.overflow = overflow; el.style.width = width; });
+
+    // 5) Blob 변환
+    return await new Promise((resolve)=> canvas.toBlob(b=>resolve(b),'image/png',1.0));
+  }
+
+  async function shareBlobPNG(blob){
+    const fileName = `위험성평가_캡쳐_${new Date().toISOString().slice(0,10)}.png`;
+    const file = new File([blob], fileName, {type:'image/png'});
+
+    try{
+      if(navigator.canShare && navigator.canShare({ files:[file] })){
+        await navigator.share({ files:[file], title:'위험성 평가 캡쳐', text:'모바일 전체 화면 캡쳐' });
+        return true;
+      }
+      if(navigator.share){
+        // 일부 브라우저는 files 미지원  URL/텍스트 공유만 가능
+        // 파일 공유 폴백: 새 탭 오픈 또는 다운로드
+      }
+    }catch(e){
+      // 사용자가 공유시트를 닫는 등 예외는 폴백 시도
+    }
+
+    // 폴백: 새 탭으로 Blob URL 열기(아이폰/안드로이드 모두 공유/저장 가능)
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, '_blank');
+    if(!win){
+      // 새 탭 차단 시  다운로드 트리거
+      const a = document.createElement('a');
+      a.href = url; a.download = fileName;
+      document.body.appendChild(a); a.click(); a.remove();
+    }
+    setTimeout(()=>URL.revokeObjectURL(url), 40000);
+    return false;
+  }
+
+  function attachCaptureShare(btn){
+    if(!btn) return;
+    btn.addEventListener('click', async ()=>{
+      btn.disabled = true;
+      const oldText = btn.textContent;
+      btn.textContent = '캡쳐 중...';
+      try{
+        const blob = await captureFullPageToBlob();
+        if(!blob) throw new Error('캡쳐 실패');
+        await shareBlobPNG(blob);
+      }catch(e){
+        alert('캡쳐/공유 중 오류: ' + (e && e.message ? e.message : e));
+      }finally{
+        btn.textContent = oldText;
+        btn.disabled = false;
+      }
+    }, {passive:false});
+  }
 
   function initAll(){
     try{
@@ -723,31 +892,37 @@
           const c=byId("fCompany"); if(c) c.value = (doc.meta && doc.meta.companyName) || c.value || "LG전자 ES에너지컨설팅팀";
         }
       }catch(e){}
+
       const btnPrint = byId("printPDF"), btnClear = byId("clearAll");
       const btnPrepAdd = byId("btnPrepAdd"), btnPrepRemove = byId("btnPrepRemove");
-      const btnWorksAdd= byId("btnWorksAdd"),btnWorksRemove = byId("btnWorksRemove");
+      const btnWorksAdd= byId("btnWorksAdd"), btnWorksRemove = byId("btnWorksRemove");
       const btnMiscAdd = byId("addMiscRow"), btnMiscRemove = byId("removeMiscRow");
+      const btnShareCap = byId("btnShareCapture");
 
       attachSafePrint(btnPrint);
       attachDoneMaster();
+      attachCaptureShare(btnShareCap);
 
       if(btnClear){ btnClear.addEventListener("click", ()=>{ if(confirm("초기화 하시겠습니까? 저장된 데이터가 삭제됩니다.")){ resetToMaster(); } }); }
-      if(btnPrepAdd) btnPrepAdd .addEventListener("click", addPrepRow);
-      if(btnPrepRemove)btnPrepRemove.addEventListener("click", removePrepRow);
-      if(btnWorksAdd) btnWorksAdd .addEventListener("click", addWorkRow);
+      if(btnPrepAdd)    btnPrepAdd   .addEventListener("click", addPrepRow);
+      if(btnPrepRemove) btnPrepRemove.addEventListener("click", removePrepRow);
+      if(btnWorksAdd)   btnWorksAdd  .addEventListener("click", addWorkRow);
       if(btnWorksRemove)btnWorksRemove.addEventListener("click", removeWorkRow);
-      if(btnMiscAdd) btnMiscAdd .addEventListener("click", addMiscRow);
-      if(btnMiscRemove)btnMiscRemove.addEventListener("click", removeMiscRow);
+      if(btnMiscAdd)    btnMiscAdd   .addEventListener("click", addMiscRow);
+      if(btnMiscRemove) btnMiscRemove.addEventListener("click", removeMiscRow);
 
       initRiskTable();
       initPrepRowLogic();
+
       initSignature('sigCanvasSafety','clearSigSafety');
       initSignature('sigCanvasW1','clearSigW1');
       initSignature('sigCanvasW2','clearSigW2');
       initSignature('sigCanvasW3','clearSigW3');
+
       syncSigFromMeta();
+
       setTimeout(equalizeHazardMitiWidth, 50);
-      window.addEventListener("resize", ()=>{ requestAnimationFrame(equalizeHazardMitiWidth); });
+      window.addEventListener("resize", ()=>{ requestAnimationFrame(equalizeHazardMitiWidth); }); // 표 폭 맞춤만 유지
       window.addEventListener("orientationchange", equalizeHazardMitiWidth);
     }catch(e){ console.error(e); alert("기능 초기화 중 오류: " + (e && e.message ? e.message : e)); }
   }
