@@ -1,3 +1,28 @@
+
+#Requires -Version 5.1
+[CmdletBinding()]
+param(
+    [string]$OutDir   = 'D:\000. 현장\0000. 진단 보고서\2026\2. 모바일 코딩\1. 모바일 신규 버전',
+    [string]$FileName = 'index.html',
+    [switch]$Open,
+    [switch]$Hash
+)
+
+$ErrorActionPreference = 'Stop'
+
+try {
+    if (-not (Test-Path -LiteralPath $OutDir)) {
+        New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
+    }
+} catch {
+    Write-Error "출력 폴더 생성/확인 중 오류: $($_.Exception.Message)"
+    throw
+}
+
+$indexPath = Join-Path $OutDir $FileName
+
+# HTML 전체(모바일 위험성 평가 웹앱)
+$html = @'
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -110,7 +135,7 @@
   }
   .section-cell{ display:flex; flex-direction:column; align-items:center; justify-content:space-between; min-height:100%; gap:8px }
   .section-title{ font-weight:700 }
-  .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap } /* + / - 컨테이너 */
+  .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap }
   .chk-wrap{ display:flex; align-items:center; justify-content:center; min-height:32px; }
   .riskchk{ width:18px; height:18px; accent-color:#111827; cursor:pointer; }
   @media(pointer:coarse){ .riskchk{ width:21px; height:21px } }
@@ -149,7 +174,7 @@
     border-radius:8px; background:#fff; touch-action:none
   }
 
-  /*  인쇄 최적화 (유지)  */
+  /* ───── 인쇄 최적화 (유지) ───── */
   @page{ margin:12mm }
   @media print{
     html, body{ background:#fff !important; color:#000 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
@@ -205,7 +230,7 @@
   #approvalSection > h2{ font-size:calc(var(--fs-h2) - 4px + 3px) }
 </style>
 
-<!--  html2canvas (캡쳐용)  오타 복구: 정상 script 태그 -->
+<!-- ⭐ html2canvas (캡쳐용) - 오타 수정하여 정상 로딩 -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 </head>
@@ -218,8 +243,8 @@
     <div class="toolbar">
       <div class="toolbar-left">
         <button id="clearAll" class="warn" type="button">초기화</button>
-        <!--  추가: 전체 캡쳐 후 공유 -->
-        <button id="btnShareCapture" class="secondary" type="button" title="전체 화면을 캡쳐하여 공유">캡쳐공유</button>
+        <!-- ⭐ 추가: 전체 캡쳐 후 공유 -->
+        <button id="btnShareCapture" class="secondary" type="button" title="전체 화면을 캡쳐하여 공유">캡쳐·공유</button>
       </div>
     </div>
   </div>
@@ -231,7 +256,7 @@
     <div class="title main-title">수시 위험성 평가표</div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
       <div><label class="hint">업체명</label><input id="fCompany" type="text" value="LG전자 ES에너지컨설팅팀" class="field"></div>
-      <div><label class="hint">현장명</label><input id="fSiteName" type="text" placeholder="예: 공장 라인" class="field"></div>
+      <div><label class="hint">현장명</label><input id="fSiteName" type="text" placeholder="예: ○○공장 ○○라인" class="field"></div>
       <div><label class="hint">진단 시작</label><input id="fDiagStart" type="date" class="field"></div>
       <div><label class="hint">진단 종료</label><input id="fDiagEnd" type="date" class="field"></div>
       <div><label class="hint">작성 일자</label><input id="fWrittenDate" type="date" class="field"></div>
@@ -259,10 +284,10 @@
         <thead>
         <tr>
           <th rowspan="2" class="th-center">작업</th>
-          <th rowspan="2" class="th-center">유해위험요인 파악</th>
+          <th rowspan="2" class="th-center">유해·위험요인 파악</th>
           <th colspan="3" class="th-center">위험성 확인결과</th>
           <th rowspan="2" class="th-center">보완 대책</th>
-          <!--  확인 열 헤더에만 마스터 체크박스 -->
+          <!-- ✅ 확인 열 헤더에만 마스터 체크박스 -->
           <th rowspan="2" class="th-center">
             확인
             <div class="chk-wrap" style="margin-top:4px">
@@ -576,7 +601,7 @@
     }catch(e){ console.error(e); alert("기타 섹션 행 삭제 중 오류: " + (e && e.message ? e.message : e)); }
   }
 
-  /* 사전준비 해당없음 시 하위행 잠금/해제 (유지) */
+  /* 사전준비 ‘해당없음’ 시 하위행 잠금/해제 (유지) */
   function setPrepSubRowsDisabled(disabled){
     qsa("#riskTable tbody tr.prep-sub-row").forEach((row)=>{
       ["ok","fix","na","done"].forEach((colKey)=>{
@@ -601,11 +626,11 @@
     evalState();
   }
 
-  /* 
-      서명패드: 화면 이동 시 지워지는 문제 수정 (resize 제거)
+  /* ─────────────────────────────────────────────────────────
+     ⭐ 서명패드: 화면 이동 시 지워지는 문제 수정 (resize 제거)
      - 초기 1회만 크기 설정
-     - 화면 회전 시, 기존 서명을 데이터URL로 보관 후 리사이즈재그리기
-      */
+     - 화면 회전 시, 기존 서명을 데이터URL로 보관 후 리사이즈→재그리기
+     ───────────────────────────────────────────────────────── */
   function initSignature(canvasId, clearBtnId){
     const cvs=byId(canvasId), btn=byId(clearBtnId); if(!cvs) return;
     const ctx=cvs.getContext('2d');
@@ -640,8 +665,8 @@
     cvs.addEventListener('mousedown',start); cvs.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
     cvs.addEventListener('touchstart',start,{passive:false}); cvs.addEventListener('touchmove',move,{passive:false}); cvs.addEventListener('touchend',end);
 
-    //  window.resize 이벤트 미사용  주소창 show/hide 등으로 인한 캔버스 초기화 차단
-    //  화면 회전 시에만 보존 리사이즈
+    // ❌ window.resize 이벤트 미사용 → 주소창 show/hide 등으로 인한 캔버스 초기화 차단
+    // ⭕ 화면 회전 시에만 보존 리사이즈
     window.addEventListener('orientationchange', ()=>internalResize(false), {passive:true});
 
     internalResize(true);
@@ -649,7 +674,7 @@
     if(btn){ btn.addEventListener('click', ()=>{ ctx.clearRect(0,0,cvs.width,cvs.height); }); }
   }
 
-  /* 상단 성명  하단 서명란 자동 반영 (유지) */
+  /* 상단 성명 → 하단 서명란 자동 반영 (유지) */
   function syncSigFromMeta(){
     [
       {src:"fSafety",  dst:"sigNameSafety"},
@@ -744,7 +769,7 @@
     btn.addEventListener("click", handler, {passive:false});
   }
 
-  /*  확인 헤더 마스터 체크박스 로직 (유지) */
+  /* ✅ 확인 헤더 마스터 체크박스 로직 (유지) */
   function attachDoneMaster(){
     const master = byId("doneMasterChk");
     if(!master) return;
@@ -786,13 +811,13 @@
   window.addEventListener('beforeprint', ()=>{ setPrintOrientationClass(); scalePageBlocksForPrint(); });
   window.addEventListener('afterprint',  ()=>{ clearPrintOrientationClass(); resetBlockScaleAfterPrint(); });
 
-  /* 
-      전체 페이지 캡쳐  공유(내보내기)
+  /* ─────────────────────────────────────────────────────────
+     ⭐ 전체 페이지 캡쳐 → 공유(내보내기)
      - 열이 많은 표가 잘리지 않도록 .table-wrap 폭을 scrollWidth로 임시 확장
      - CSS color() 함수가 있을 때 실패하는 문제 회피:
-        onclone에서 <style> 및 style 속성 내 color(  )를 안전색으로 치환(클론에만)
-        1차 실패 시 foreignObjectRendering:true로 재시도
-      */
+       · onclone에서 <style> 및 style 속성 내 color( … )를 안전색으로 치환(클론에만)
+       · 1차 실패 시 foreignObjectRendering:true로 재시도
+     ───────────────────────────────────────────────────────── */
   async function captureFullPageToBlob(){
     if(typeof html2canvas === 'undefined'){ throw new Error("html2canvas 로딩 실패"); }
 
@@ -841,7 +866,7 @@
       scrollY: 0,
       scale: Math.min(2, window.devicePixelRatio || 2),
       onclone: (clonedDoc) => {
-        try { sanitizeColorFunctions(clonedDoc); } catch(e) {}
+       ColorFunctions(clonedDoc); } catch(e) {}
       }
     };
 
@@ -849,7 +874,7 @@
     try {
       canvas = await html2canvas(body, baseOpts);
     } catch (e1) {
-      // 1차 실패  foreignObjectRendering 모드로 재시도
+      // 1차 실패 → foreignObjectRendering 모드로 재시도
       try {
         canvas = await html2canvas(body, {
           ...baseOpts,
@@ -879,7 +904,7 @@
         return true;
       }
       if(navigator.share){
-        // 일부 브라우저는 files 미지원  폴백으로 진행
+        // 일부 브라우저는 files 미지원 → 폴백으로 진행
       }
     }catch(e){
       // 사용자가 공유시트를 닫는 등 예외는 폴백 시도
@@ -889,7 +914,7 @@
     const url = URL.createObjectURL(blob);
     const win = window.open(url, '_blank');
     if(!win){
-      // 새 탭 차단 시  다운로드 트리거
+      // 새 탭 차단 시 → 다운로드 트리거
       const a = document.createElement('a');
       a.href = url; a.download = fileName;
       document.body.appendChild(a); a.click(); a.remove();
@@ -971,3 +996,37 @@
 </script>
 </body>
 </html>
+'@
+
+# 파일 쓰기
+Set-Content -Path $indexPath -Value $html -Encoding UTF8
+
+# 폰트 복사(있을 경우)
+$fontFiles = @("LGSmartRegular.woff2","LGSmartRegular.woff")
+foreach($f in $fontFiles){
+  $src = Join-Path $PSScriptRoot $f
+  $dst = Join-Path $OutDir $f
+  if(Test-Path $src){ Copy-Item -LiteralPath $src -Destination $dst -Force }
+}
+
+# 해시 출력(선택)
+if ($Hash) {
+  try {
+    $h = Get-FileHash -LiteralPath $indexPath -Algorithm SHA256
+    Write-Host ("SHA256: " + $h.Hash)
+  } catch {
+    Write-Warning "SHA256 해시 계산 실패: $($_.Exception.Message)"
+  }
+}
+
+# 자동 열기(선택)
+if ($Open) {
+  try {
+    Start-Process $indexPath
+    Write-Host "생성 완료: $indexPath (자동 열기)"
+  } catch {
+    Write-Warning "생성은 완료되었지만 자동 열기에 실패했습니다. 파일을 직접 더블클릭 해주세요."
+  }
+} else {
+  Write-Host "생성 완료: $indexPath"
+}
