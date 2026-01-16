@@ -110,7 +110,7 @@
   }
   .section-cell{ display:flex; flex-direction:column; align-items:center; justify-content:space-between; min-height:100%; gap:8px }
   .section-title{ font-weight:700 }
-  .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap }
+  .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap } /* + / - 컨테이너 */
   .chk-wrap{ display:flex; align-items:center; justify-content:center; min-height:32px; }
   .riskchk{ width:18px; height:18px; accent-color:#111827; cursor:pointer; }
   @media(pointer:coarse){ .riskchk{ width:21px; height:21px } }
@@ -205,7 +205,7 @@
   #approvalSection > h2{ font-size:calc(var(--fs-h2) - 4px + 3px) }
 </style>
 
-<!--  html2canvas (캡쳐용) -->
+<!--  html2canvas (캡쳐용)  오타 복구: 정상 script 태그 -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 </head>
@@ -789,7 +789,9 @@
   /* 
       전체 페이지 캡쳐  공유(내보내기)
      - 열이 많은 표가 잘리지 않도록 .table-wrap 폭을 scrollWidth로 임시 확장
-     - Web Share API 파일공유(가능시)  불가 시 새 탭 열기/다운로드
+     - CSS color() 함수가 있을 때 실패하는 문제 회피:
+        onclone에서 <style> 및 style 속성 내 color(  )를 안전색으로 치환(클론에만)
+        1차 실패 시 foreignObjectRendering:true로 재시도
       */
   async function captureFullPageToBlob(){
     if(typeof html2canvas === 'undefined'){ throw new Error("html2canvas 로딩 실패"); }
@@ -808,22 +810,62 @@
     const w = Math.max(root.scrollWidth, body.scrollWidth, window.innerWidth);
     const h = Math.max(root.scrollHeight, body.scrollHeight, window.innerHeight);
 
-    // 3) 캡쳐
-    const scale = Math.min(2, window.devicePixelRatio || 2); // 고해상도 제한(성능/용량 밸런스)
-    const canvas = await html2canvas(body, {
+    // 3) onclone 훅: 클론 내 스타일 텍스트/인라인 스타일에서 color() 제거/치환
+    const sanitizeColorFunctions = (clonedDoc) => {
+      const styleEls = Array.from(clonedDoc.querySelectorAll('style'));
+      const colorFuncRe = /color\([^)]*\)/gi; // CSS Color Level 4 color() 패턴
+      styleEls.forEach(st => {
+        try {
+          if (st.textContent && colorFuncRe.test(st.textContent)) {
+            st.textContent = st.textContent.replace(colorFuncRe, 'rgb(0,0,0)');
+          }
+        } catch (e) {/* no-op */}
+      });
+      Array.from(clonedDoc.querySelectorAll('[style]')).forEach(el => {
+        try {
+          const v = el.getAttribute('style');
+          if (v && colorFuncRe.test(v)) {
+            el.setAttribute('style', v.replace(colorFuncRe, 'rgb(0,0,0)'));
+          }
+        } catch (e) {/* no-op */}
+      });
+    };
+
+    // 4) 캡쳐 옵션(1차 시도)
+    const baseOpts = {
       backgroundColor:'#ffffff',
       useCORS:true,
       windowWidth: w,
       windowHeight: h,
       scrollX: 0,
       scrollY: 0,
-      scale
-    });
+      scale: Math.min(2, window.devicePixelRatio || 2),
+      onclone: (clonedDoc) => {
+        try { sanitizeColorFunctions(clonedDoc); } catch(e) {}
+      }
+    };
 
-    // 4) 원복
+    let canvas;
+    try {
+      canvas = await html2canvas(body, baseOpts);
+    } catch (e1) {
+      // 1차 실패  foreignObjectRendering 모드로 재시도
+      try {
+        canvas = await html2canvas(body, {
+          ...baseOpts,
+          foreignObjectRendering: true
+        });
+      } catch (e2) {
+        // 원복 후 에러 throw
+        backup.forEach(({el,overflow,width})=>{ el.style.overflow = overflow; el.style.width = width; });
+        throw e2 || e1;
+      }
+    }
+
+    // 5) 원복
     backup.forEach(({el,overflow,width})=>{ el.style.overflow = overflow; el.style.width = width; });
 
-    // 5) Blob 변환
+    // 6) Blob 변환
     return await new Promise((resolve)=> canvas.toBlob(b=>resolve(b),'image/png',1.0));
   }
 
@@ -837,8 +879,7 @@
         return true;
       }
       if(navigator.share){
-        // 일부 브라우저는 files 미지원  URL/텍스트 공유만 가능
-        // 파일 공유 폴백: 새 탭 오픈 또는 다운로드
+        // 일부 브라우저는 files 미지원  폴백으로 진행
       }
     }catch(e){
       // 사용자가 공유시트를 닫는 등 예외는 폴백 시도
