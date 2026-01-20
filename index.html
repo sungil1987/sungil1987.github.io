@@ -1,939 +1,866 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="color-scheme" content="light" />
-  <title>LG전자 ES에너지컨설팅팀 위험성 평가표 (모바일 표 Ver.)</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light" />
+<title>LG전자 ES에너지컨설팅팀 위험성 평가표 (모바일 표 Ver.)</title>
 
-  <!--  html2canvas 정식 로더 (필수: src 속성 포함) -->
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+  @font-face {
+    font-family: "LG스마트체";
+    src: url("LGSmartRegular.woff2") format("woff2"),
+         url("LGSmartRegular.woff") format("woff");
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  :root{
+    /* 120% 글자 확대 유지 */
+    --bg:#f6f7fb; --card:#fff; --text:#111827; --border:#e5e7eb; --primary:#111827;
+    --fs-body: clamp(15.6px, 2.04vw, 18px);
+    --fs-label: clamp(14.4px, 1.92vw, 16.8px);
+    --fs-title: clamp(21.6px, 4.32vw, 26.4px);
+    --fs-h2: clamp(16.8px, 3.12vw, 19.2px);
+    --fs-btn: clamp(15.6px, 2.88vw, 18px);
+    --line:1.45; --radius:12px; --table-pad:6px; --radius-input:10px; --focus:#3b82f6;
+    --shadow:0 2px 6px rgba(0,0,0,.06); --title-accent:#8B1B3D;
+  }
+  *{ box-sizing:border-box }
+  html,body{
+    margin:0; padding:0; width:100%; min-height:100vh; overflow-x:hidden;
+    -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent;
+    background:var(--bg); color:var(--text);
+    font-family:"LG스마트체","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:var(--fs-body); line-height:var(--line);
+  }
+  header{ background:var(--card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:10; backdrop-filter:saturate(120%) blur(6px); }
+  .wrap{max-width:1000px; margin:0 auto; padding:12px}
+  .brand{display:flex; align-items:center; justify-content:space-between; gap:8px}
+  .title{font-weight:800;}
+  .main-title{
+    color:var(--title-accent); font-size:calc(var(--fs-title) + 8px);
+    text-shadow:0 1px 0 rgba(0,0,0,.05); letter-spacing:2px; transform:translateY(-4px);
+    text-align:center; line-height:1.25; margin:6px 0 10px 0;
+  }
+  .toolbar{display:flex; gap:8px; margin-top:8px}
+  .toolbar-left{display:flex; gap:8px; margin-right:auto}
+  button{
+    border:1px solid var(--border); background:var(--primary); color:#fff; border-radius:var(--radius);
+    padding:9px 12px; font-size:var(--fs-btn); min-height:40px; cursor:pointer; font-family:inherit;
+  }
+  button.secondary{background:#374151} button.warn{background:#b91c1c}
+  button.mini{ padding:6px 8px; min-height:32px; font-size:calc(var(--fs-btn) - 2px); border-radius:10px }
+  @media (pointer:coarse){
+    button{min-height:44px}
+    input,select,textarea{min-height:48px; font-family:inherit}
+    .table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+    button.mini{ min-height:36px }
+  }
+  main{padding:12px 0}
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px;
+    margin:12px auto; box-shadow:var(--shadow)
+  }
+  .field{
+    width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:var(--radius-input); outline:none;
+    font-family:inherit; font-size:inherit; background:#fff; transition:border-color .15s ease, box-shadow .15s ease; min-height:48px;
+  }
+  .field:focus{ border-color:var(--focus); box-shadow:0 0 0 3px rgba(59,130,246,.15) }
+  .field.textarea{ min-height:72px; resize:vertical }
 
-  <style>
-    @font-face {
-      font-family: "LG스마트체";
-      src: url("LGSmartRegular.woff2") format("woff2"),
-           url("LGSmartRegular.woff") format("woff");
-      font-weight: 400; font-style: normal; font-display: swap;
+  .table-wrap{
+    width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--border); border-radius:var(--radius); background:#fff;
+  }
+  table{
+    width:100%; border-collapse:collapse; min-width:920px; table-layout:fixed; word-break:keep-all; font-family:inherit;
+  }
+  /* 화면용 열 폭 */
+  col.c-task { width:72px } col.c-hazard{ width:364px } col.c-ok { width:72px } col.c-fix { width:72px }
+  col.c-na { width:88px } col.c-miti{ width:220px } col.c-done{ width:56px }
+  th,td{ border:1px solid var(--border); padding:var(--table-pad); font-size:var(--fs-body); vertical-align:top }
+  thead th{ background:#f3f4f6; text-align:center; white-space:nowrap }
+  td{ text-align:left }
+  td.section{ text-align:center !important; vertical-align:middle !important; font-weight:600; background:#f8fafc; }
+  .section-cell{ display:flex; flex-direction:column; align-items:center; justify-content:space-between; min-height:100%; gap:8px }
+  .section-title{ font-weight:700 }
+  .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap }
+  .chk-wrap{ display:flex; align-items:center; justify-content:center; min-height:32px; }
+  .riskchk{ width:18px; height:18px; accent-color:#111827; cursor:pointer; }
+  @media(pointer:coarse){ .riskchk{ width:21px; height:21px } }
+  .cell-input{
+    width:100%; min-height:40px; border:1px solid var(--border); border-radius:8px; background:#fff; font-family:inherit; font-size:inherit;
+    padding:6px 8px; outline:none; white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; resize:vertical;
+  }
+
+  /* 보완대책 드롭셀/사용자입력 UI */
+  .miti-cell{ padding:6px !important; }
+  .miti-ui{ display:flex; flex-direction:column; gap:6px; }
+  .miti-select, .miti-user{
+    box-sizing:border-box; width:100%; min-height:48px; padding:6px 8px; border:1px solid var(--border); border-radius:8px; background:#fff;
+    font-family:inherit; font-size:inherit; line-height:normal; outline:none; -webkit-appearance:none; appearance:none;
+  }
+  .miti-user{ display:none; }
+  .miti-print{ display:none; min-height:48px; white-space:pre-wrap; word-break:break-word; }
+
+  @supports (-webkit-touch-callout: none) {
+    .miti-select{ padding-top:8px; padding-bottom:8px; }
+  }
+  @media (pointer:coarse) and (max-width:800px){ .miti-select{ line-height:1.2; } }
+
+  .signature{ width:100%; height:130px }
+  .sig-box{ position:relative }
+  #printPDF{ position:absolute; top:-50px; right:14px; transform:none; z-index:2 }
+  .signature canvas{
+    width:100%; height:100%; display:block; border:1px dashed var(--border); border-radius:8px; background:#fff; touch-action:none
+  }
+
+  /* 인쇄 최적화 */
+  @page{ margin:12mm }
+  @media print{
+    html, body{ background:#fff !important; color:#000 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .wrap{ transform:none !important; width:auto !important }
+    header,.toolbar{ display:none !important }
+    .card{ box-shadow:none !important; background:#fff !important; border-color:#ddd !important; transform-origin:top left; }
+    .table-wrap, table, thead, tbody, tfoot, tr, th, td, input.field, textarea.field, .signature canvas{ background:#fff !important; }
+    thead th{ background:#fff !important }
+    td.section{ background:#fff !important }
+    #printPDF, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3{ display:none !important; }
+    .section-actions{ display:none !important; }
+    thead{ display:table-header-group !important }
+    tfoot{ display:table-footer-group !important }
+    table{ min-width:auto; width:100%; table-layout:auto; border-collapse:collapse }
+    .table-wrap{ overflow:visible !important }
+    tr, th, td, .sig-box, .signature, .section-cell, .miti-print, .cell-input, .miti-select, .miti-user{ page-break-inside:avoid !important; break-inside:avoid !important; }
+    tbody{ page-break-inside:auto; break-inside:auto }
+    p, .cell-input, .miti-print{ orphans:3; widows:3 }
+    h1,h2,h3, .main-title, .section-title{ page-break-after:avoid; break-after:avoid }
+    .page-block{ page-break-inside:avoid !important; break-inside:avoid !important; }
+    .page-start{ page-break-before:always !important; break-before:page !important }
+
+    /* A4 세로/가로 열폭 */
+    html.print-portrait col.c-task{width:8%!important}
+    html.print-portrait col.c-hazard{width:36%!important}
+    html.print-portrait col.c-ok{width:6%!important}
+    html.print-portrait col.c-fix{width:6%!important}
+    html.print-portrait col.c-na{width:6%!important}
+    html.print-portrait col.c-miti{width:36%!important}
+    html.print-portrait col.c-done{width:2%!important}
+    html.print-landscape col.c-task{width:8%!important}
+    html.print-landscape col.c-hazard{width:36%!important}
+    html.print-landscape col.c-ok{width:5%!important}
+    html.print-landscape col.c-fix{width:5%!important}
+    html.print-landscape col.c-na{width:5%!important}
+    html.print-landscape col.c-miti{width:36%!important}
+    html.print-landscape col.c-done{width:5%!important}
+
+    .miti-ui{ display:none !important; }
+    .miti-print{ display:block !important; }
+  }
+
+  @media (max-width:800px), (pointer:coarse){
+    col.c-hazard, col.c-miti { width:182px !important }
+    tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal }
+    main .card:first-of-type input[type="date"].field{
+      width:100%; min-width:0; -webkit-appearance:none; appearance:none; height:48px; line-height:48px; color:var(--text); caret-color:var(--text);
     }
-    :root{
-      --bg:#f6f7fb; --card:#fff; --text:#111827; --border:#e5e7eb; --primary:#111827;
-      --fs-body: clamp(15.6px, 2.04vw, 18px);
-      --fs-label: clamp(14.4px, 1.92vw, 16.8px);
-      --fs-title: clamp(21.6px, 4.32vw, 26.4px);
-      --fs-h2: clamp(16.8px, 3.12vw, 19.2px);
-      --fs-btn: clamp(15.6px, 2.88vw, 18px);
-      --line:1.45; --radius:12px; --table-pad:6px; --radius-input:10px; --focus:#3b82f6;
-      --shadow:0 2px 6px rgba(0,0,0,.06); --title-accent:#8B1B3D;
-    }
-    *{ box-sizing:border-box }
-    html,body{
-      margin:0; padding:0; width:100%; min-height:100vh; overflow-x:hidden;
-      -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent;
-      background:var(--bg); color:var(--text);
-      font-family:"LG스마트체","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-      font-size:var(--fs-body); line-height:var(--line);
-    }
-    header{ background:var(--card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:10; backdrop-filter:saturate(120%) blur(6px); }
-    .wrap{max-width:1000px; margin:0 auto; padding:12px}
-    .brand{display:flex; align-items:center; justify-content:space-between; gap:8px}
-    .title{font-weight:800;}
-    .main-title{
-      color:var(--title-accent); font-size:calc(var(--fs-title) + 8px);
-      text-shadow:0 1px 0 rgba(0,0,0,.05); letter-spacing:2px; transform:translateY(-4px);
-      text-align:center; line-height:1.25; margin:6px 0 10px 0;
-    }
-    .toolbar{display:flex; gap:8px; margin-top:8px}
-    .toolbar-left{display:flex; gap:8px; margin-right:auto}
-    button{
-      border:1px solid var(--border); background:var(--primary); color:#fff; border-radius:var(--radius);
-      padding:9px 12px; font-size:var(--fs-btn); min-height:40px; cursor:pointer; font-family:inherit;
-    }
-    button.secondary{background:#374151} button.warn{background:#b91c1c}
-    button.mini{ padding:6px 8px; min-height:32px; font-size:calc(var(--fs-btn) - 2px); border-radius:10px }
+    main .card:first-of-type input[type="date"].field::-webkit-datetime-edit,
+    main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-year-field,
+    main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-month-field,
+    main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-day-field,
+    main .card:first-of-type input[type="date"].field::-webkit-datetime-edit-text{ color:var(--text) }
+    main .card:first-of-type input[type="date"].field::-webkit-calendar-picker-indicator{ margin:0 6px 0 0; padding:0; width:18px; height:18px; }
 
-    @media (pointer:coarse){
-      button{min-height:44px}
-      input,select,textarea{min-height:48px; font-family:inherit}
-      .table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
-      button.mini{ min-height:36px }
-    }
+    /* 모바일 가시성 축소 */
+    .wrap{ transform:scale(.8); transform-origin:top left; width:calc(100%/.8) }
+  }
+  #approvalSection > h2{ font-size:calc(var(--fs-h2) - 4px + 3px) }
+</style>
 
-    main{padding:12px 0}
-    .card{
-      background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px;
-      margin:12px auto; box-shadow:var(--shadow)
-    }
+<!--  html2canvas 로더 (정상 표기) -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<!-- (필요 시) html2canvas-pro는 아래 JS에서 동적 로드 -->
 
-    .field{
-      width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:var(--radius-input); outline:none;
-      font-family:inherit; font-size:inherit; background:#fff; transition:border-color .15s ease, box-shadow .15s ease; min-height:48px;
-    }
-    .field:focus{ border-color:var(--focus); box-shadow:0 0 0 3px rgba(59,130,246,.15) }
-    .field.textarea{ min-height:72px; resize:vertical }
-
-    .table-wrap{
-      width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--border); border-radius:var(--radius); background:#fff;
-    }
-    table{
-      width:100%; border-collapse:collapse; min-width:920px; table-layout:fixed; word-break:keep-all; font-family:inherit;
-    }
-    /* 화면용 열 폭 */
-    col.c-task { width:72px } col.c-hazard{ width:364px } col.c-ok { width:72px } col.c-fix { width:72px }
-    col.c-na { width:88px } col.c-miti{ width:220px } col.c-done{ width:56px }
-
-    th,td{ border:1px solid var(--border); padding:var(--table-pad); font-size:var(--fs-body); vertical-align:top }
-    thead th{ background:#f3f4f6; text-align:center; white-space:nowrap }
-    td{ text-align:left }
-    td.section{ text-align:center !important; vertical-align:middle !important; font-weight:600; background:#f8fafc; }
-    .section-cell{ display:flex; flex-direction:column; align-items:center; justify-content:space-between; min-height:100%; gap:8px }
-    .section-title{ font-weight:700 }
-    .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap }
-    .chk-wrap{ display:flex; align-items:center; justify-content:center; min-height:32px; }
-    .riskchk{ width:18px; height:18px; accent-color:#111827; cursor:pointer; }
-    @media(pointer:coarse){ .riskchk{ width:21px; height:21px } }
-
-    .cell-input{
-      width:100%; min-height:40px; border:1px solid var(--border); border-radius:8px; background:#fff; font-family:inherit; font-size:inherit;
-      padding:6px 8px; outline:none; white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; resize:vertical;
-    }
-
-    /* 보완대책 드롭셀/사용자입력 UI */
-    .miti-cell{ padding:6px !important; }
-    .miti-ui{ display:flex; flex-direction:column; gap:6px; }
-    .miti-select, .miti-user{
-      box-sizing:border-box; width:100%; min-height:48px; padding:6px 8px; border:1px solid var(--border); border-radius:8px; background:#fff;
-      font-family:inherit; font-size:inherit; line-height:normal; outline:none; -webkit-appearance:none; appearance:none;
-    }
-    .miti-user{ display:none; }
-    .miti-print{ display:none; min-height:48px; white-space:pre-wrap; word-break:break-word; }
-
-    @supports (-webkit-touch-callout: none) {
-      .miti-select{ padding-top:8px; padding-bottom:8px; }
-    }
-    @media (pointer:coarse) and (max-width:800px){ .miti-select{ line-height:1.2; } }
-
-    .signature{ width:100%; height:130px }
-    .sig-box{ position:relative }
-    #printPDF{ position:absolute; top:-50px; right:14px; transform:none; z-index:2 }
-    .signature canvas{
-      width:100%; height:100%; display:block; border:1px dashed var(--border); border-radius:8px; background:#fff; touch-action:none
-    }
-
-    /* 인쇄 최적화 */
-    @page{ margin:12mm }
-    @media print{
-      html, body{ background:#fff !important; color:#000 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-      .wrap{ transform:none !important; width:auto !important }
-      header,.toolbar{ display:none !important }
-      .card{ box-shadow:none !important; background:#fff !important; border-color:#ddd !important; transform-origin:top left; }
-      .table-wrap, table, thead, tbody, tfoot, tr, th, td, input.field, textarea.field, .signature canvas{ background:#fff !important; }
-      thead th{ background:#fff !important }
-      td.section{ background:#fff !important }
-      #printPDF, #clearAll, #clearSigSafety, #clearSigW1, #clearSigW2, #clearSigW3{ display:none !important; }
-      .section-actions{ display:none !important; }
-      thead{ display:table-header-group !important }
-      tfoot{ display:table-footer-group !important }
-      table{ min-width:auto; width:100%; table-layout:auto; border-collapse:collapse }
-      .table-wrap{ overflow:visible !important }
-      tr, th, td, .sig-box, .signature, .section-cell, .miti-print, .cell-input, .miti-select, .miti-user{ page-break-inside:avoid !important; break-inside:avoid !important; }
-      tbody{ page-break-inside:auto; break-inside:auto }
-      p, .cell-input, .miti-print{ orphans:3; widows:3 }
-      h1,h2,h3, .main-title, .section-title{ page-break-after:avoid; break-after:avoid }
-      .page-block{ page-break-inside:avoid !important; break-inside:avoid !important; }
-      .page-start{ page-break-before:always !important; break-before:page !important }
-
-      /* A4 세로/가로 열폭 */
-      html.print-portrait col.c-task{width:8%!important}
-      html.print-portrait col.c-hazard{width:36%!important}
-      html.print-portrait col.c-ok{width:6%!important}
-      html.print-portrait col.c-fix{width:6%!important}
-      html.print-portrait col.c-na{width:6%!important}
-      html.print-portrait col.c-miti{width:36%!important}
-      html.print-portrait col.c-done{width:2%!important}
-
-      html.print-landscape col.c-task{width:8%!important}
-      html.print-landscape col.c-hazard{width:36%!important}
-      html.print-landscape col.c-ok{width:5%!important}
-      html.print-landscape col.c-fix{width:5%!important}
-      html.print-landscape col.c-na{width:5%!important}
-      html.print-landscape col.c-miti{width:36%!important}
-      html.print-landscape col.c-done{width:5%!important}
-
-      .miti-ui{ display:none !important; }
-      .miti-print{ display:block !important; }
-    }
-
-    @media (max-width:800px), (pointer:coarse){
-      col.c-hazard, col.c-miti { width:182px !important }
-      tbody td:nth-child(2){ word-break:break-word; overflow-wrap:break-word; white-space:normal }
-      /* 모바일 가시성 축소 */
-      .wrap{ transform:scale(.8); transform-origin:top left; width:calc(100%/.8) }
-    }
-
-    #approvalSection > h2{ font-size:calc(var(--fs-h2) - 4px + 3px) }
-  </style>
 </head>
 <body>
-  <header>
-    <div class="wrap">
-      <div class="brand">
-        <div class="title">LG전자 ES에너지컨설팅팀 위험성 평가표 (모바일 표 Ver.)</div>
-      </div>
-      <div class="toolbar">
-        <div class="toolbar-left">
-          <button id="clearAll" class="warn" type="button">초기화</button>
-          <button id="btnShareCapture" class="secondary" type="button" title="전체 화면을 캡쳐하여 공유">캡쳐공유</button>
-        </div>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <div class="title">LG전자 ES에너지컨설팅팀 위험성 평가표 (모바일 표 Ver.)</div>
+    </div>
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button id="clearAll" class="warn" type="button">초기화</button>
+        <button id="btnShareCapture" class="secondary" type="button" title="전체 화면을 캡쳐하여 공유">캡쳐공유</button>
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <main class="wrap">
-    <!-- 1) 현장 정보 -->
-    <section class="card page-block" id="metaCard">
-      <div class="title main-title">수시 위험성 평가표</div>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
-        <div><label class="hint">업체명</label><input id="fCompany" type="text" value="LG전자 ES에너지컨설팅팀" class="field"></div>
-        <div><label class="hint">현장명</label><input id="fSiteName" type="text" placeholder="예: 공장 라인" class="field"></div>
-
-        <div><label class="hint">진단 시작</label><input id="fDiagStart" type="date" class="field"></div>
-        <div><label class="hint">진단 종료</label><input id="fDiagEnd" type="date" class="field"></div>
-
-        <div><label class="hint">작성 일자</label><input id="fWrittenDate" type="date" class="field"></div>
-        <div><label class="hint">작업관리자</label><input id="fSafety" type="text" placeholder="성명" class="field"></div>
-
-        <div><label class="hint">작업자1</label><input id="fWorker1" type="text" placeholder="성명" class="field"></div>
-        <div><label class="hint">작업자2</label><input id="fWorker2" type="text" placeholder="성명" class="field"></div>
-
-        <div><label class="hint">작업자3</label><input id="fWorker3" type="text" placeholder="성명" class="field"></div>
-
-        <div style="grid-column:1/-1"><label class="hint">비고</label>
-          <textarea id="fRemark" class="field textarea" placeholder="특이사항/참고사항"></textarea>
-        </div>
+<main class="wrap">
+  <!-- 1) 현장 정보 -->
+  <section class="card page-block" id="metaCard">
+    <div class="title main-title">수시 위험성 평가표</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+      <div><label class="hint">업체명</label><input id="fCompany" type="text" value="LG전자 ES에너지컨설팅팀" class="field"></div>
+      <div><label class="hint">현장명</label><input id="fSiteName" type="text" placeholder="예: 공장 라인" class="field"></div>
+      <div><label class="hint">진단 시작</label><input id="fDiagStart" type="date" class="field"></div>
+      <div><label class="hint">진단 종료</label><input id="fDiagEnd" type="date" class="field"></div>
+      <div><label class="hint">작성 일자</label><input id="fWrittenDate" type="date" class="field"></div>
+      <div><label class="hint">작업관리자</label><input id="fSafety" type="text" placeholder="성명" class="field"></div>
+      <div><label class="hint">작업자1</label><input id="fWorker1" type="text" placeholder="성명" class="field"></div>
+      <div><label class="hint">작업자2</label><input id="fWorker2" type="text" placeholder="성명" class="field"></div>
+      <div><label class="hint">작업자3</label><input id="fWorker3" type="text" placeholder="성명" class="field"></div>
+      <div style="grid-column:1/-1"><label class="hint">비고</label>
+        <textarea id="fRemark" class="field textarea" placeholder="특이사항/참고사항"></textarea>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- 2) 체크리스트 -->
-    <section class="card page-block page-start" id="checklistCard">
-      <h2 style="display:none">작업별 유해위험요인 평가</h2>
+  <!-- 2) 체크리스트 -->
+  <section class="card page-block page-start" id="checklistCard">
+    <h2 style="display:none">작업별 유해위험요인 평가</h2>
+    <div class="table-wrap">
+      <table id="riskTable">
+        <colgroup>
+          <col class="c-task"/><col class="c-hazard"/><col class="c-ok"/><col class="c-fix"/><col class="c-na"/><col class="c-miti"/><col class="c-done"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th rowspan="2" class="th-center">작업</th>
+            <th rowspan="2" class="th-center">유해위험요인 파악</th>
+            <th colspan="3" class="th-center">위험성 확인결과</th>
+            <th rowspan="2" class="th-center">보완 대책</th>
+            <th rowspan="2" class="th-center">
+              확인
+              <div class="chk-wrap" style="margin-top:4px">
+                <input id="doneMasterChk" type="checkbox" class="riskchk" title="전체 확인 체크/해제">
+              </div>
+            </th>
+          </tr>
+          <tr><th>적정</th><th>보완</th><th>해당없음</th></tr>
+        </thead>
+        <tbody>
+          <!-- 사전준비 -->
+          <tr id="prep-master-row">
+            <td id="prep-section-cell" class="section" rowspan="8">
+              <div class="section-cell">
+                <div class="section-title">사전준비 작업</div>
+                <div class="section-actions">
+                  <button type="button" class="secondary mini" id="btnPrepAdd">+</button>
+                  <button type="button" class="warn mini" id="btnPrepRemove">-</button>
+                </div>
+              </div>
+            </td>
+            <td>작업 장소 (기계실, 전기실, 옥상 등)까지 또는 장소 내 이동 및 작업에 있어 유해, 위험 요인이 있는가? 있다면 아래 점검.</td>
+            <td class="no-ok"></td><td class="no-fix"></td><td></td><td class="miti-cell"></td><td></td>
+          </tr>
+          <tr class="prep-sub-row"><td>- 작업장 또는 통로에 배관 등 머리 부딪힘 가능</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr class="prep-sub-row"><td>- 작업장 또는 통로에 추락 가능 장소 있음</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr class="prep-sub-row"><td>- 작업장 또는 통로에 떨어짐 가능 장소 있음</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr class="prep-sub-row"><td>- 작업장 또는 통로에 고전압 주의 장소 있음</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr class="prep-sub-row"><td>- 작업장 또는 통로에 회전장비가 있음</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr><td>측정장비의 현장 운반까지 유해, 위험 요인이 있는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr id="prep-last-fixed"><td>작업 공간이 밀폐되거나, 소통이 어려운 환경인가? Ex. 긴급, 응급상황 대처</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
 
-      <div class="table-wrap">
-        <table id="riskTable">
-          <colgroup>
-            <col class="c-task"/><col class="c-hazard"/><col class="c-ok"/><col class="c-fix"/><col class="c-na"/><col class="c-miti"/><col class="c-done"/>
-          </colgroup>
-          <thead>
-            <tr>
-              <th rowspan="2" class="th-center">작업</th>
-              <th rowspan="2" class="th-center">유해위험요인 파악</th>
-              <th colspan="3" class="th-center">위험성 확인결과</th>
-              <th rowspan="2" class="th-center">보완 대책</th>
-              <th rowspan="2" class="th-center">
-                확인
-                <div class="chk-wrap" style="margin-top:4px">
-                  <input id="doneMasterChk" type="checkbox" class="riskchk" title="전체 확인 체크/해제">
+          <!-- 작업시 -->
+          <tr>
+            <td id="task-works-label" class="section" rowspan="5">
+              <div class="section-cell">
+                <div class="section-title">작업시</div>
+                <div class="section-actions">
+                  <button type="button" class="secondary mini" id="btnWorksAdd">+</button>
+                  <button type="button" class="warn mini" id="btnWorksRemove">-</button>
                 </div>
-              </th>
-            </tr>
-            <tr><th>적정</th><th>보완</th><th>해당없음</th></tr>
-          </thead>
-          <tbody>
-            <!-- 사전준비 -->
-            <tr id="prep-master-row">
-              <td id="prep-section-cell" class="section" rowspan="8">
-                <div class="section-cell">
-                  <div class="section-title">사전준비 작업</div>
-                  <div class="section-actions">
-                    <button type="button" class="secondary mini" id="btnPrepAdd">+</button>
-                    <button type="button" class="warn mini" id="btnPrepRemove">-</button>
-                  </div>
-                </div>
-              </td>
-              <td>작업 장소 (기계실, 전기실, 옥상 등)까지 또는 장소 내 이동 및 작업에 있어 유해, 위험 요인이 있는가? 있다면 아래 점검.</td>
-              <td class="no-ok"></td><td class="no-fix"></td><td></td><td class="miti-cell"></td><td></td>
-            </tr>
-            <tr class="prep-sub-row"><td>- 작업장 또는 통로에 배관 등 머리 부딪힘 가능</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
-            <tr class="prep-sub-row"><td>- 작업장 또는 통로에 추락 가능 장소 있음</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
-            <tr class="prep-sub-row"><td>- 작업장 또는 통로에 떨어짐 가능 장소 있음</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
-            <tr class="prep-sub-row"><td>- 작업장 또는 통로에 고전압 주의 장소 있음</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
-            <tr class="prep-sub-row"><td>- 작업장 또는 통로에 회전장비가 있음</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
-            <tr><td>측정장비의 현장 운반까지 유해, 위험 요인이 있는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
-            <tr id="prep-last-fixed"><td>작업 공간이 밀폐되거나, 소통이 어려운 환경인가? Ex. 긴급, 응급상황 대처</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+              </div>
+            </td>
+            <td>보온재 탈거/제거, 각종 측정 등의 작업이 바닥에 서서 할 수 있는가? Ex. 사다리 필요여부</td>
+            <td></td><td></td><td></td><td class="miti-cell"></td><td></td>
+          </tr>
+          <tr><td>보온재 탈거 및 제거를 고객측 또는 전문점측 인원이 수행하는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr><td>직접 탈거 및 제거를 할 경우 베임방지 장갑 착용, 보안경 착용 등 안전규정을 지키는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr><td>기존 온도센서 제거 및 자사 온도센서 부착 시 배관 내 압력에 의해 문제가 생길 수 있는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+          <tr id="works-last-fixed"><td>220V 이상 전원이 있는 장소에서 작업을 하는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
 
-            <!-- 작업시 -->
-            <tr>
-              <td id="task-works-label" class="section" rowspan="5">
-                <div class="section-cell">
-                  <div class="section-title">작업시</div>
-                  <div class="section-actions">
-                    <button type="button" class="secondary mini" id="btnWorksAdd">+</button>
-                    <button type="button" class="warn mini" id="btnWorksRemove">-</button>
-                  </div>
+          <!-- 기타 -->
+          <tr id="misc-section-row">
+            <td id="misc-section-cell" class="section" rowspan="1">
+              <div class="section-cell">
+                <div class="section-title">기타</div>
+                <div class="section-actions">
+                  <button id="addMiscRow" class="secondary mini" type="button">+</button>
+                  <button id="removeMiscRow" class="warn mini" type="button">-</button>
                 </div>
-              </td>
-              <td>보온재 탈거/제거, 각종 측정 등의 작업이 바닥에 서서 할 수 있는가? Ex. 사다리 필요여부</td>
-              <td></td><td></td><td></td><td class="miti-cell"></td><td></td>
-            </tr>
-            <tr><td>보온재 탈거 및 제거를 고객측 또는 전문점측 인원이 수행하는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
-            <tr><td>직접 탈거 및 제거를 할 경우 베임방지 장갑 착용, 보안경 착용 등 안전규정을 지키는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
-            <tr><td>기존 온도센서 제거 및 자사 온도센서 부착 시 배관 내 압력에 의해 문제가 생길 수 있는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
-            <tr id="works-last-fixed"><td>220V 이상 전원이 있는 장소에서 작업을 하는가?</td><td></td><td></td><td></td><td class="miti-cell"></td><td></td></tr>
+              </div>
+            </td>
+            <td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-            <!-- 기타 -->
-            <tr id="misc-section-row">
-              <td id="misc-section-cell" class="section" rowspan="1">
-                <div class="section-cell">
-                  <div class="section-title">기타</div>
-                  <div class="section-actions">
-                    <button id="addMiscRow" class="secondary mini" type="button">+</button>
-                    <button id="removeMiscRow" class="warn mini" type="button">-</button>
-                  </div>
-                </div>
-              </td>
-              <td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- 3) 서명란 -->
+  <section id="approvalSection" class="card page-block page-start">
+    <h2>현장 확인 및 승인 서명</h2>
+    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px">
+      <div class="sig-box">
+        <label>작업관리자</label>
+        <input id="sigNameSafety" type="text" placeholder="성명" class="field">
+        <div class="signature" style="margin-top:6px"><canvas id="sigCanvasSafety"></canvas></div>
+        <div style="margin-top:6px"><button class="secondary" id="clearSigSafety" type="button">Clear</button></div>
       </div>
-    </section>
-
-    <!-- 3) 서명란 -->
-    <section id="approvalSection" class="card page-block page-start">
-      <h2>현장 확인 및 승인 서명</h2>
-      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px">
-        <div class="sig-box">
-          <label>작업관리자</label>
-          <input id="sigNameSafety" type="text" placeholder="성명" class="field">
-          <div class="signature" style="margin-top:6px"><canvas id="sigCanvasSafety"></canvas></div>
-          <div style="margin-top:6px"><button class="secondary" id="clearSigSafety" type="button">Clear</button></div>
-        </div>
-
-        <div class="sig-box">
-          <label>작업자1</label>
-          <input id="sigNameW1" type="text" placeholder="성명" class="field">
-          <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW1"></canvas></div>
-          <div style="margin-top:6px"><button class="secondary" id="clearSigW1" type="button">Clear</button></div>
-        </div>
-
-        <div class="sig-box">
-          <label>작업자2</label>
-          <input id="sigNameW2" type="text" placeholder="성명" class="field">
-          <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW2"></canvas></div>
-          <div style="margin-top:6px"><button class="secondary" id="clearSigW2" type="button">Clear</button></div>
-        </div>
-
-        <div class="sig-box">
-          <label>작업자3</label>
-          <input id="sigNameW3" type="text" placeholder="성명" class="field">
-          <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW3"></canvas></div>
-          <button id="printPDF" class="secondary" type="button" title="PDF로 내보내기">PDF</button>
-          <div style="margin-top:6px"><button class="secondary" id="clearSigW3" type="button">Clear</button></div>
-        </div>
+      <div class="sig-box">
+        <label>작업자1</label>
+        <input id="sigNameW1" type="text" placeholder="성명" class="field">
+        <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW1"></canvas></div>
+        <div style="margin-top:6px"><button class="secondary" id="clearSigW1" type="button">Clear</button></div>
       </div>
-    </section>
-  </main>
+      <div class="sig-box">
+        <label>작업자2</label>
+        <input id="sigNameW2" type="text" placeholder="성명" class="field">
+        <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW2"></canvas></div>
+        <div style="margin-top:6px"><button class="secondary" id="clearSigW2" type="button">Clear</button></div>
+      </div>
+      <div class="sig-box">
+        <label>작업자3</label>
+        <input id="sigNameW3" type="text" placeholder="성명" class="field">
+        <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW3"></canvas></div>
+        <button id="printPDF" class="secondary" type="button" title="PDF로 내보내기">PDF</button>
+        <div style="margin-top:6px"><button class="secondary" id="clearSigW3" type="button">Clear</button></div>
+      </div>
+    </div>
+  </section>
+</main>
 
-  <script>
-  /* ========= [A] 런타임 로더: html2canvas 보장 ========= */
-  function ensureHtml2Canvas(){
-    return new Promise(function(resolve, reject){
-      if (window.html2canvas && typeof window.html2canvas === 'function') {
-        resolve(window.html2canvas); return;
-      }
-      // 이미 head에 로더가 있으니, 로드 지연만 고려하여 재시도
-      var tries = 0;
-      (function waitForIt(){
-        if (window.html2canvas && typeof window.html2canvas === 'function'){ resolve(window.html2canvas); return; }
-        tries++;
-        if (tries > 20){ // ~2초
-          // 최후수단: 동적 script 삽입
-          var s=document.createElement('script');
-          s.src='https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
-          s.async=true;
-          s.onload=function(){ resolve(window.html2canvas); };
-          s.onerror=function(){ reject(new Error('html2canvas 로드 실패')); };
-          document.head.appendChild(s);
-          return;
-        }
-        setTimeout(waitForIt, 100);
-      })();
-    });
-  }
+<script>
+/* ========= [1] 유틸 & 공용 함수 (모든 attach/초기화보다 먼저 선언) ========= */
+var byId = function(id){ return document.getElementById(id); };
+var qs  = function(sel){ return document.querySelector(sel); };
+var qsa = function(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); };
 
-  /* ========= [1] 유틸 & 공용 함수 ========= */
-  var byId = function(id){ return document.getElementById(id); };
-  var qs  = function(sel){ return document.querySelector(sel); };
-  var qsa = function(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); };
+/* 체크박스/입력 UI */
+function injectCheckbox(cell, colKey, labelText){
+  var input=document.createElement("input");
+  input.type="checkbox"; input.className="riskchk";
+  input.setAttribute("data-col", colKey);
+  input.setAttribute("title", labelText);
+  var wrap=document.createElement("label");
+  wrap.className="chk-wrap"; wrap.appendChild(input);
+  cell.innerHTML=""; cell.appendChild(wrap);
+  return input;
+}
+function injectTextarea(cell){
+  var ta=document.createElement("textarea");
+  ta.className="cell-input"; ta.setAttribute("rows","1");
+  function autosize(){ ta.style.height="auto"; ta.style.height=(ta.scrollHeight)+"px"; }
+  ta.addEventListener("input", autosize); setTimeout(autosize,0);
+  cell.innerHTML=""; cell.appendChild(ta);
+  return ta;
+}
+function injectMitiInput(cell){
+  cell.innerHTML=""; cell.classList.add("miti-cell");
+  var ui=document.createElement("div"); ui.className="miti-ui";
+  var sel=document.createElement("select"); sel.className="miti-select";
+  sel.innerHTML = ''+
+    '<option value="">선택</option>'+
+    '<option value="완료">안전 조치 완료</option>'+
+    '<option value="입력">사용자 입력</option>';
+  var user=document.createElement("input"); user.type="text"; user.className="miti-user"; user.style.display="none";
+  var printDiv=document.createElement("div"); printDiv.className="miti-print";
+  function sync(){
+    var v = sel.value;
+    if(v === "완료"){ user.style.display="none"; printDiv.textContent = "안전 조치 완료"; }
+    else if(v === "입력"){ user.style.display="block"; printDiv.textContent = user.value || ""; }
+    else { user.style.display="none"; printDiv.textContent = ""; }
+  }
+  sel.addEventListener("change", sync); user.addEventListener("input", sync);
+  ui.appendChild(sel); ui.appendChild(user);
+  cell.appendChild(ui); cell.appendChild(printDiv);
+  setTimeout(sync,0);
+  return sel;
+}
 
-  /* 체크박스/입력 UI */
-  function injectCheckbox(cell, colKey, labelText){
-    var input=document.createElement("input");
-    input.type="checkbox"; input.className="riskchk";
-    input.setAttribute("data-col", colKey);
-    input.setAttribute("title", labelText);
-    var wrap=document.createElement("label");
-    wrap.className="chk-wrap"; wrap.appendChild(input);
-    cell.innerHTML=""; cell.appendChild(wrap);
-    return input;
-  }
-  function injectTextarea(cell){
-    var ta=document.createElement("textarea");
-    ta.className="cell-input"; ta.setAttribute("rows","1");
-    function autosize(){ ta.style.height="auto"; ta.style.height=(ta.scrollHeight)+"px"; }
-    ta.addEventListener("input", autosize); setTimeout(autosize,0);
-    cell.innerHTML=""; cell.appendChild(ta);
-    return ta;
-  }
-  function injectMitiInput(cell){
-    cell.innerHTML=""; cell.classList.add("miti-cell");
-    var ui=document.createElement("div"); ui.className="miti-ui";
-    var sel=document.createElement("select"); sel.className="miti-select";
-    sel.innerHTML =
-      '<option value="">선택</option>' +
-      '<option value="완료">안전 조치 완료</option>' +
-      '<option value="입력">사용자 입력</option>';
-    var user=document.createElement("input"); user.type="text"; user.className="miti-user"; user.style.display="none";
-    var printDiv=document.createElement("div"); printDiv.className="miti-print";
-    function sync(){
-      var v = sel.value;
-      if(v === "완료"){ user.style.display="none"; printDiv.textContent = "안전 조치 완료"; }
-      else if(v === "입력"){ user.style.display="block"; printDiv.textContent = user.value || ""; }
-      else { user.style.display="none"; printDiv.textContent = ""; }
-    }
-    sel.addEventListener("change", sync); user.addEventListener("input", sync);
-    ui.appendChild(sel); ui.appendChild(user);
-    cell.appendChild(ui); cell.appendChild(printDiv);
-    setTimeout(sync,0);
-    return sel;
-  }
+/* 표 초기화 */
+function initRiskRow(tr){
+  var tds=tr.querySelectorAll("td");
+  var len=tds.length; if(len<6) return;
+  var idxHaz = (len===7 ? 1 : 0);
+  var idxOk  = idxHaz + 1;
+  var idxFix = idxHaz + 2;
+  var idxNa  = idxHaz + 3;
+  var idxMiti= idxHaz + 4;
+  var idxDone= idxHaz + 5;
+  var isPrepMaster = tr.id === "prep-master-row";
 
-  /* 표 초기화 */
-  function initRiskRow(tr){
-    var tds=tr.querySelectorAll("td");
-    var len=tds.length; if(len<6) return;
-    var idxHaz = (len===7 ? 1 : 0);
-    var idxOk  = idxHaz + 1;
-    var idxFix = idxHaz + 2;
-    var idxNa  = idxHaz + 3;
-    var idxMiti= idxHaz + 4;
-    var idxDone= idxHaz + 5;
-
-    var isPrepMaster = tr.id === "prep-master-row";
-    if(isPrepMaster){
-      if(!tds[idxNa].querySelector(".riskchk")) injectCheckbox(tds[idxNa], "na", "해당없음");
-    } else {
-      if(!tds[idxOk ].querySelector(".riskchk")) injectCheckbox(tds[idxOk ], "ok" , "적정");
-      if(!tds[idxFix].querySelector(".riskchk")) injectCheckbox(tds[idxFix], "fix", "보완");
-      if(!tds[idxNa ].querySelector(".riskchk")) injectCheckbox(tds[idxNa ], "na" , "해당없음");
-
-      var rowChks=tr.querySelectorAll(".riskchk");
-      Array.prototype.forEach.call(rowChks, function(chk){
-        chk.addEventListener("change", function(){
-          if(chk.checked && (chk.dataset.col==="ok" || chk.dataset.col==="fix" || chk.dataset.col==="na")){
-            Array.prototype.forEach.call(rowChks, function(other){
-              if(other!==chk && (other.dataset.col==="ok" || other.dataset.col==="fix" || other.dataset.col==="na")) other.checked=false;
-            });
-          }
-        });
-      });
-    }
-
-    if(!tds[idxDone].querySelector(".riskchk")) injectCheckbox(tds[idxDone], "done", "확인");
-    if(!tds[idxMiti].querySelector(".miti-select")) injectMitiInput(tds[idxMiti]);
-    if(idxHaz>=0 && tds[idxHaz].textContent.trim()==="" && !tds[idxHaz].querySelector(".cell-input")) injectTextarea(tds[idxHaz]);
-  }
-  function initRiskTable(){ qsa("#riskTable tbody tr").forEach(initRiskRow); }
-
-  /* 섹션 행 증감 */
-  var PREP_BASE_ROWS=8, WORKS_BASE_ROWS=5, MISC_BASE_ROWS=1;
-  function adjustRowspan(cellId, base, delta){
-    var td = byId(cellId); if(!td) return;
-    var cur = td.rowSpan || base; var next = cur + delta; if(next < base) next = base; td.rowSpan = next;
-  }
-  function addPrepRow(){
-    try{
-      var tbody = qs("#riskTable tbody"), lastFixed = byId("prep-last-fixed"); if(!tbody || !lastFixed) return;
-      var insertAfter = lastFixed;
-      while(insertAfter.nextElementSibling && insertAfter.nextElementSibling.classList && insertAfter.nextElementSibling.classList.contains("prep-extra-row")){
-        insertAfter = insertAfter.nextElementSibling;
-      }
-      var tr = document.createElement("tr"); tr.className = "prep-extra-row";
-      tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
-      tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
-      var tds = tr.querySelectorAll("td"); injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
-      adjustRowspan("prep-section-cell", PREP_BASE_ROWS, +1);
-    }catch(e){ console.error(e); alert("사전준비 작업 행 추가 중 오류: " + (e&&e.message?e.message:e)); }
-  }
-  function removePrepRow(){
-    try{
-      var tbody = qs("#riskTable tbody"); if(!tbody) return;
-      var lastExtra=null, node=tbody.lastElementChild;
-      while(node){ if(node.classList && node.classList.contains("prep-extra-row")){ lastExtra=node; break;} node=node.previousElementSibling; }
-      if(!lastExtra){ alert("사전준비 섹션에 삭제할 추가 행이 없습니다."); return; }
-      tbody.removeChild(lastExtra); adjustRowspan("prep-section-cell", PREP_BASE_ROWS, -1);
-    }catch(e){ console.error(e); alert("사전준비 작업 행 삭제 중 오류: " + (e&&e.message?e.message:e)); }
-  }
-  function addWorkRow(){
-    try{
-      var tbody = qs("#riskTable tbody"), lastFixed = byId("works-last-fixed"); if(!tbody || !lastFixed) return;
-      var insertAfter = lastFixed;
-      while(insertAfter.nextElementSibling && insertAfter.nextElementSibling.classList && insertAfter.nextElementSibling.classList.contains("extra-work-row")){
-        insertAfter = insertAfter.nextElementSibling;
-      }
-      var tr = document.createElement("tr"); tr.className = "extra-work-row";
-      tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
-      tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
-      var tds = tr.querySelectorAll("td"); injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
-      adjustRowspan("task-works-label", WORKS_BASE_ROWS, +1);
-    }catch(e){ console.error(e); alert("작업시 행 추가 중 오류: " + (e&&e.message?e.message:e)); }
-  }
-  function removeWorkRow(){
-    try{
-      var tbody = qs("#riskTable tbody"); if(!tbody) return;
-      var lastExtra=null, node=tbody.lastElementChild;
-      while(node){ if(node.classList && node.classList.contains("extra-work-row")){ lastExtra=node; break;} node=node.previousElementSibling; }
-      if(!lastExtra){ alert("작업시 섹션에 삭제할 추가 행이 없습니다."); return; }
-      tbody.removeChild(lastExtra); adjustRowspan("task-works-label", WORKS_BASE_ROWS, -1);
-    }catch(e){ console.error(e); alert("작업시 추가 행 삭제 중 오류: " + (e&&e.message?e.message:e)); }
-  }
-  function addMiscRow(){
-    try{
-      var tbody = qs("#riskTable tbody"), head = byId("misc-section-row"); if(!tbody || !head) return;
-      var insertAfter=head;
-      while(insertAfter.nextElementSibling && insertAfter.nextElementSibling.classList && insertAfter.nextElementSibling.classList.contains("misc-extra-row")){
-        insertAfter = insertAfter.nextElementSibling;
-      }
-      var tr=document.createElement("tr"); tr.className="misc-extra-row";
-      tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
-      tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
-      var tds = tr.querySelectorAll("td"); injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
-      adjustRowspan("misc-section-cell", MISC_BASE_ROWS, +1);
-    }catch(e){ console.error(e); alert("기타 섹션 행 추가 중 오류: " + (e&&e.message?e.message:e)); }
-  }
-  function removeMiscRow(){
-    try{
-      var tbody = qs("#riskTable tbody"); if(!tbody) return;
-      var lastExtra=null, node=tbody.lastElementChild;
-      while(node){ if(node.classList && node.classList.contains("misc-extra-row")){ lastExtra=node; break;} node=node.previousElementSibling; }
-      if(!lastExtra){ alert("기타 섹션에 삭제할 추가 행이 없습니다."); return; }
-      tbody.removeChild(lastExtra); adjustRowspan("misc-section-cell", MISC_BASE_ROWS, -1);
-    }catch(e){ console.error(e); alert("기타 섹션 행 삭제 중 오류: " + (e&&e.message?e.message:e)); }
-  }
-
-  /* 사전준비 : 해당없음  하위행 잠금/해제 */
-  function setPrepSubRowsDisabled(disabled){
-    qsa("#riskTable tbody tr.prep-sub-row").forEach(function(row){
-      ["ok","fix","na","done"].forEach(function(colKey){
-        var chk=row.querySelector('input.riskchk[data-col="'+colKey+'"]');
-        if(chk){ if(disabled){ chk.checked=false; } chk.disabled=!!disabled; }
-      });
-      var sel=row.querySelector('.miti-select'); var user=row.querySelector('.miti-user');
-      if(sel){ sel.disabled=!!disabled; }
-      if(user){ user.disabled=!!disabled; }
-    });
-  }
-  function initPrepRowLogic(){
-    var master=byId("prep-master-row"); if(!master) return;
-    function evalState(){
-      var na = master.querySelector('input.riskchk[data-col="na"]');
-      var disabled = !!(na && na.checked);
-      setPrepSubRowsDisabled(disabled);
-    }
-    qsa('#prep-master-row input.riskchk[data-col="na"]').forEach(function(chk){ chk.addEventListener("change", evalState); });
-    evalState();
-  }
-
-  /* 서명패드 */
-  function initSignature(canvasId, clearBtnId){
-    var cvs=byId(canvasId), btn=byId(clearBtnId); if(!cvs) return;
-    var ctx=cvs.getContext('2d');
-    function internalResize(init){
-      var ratio=Math.max((window.devicePixelRatio || 1), 1);
-      var rect=cvs.getBoundingClientRect();
-      var w=Math.floor(rect.width*ratio), h=Math.floor(rect.height*ratio);
-      var prevURL=null; if(!init){ try{ prevURL=cvs.toDataURL('image/png'); }catch(e){} }
-      cvs.width=w; cvs.height=h; ctx.setTransform(1,0,0,1,0,0); ctx.scale(ratio,ratio);
-      ctx.lineWidth=2; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.strokeStyle='#111827';
-      if(prevURL){
-        var img=new Image(); img.onload=function(){ ctx.drawImage(img,0,0,cvs.width,cvs.height); }; img.src=prevURL;
-      } else { ctx.clearRect(0,0,w,h); }
-    }
-    var drawing=false, last=null;
-    function getPos(e){ var r=cvs.getBoundingClientRect(); var t=(e.touches && e.touches[0]) || null; return t?{x:t.clientX-r.left,y:t.clientY-r.top}:{x:e.clientX-r.left,y:e.clientY-r.top}; }
-    function start(e){ if(e&&e.preventDefault) e.preventDefault(); drawing=true; last=getPos(e); }
-    function move (e){ if(!drawing) return; if(e&&e.preventDefault) e.preventDefault(); var p=getPos(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; }
-    function end (){ drawing=false; last=null; }
-    cvs.addEventListener('mousedown',start); cvs.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
-    cvs.addEventListener('touchstart',start,{passive:false}); cvs.addEventListener('touchmove',move,{passive:false}); cvs.addEventListener('touchend',end);
-    window.addEventListener('orientationchange', function(){ internalResize(false); }, {passive:true});
-    internalResize(true);
-    if(btn){ btn.addEventListener('click', function(){ ctx.clearRect(0,0,cvs.width,cvs.height); }); }
-  }
-
-  /* 성명  서명란 자동반영 */
-  function syncSigFromMeta(){
-    [
-      {src:"fSafety",  dst:"sigNameSafety"},
-      {src:"fWorker1", dst:"sigNameW1"},
-      {src:"fWorker2", dst:"sigNameW2"},
-      {src:"fWorker3", dst:"sigNameW3"}
-    ].forEach(function(m){
-      var s=byId(m.src), d=byId(m.dst); if(!s || !d) return;
-      d.value = s.value || "";
-      ["input","change"].forEach(function(ev){ s.addEventListener(ev, function(){ d.value = s.value || ""; }); });
-    });
-  }
-
-  /* 모바일 열 폭 동기화 */
-  function equalizeHazardMitiWidth(){
-    var isMobile = window.matchMedia("(max-width: 800px), (pointer:coarse)").matches;
-    var styleId = "dyn-mobile-cols";
-    var styleEl = document.getElementById(styleId);
-    if(!styleEl){ styleEl = document.createElement("style"); styleEl.id = styleId; document.head.appendChild(styleEl); }
-    if(!isMobile){ styleEl.textContent=""; return; }
-    try{
-      var tb = document.getElementById("riskTable"); if(!tb || !tb.tBodies.length) return;
-      var firstRow = tb.tBodies[0].rows[0]; if(!firstRow || firstRow.cells.length<2) return;
-      var hazardCell=firstRow.cells[1]; var width=Math.round(hazardCell.getBoundingClientRect().width);
-      if(width>0){ styleEl.textContent = "@media (max-width:800px), (pointer:coarse){ col.c-miti{ width:"+width+"px !important; } }"; }
-    }catch(e){}
-  }
-
-  /* 인쇄 방향/스케일 */
-  function setPrintOrientationClass(){
-    try{
-      var isLandscape = (window.matchMedia && window.matchMedia("(orientation: landscape)").matches) || (window.innerWidth > window.innerHeight);
-      var rootEl = document.documentElement;
-      if(isLandscape){ rootEl.classList.add("print-landscape"); rootEl.classList.remove("print-portrait"); }
-      else { rootEl.classList.add("print-portrait"); rootEl.classList.remove("print-landscape"); }
-    }catch(e){}
-  }
-  function clearPrintOrientationClass(){
-    var rootEl = document.documentElement; rootEl.classList.remove("print-landscape"); rootEl.classList.remove("print-portrait");
-  }
-  function scalePageBlocksForPrint(){
-    try{
-      var blocks = qsa('.page-block');
-      var viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
-      var marginComp = 40, usableH = Math.max(0, viewportH - marginComp);
-      blocks.forEach(function(block){
-        block.style.transform = ''; block.style.width = '';
-        var rect = block.getBoundingClientRect(), h = rect.height;
-        if(usableH > 0 && h > usableH){
-          var scale = usableH / h; scale = Math.max(0.8, Math.min(1.0, scale));
-          block.style.transform = "scale("+scale+")";
-          block.style.transformOrigin = 'top left';
-          block.style.width = "calc(100% / "+scale+")";
-        }
-      });
-      qsa('.miti-cell').forEach(function(cell){
-        var sel=cell.querySelector('.miti-select'), user=cell.querySelector('.miti-user'), p=cell.querySelector('.miti-print');
-        if(!p || !sel) return;
-        var v=sel.value; if(v==='완료'){ p.textContent='안전 조치 완료'; }
-        else if(v==='입력'){ p.textContent=(user && user.value) ? user.value : ''; }
-        else { p.textContent=''; }
-      });
-    }catch(e){}
-  }
-  function resetBlockScaleAfterPrint(){ qsa('.page-block').forEach(function(block){ block.style.transform=''; block.style.width=''; }); }
-
-  /*  안전 프린트 */
-  function attachSafePrint(btn){
-    if(!btn) return; var printing=false;
-    var handler=function(){ if(printing) return; printing=true; try{ window.print(); } finally { setTimeout(function(){ printing=false; }, 1200); } };
-    btn.addEventListener("click", handler, {passive:false});
-  }
-
-  /* 마스터 체크박스 */
-  function attachDoneMaster(){
-    var master=byId("doneMasterChk"); if(!master) return;
-    master.addEventListener("change", function(){
-      qsa('#riskTable tbody input.riskchk[data-col="done"]').forEach(function(chk){ if(chk.disabled) return; chk.checked = master.checked; });
-    });
-  }
-
-  /* 초기화 */
-  function resetToMaster(){
-    try{
-      qsa('.riskchk').forEach(function(chk){ chk.checked=false; chk.disabled=false; });
-      qsa('input[type="text"], input[type="date"], textarea').forEach(function(el){ if(el.id==="fCompany") return; el.value=""; });
-      qsa('.miti-select').forEach(function(sel){ sel.value=""; });
-      qsa('.miti-user').forEach(function(inp){ inp.value=""; inp.style.display="none"; });
-      qsa('.miti-print').forEach(function(el){ el.textContent=""; });
-
-      ["sigCanvasSafety","sigCanvasW1","sigCanvasW2","sigCanvasW3"].forEach(function(cid){ var cvs=byId(cid); if(!cvs) return; var ctx=cvs.getContext('2d'); ctx.clearRect(0,0,cvs.width,cvs.height); });
-
-      qsa(".prep-extra-row").forEach(function(r){ r.remove(); });
-      qsa(".extra-work-row").forEach(function(r){ r.remove(); });
-      qsa(".misc-extra-row").forEach(function(r){ r.remove(); });
-
-      var prepCell=byId("prep-section-cell"); if(prepCell) prepCell.rowSpan=PREP_BASE_ROWS;
-      var worksCell=byId("task-works-label"); if(worksCell) worksCell.rowSpan=WORKS_BASE_ROWS;
-      var miscCell=byId("misc-section-cell"); if(miscCell) miscCell.rowSpan=MISC_BASE_ROWS;
-
-      setTimeout(equalizeHazardMitiWidth, 50);
-    }catch(e){ console.error(e); alert("초기화 중 오류: " + (e&&e.message?e.message:e)); }
-  }
-
-  /* ========= [2] 캡쳐/공유 (여백 제거 포함) ========= */
-  var _h2cProLoading = null;
-  function loadHtml2CanvasPro(){
-    if(window.html2canvas && window.html2canvas.name && window.html2canvas.name.indexOf('pro')>=0) return Promise.resolve(window.html2canvas);
-    if(_h2cProLoading) return _h2cProLoading;
-    _h2cProLoading = new Promise(function(resolve,reject){
-      var tryUrls = [
-        "https://cdn.jsdelivr.net/npm/html2canvas-pro/dist/html2canvas-pro.min.js",
-        "https://cdn.jsdelivr.net/npm/html2canvas-pro/dist/html2canvas-pro.js"
-      ];
-      (function next(i){
-        if(i>=tryUrls.length){ reject(new Error("html2canvas-pro 로드 실패")); return; }
-        var s=document.createElement('script'); s.src=tryUrls[i]; s.async=true; s.onload=function(){ resolve(window.html2canvas); };
-        s.onerror=function(){ next(i+1); }; document.head.appendChild(s);
-      })(0);
-    });
-    return _h2cProLoading;
-  }
-
-  function renderWithH2C(target, opt){
-    var h2c = window.html2canvas;
-    var scale = Math.min(2, window.devicePixelRatio || 2);
-
-    // 캡쳐 폭 산정: header.wrap + main.wrap
-    function getCaptureRect(){
-      var nodes = [document.querySelector('header .wrap'), document.querySelector('main.wrap')].filter(Boolean);
-      var left = Infinity, right = -Infinity;
-      nodes.forEach(function(n){
-        var r = n.getBoundingClientRect();
-        left  = Math.min(left,  Math.max(0, r.left));
-        right = Math.max(right, r.right);
-      });
-      if(!isFinite(left) || right < 0){
-        var b = document.body.getBoundingClientRect();
-        left = 0; right = b.right;
-      }
-      return { x: Math.floor(left), width: Math.ceil(right - left) };
-    }
-    var capRect = getCaptureRect();
-
-    var baseOpt = {
-      backgroundColor:'#ffffff',
-      useCORS:true,
-      scrollX:0, scrollY:0,
-      windowWidth: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth, window.innerWidth),
-      windowHeight: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, window.innerHeight),
-      scale: scale,
-      x: capRect.x,
-      y: 0,
-      width: capRect.width,
-      onclone: function(clonedDoc){
-        // 모바일 표시 스케일 제거
-        try{
-          clonedDoc.querySelectorAll('.wrap').forEach(function(el){
-            el.style.transform = 'none';
-            el.style.width = 'auto';
+  if(isPrepMaster){
+    if(!tds[idxNa].querySelector(".riskchk")) injectCheckbox(tds[idxNa], "na", "해당없음");
+  } else {
+    if(!tds[idxOk ].querySelector(".riskchk")) injectCheckbox(tds[idxOk ], "ok" , "적정");
+    if(!tds[idxFix].querySelector(".riskchk")) injectCheckbox(tds[idxFix], "fix", "보완");
+    if(!tds[idxNa ].querySelector(".riskchk")) injectCheckbox(tds[idxNa ], "na" , "해당없음");
+    var rowChks=tr.querySelectorAll(".riskchk");
+    Array.prototype.forEach.call(rowChks, function(chk){
+      chk.addEventListener("change", function(){
+        if(chk.checked && (chk.dataset.col==="ok" || chk.dataset.col==="fix" || chk.dataset.col==="na")){
+          Array.prototype.forEach.call(rowChks, function(other){
+            if(other!==chk && (other.dataset.col==="ok" || other.dataset.col==="fix" || other.dataset.col==="na")) other.checked=false;
           });
-        }catch(e){}
-
-        var fixStyle = clonedDoc.createElement('style');
-        fixStyle.textContent = [
-          'input:disabled, textarea:disabled, select:disabled {',
-          '  color: #6b7280 !important;',
-          '  -webkit-text-fill-color: #6b7280 !important;',
-          '}',
-          'input[type="checkbox"], input[type="radio"] {',
-          '  accent-color: #111827 !important;',
-          '}',
-          '.table-wrap { overflow: visible !important; }'
-        ].join('\n');
-        clonedDoc.head.appendChild(fixStyle);
-
-        if(opt && typeof opt.onclone === 'function'){ try{ opt.onclone(clonedDoc); }catch(e){} }
-      }
-    };
-    var finalOpt = (opt ? Object.assign({}, baseOpt, opt) : baseOpt);
-    return h2c(target, finalOpt);
-  }
-
-  function captureFullPageToBlob(){
-    return new Promise(function(resolve, reject){
-      try{
-        var limitEl = byId('approvalSection');
-        var scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
-        var limitBottomCss;
-        if(!limitEl){
-          limitBottomCss = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, window.innerHeight);
-        }else{
-          var r = limitEl.getBoundingClientRect(); limitBottomCss = r.bottom + scrollTop;
         }
+      });
+    });
+  }
+  if(!tds[idxDone].querySelector(".riskchk")) injectCheckbox(tds[idxDone], "done", "확인");
+  if(!tds[idxMiti].querySelector(".miti-select")) injectMitiInput(tds[idxMiti]);
+  if(idxHaz>=0 && tds[idxHaz].textContent.trim()==="" && !tds[idxHaz].querySelector(".cell-input")) injectTextarea(tds[idxHaz]);
+}
+function initRiskTable(){ qsa("#riskTable tbody tr").forEach(initRiskRow); }
 
-        var wraps = qsa('.table-wrap');
-        var backup = wraps.map(function(el){ return { el:el, overflow:el.style.overflow, width:el.style.width }; });
-        wraps.forEach(function(el){
-          el.style.overflow = 'visible';
-          var w = el.scrollWidth || el.getBoundingClientRect().width; if(w && w>0) el.style.width = w + 'px';
-        });
+/* 섹션 행 증감 */
+var PREP_BASE_ROWS=8, WORKS_BASE_ROWS=5, MISC_BASE_ROWS=1;
+function adjustRowspan(cellId, base, delta){
+  var td = byId(cellId); if(!td) return;
+  var cur = td.rowSpan || base; var next = cur + delta; if(next < base) next = base; td.rowSpan = next;
+}
+function addPrepRow(){ try{
+  var tbody = qs("#riskTable tbody"), lastFixed = byId("prep-last-fixed"); if(!tbody||!lastFixed) return;
+  var insertAfter = lastFixed;
+  while(insertAfter.nextElementSibling && insertAfter.nextElementSibling.classList && insertAfter.nextElementSibling.classList.contains("prep-extra-row")){
+    insertAfter = insertAfter.nextElementSibling;
+  }
+  var tr = document.createElement("tr"); tr.className = "prep-extra-row";
+  tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
+  tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
+  var tds = tr.querySelectorAll("td"); injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
+  adjustRowspan("prep-section-cell", PREP_BASE_ROWS, +1);
+}catch(e){ console.error(e); alert("사전준비 작업 행 추가 중 오류: " + (e&&e.message?e.message:e)); }}
+function removePrepRow(){ try{
+  var tbody = qs("#riskTable tbody"); if(!tbody) return;
+  var lastExtra=null, node=tbody.lastElementChild;
+  while(node){ if(node.classList && node.classList.contains("prep-extra-row")){ lastExtra=node; break;} node=node.previousElementSibling; }
+  if(!lastExtra){ alert("사전준비 섹션에 삭제할 추가 행이 없습니다."); return; }
+  tbody.removeChild(lastExtra); adjustRowspan("prep-section-cell", PREP_BASE_ROWS, -1);
+}catch(e){ console.error(e); alert("사전준비 작업 행 삭제 중 오류: " + (e&&e.message?e.message:e)); }}
+function addWorkRow(){ try{
+  var tbody = qs("#riskTable tbody"), lastFixed = byId("works-last-fixed"); if(!tbody||!lastFixed) return;
+  var insertAfter = lastFixed;
+  while(insertAfter.nextElementSibling && insertAfter.nextElementSibling.classList && insertAfter.nextElementSibling.classList.contains("extra-work-row")){
+    insertAfter = insertAfter.nextElementSibling;
+  }
+  var tr = document.createElement("tr"); tr.className = "extra-work-row";
+  tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
+  tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
+  var tds = tr.querySelectorAll("td"); injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
+  adjustRowspan("task-works-label", WORKS_BASE_ROWS, +1);
+}catch(e){ console.error(e); alert("작업시 행 추가 중 오류: " + (e&&e.message?e.message:e)); }}
+function removeWorkRow(){ try{
+  var tbody = qs("#riskTable tbody"); if(!tbody) return;
+  var lastExtra=null, node=tbody.lastElementChild;
+  while(node){ if(node.classList && node.classList.contains("extra-work-row")){ lastExtra=node; break;} node=node.previousElementSibling; }
+  if(!lastExtra){ alert("작업시 섹션에 삭제할 추가 행이 없습니다."); return; }
+  tbody.removeChild(lastExtra); adjustRowspan("task-works-label", WORKS_BASE_ROWS, -1);
+}catch(e){ console.error(e); alert("작업시 추가 행 삭제 중 오류: " + (e&&e.message?e.message:e)); }}
+function addMiscRow(){ try{
+  var tbody = qs("#riskTable tbody"), head = byId("misc-section-row"); if(!tbody||!head) return;
+  var insertAfter=head;
+  while(insertAfter.nextElementSibling && insertAfter.nextElementSibling.classList && insertAfter.nextElementSibling.classList.contains("misc-extra-row")){
+    insertAfter = insertAfter.nextElementSibling;
+  }
+  var tr=document.createElement("tr"); tr.className="misc-extra-row";
+  tr.innerHTML = '<td></td><td></td><td></td><td></td><td class="miti-cell"></td><td></td>';
+  tbody.insertBefore(tr, insertAfter ? insertAfter.nextElementSibling : null);
+  var tds = tr.querySelectorAll("td"); injectTextarea(tds[0]); injectMitiInput(tds[4]); initRiskRow(tr);
+  adjustRowspan("misc-section-cell", MISC_BASE_ROWS, +1);
+}catch(e){ console.error(e); alert("기타 섹션 행 추가 중 오류: " + (e&&e.message?e.message:e)); }}
+function removeMiscRow(){ try{
+  var tbody = qs("#riskTable tbody"); if(!tbody) return;
+  var lastExtra=null, node=tbody.lastElementChild;
+  while(node){ if(node.classList && node.classList.contains("misc-extra-row")){ lastExtra=node; break;} node=node.previousElementSibling; }
+  if(!lastExtra){ alert("기타 섹션에 삭제할 추가 행이 없습니다."); return; }
+  tbody.removeChild(lastExtra); adjustRowspan("misc-section-cell", MISC_BASE_ROWS, -1);
+}catch(e){ console.error(e); alert("기타 섹션 행 삭제 중 오류: " + (e&&e.message?e.message:e)); }}
 
-        renderWithH2C(document.body).then(function(canvas){
-          backup.forEach(function(b){ b.el.style.overflow = b.overflow; b.el.style.width = b.width; });
+/* 사전준비 : 해당없음  하위행 잠금/해제 */
+function setPrepSubRowsDisabled(disabled){
+  qsa("#riskTable tbody tr.prep-sub-row").forEach(function(row){
+    ["ok","fix","na","done"].forEach(function(colKey){
+      var chk=row.querySelector('input.riskchk[data-col="'+colKey+'"]');
+      if(chk){ if(disabled){ chk.checked=false; } chk.disabled=!!disabled; }
+    });
+    var sel=row.querySelector('.miti-select'); var user=row.querySelector('.miti-user');
+    if(sel){ sel.disabled=!!disabled; }
+    if(user){ user.disabled=!!disabled; }
+  });
+}
+function initPrepRowLogic(){
+  var master=byId("prep-master-row"); if(!master) return;
+  function evalState(){
+    var na = master.querySelector('input.riskchk[data-col="na"]');
+    var disabled = !!(na && na.checked);
+    setPrepSubRowsDisabled(disabled);
+  }
+  qsa('#prep-master-row input.riskchk[data-col="na"]').forEach(function(chk){ chk.addEventListener("change", evalState); });
+  evalState();
+}
 
-          var scale = Math.min(2, window.devicePixelRatio || 2);
-          var cropHeightPx = Math.min(canvas.height, Math.max(1, Math.round(limitBottomCss * scale)));
-          var outCanvas = canvas;
-          if (cropHeightPx > 0 && cropHeightPx < canvas.height) {
-            outCanvas = document.createElement('canvas');
-            outCanvas.width = canvas.width; outCanvas.height = cropHeightPx;
-            var octx = outCanvas.getContext('2d');
-            octx.drawImage(canvas, 0, 0, canvas.width, cropHeightPx, 0, 0, canvas.width, cropHeightPx);
-          }
-          outCanvas.toBlob(function(b){ resolve(b); }, 'image/png', 1.0);
-        }).catch(function(err){
-          var msg = (err && (err.message||err)).toString().toLowerCase();
-          if(msg.indexOf('unsupported color function')>=0 || msg.indexOf('color(')>=0 || msg.indexOf('oklab')>=0 || msg.indexOf('oklch')>=0 || msg.indexOf('lch(')>=0 || msg.indexOf('lab(')>=0){
-            loadHtml2CanvasPro().then(function(){
-              return renderWithH2C(document.body);
-            }).then(function(canvas){
-              backup.forEach(function(b){ b.el.style.overflow = b.overflow; b.el.style.width = b.width; });
+/* 서명패드 */
+function initSignature(canvasId, clearBtnId){
+  var cvs=byId(canvasId), btn=byId(clearBtnId); if(!cvs) return;
+  var ctx=cvs.getContext('2d');
+  function internalResize(init){
+    var ratio=Math.max((window.devicePixelRatio || 1), 1);
+    var rect=cvs.getBoundingClientRect();
+    var w=Math.floor(rect.width*ratio), h=Math.floor(rect.height*ratio);
+    var prevURL=null; if(!init){ try{ prevURL=cvs.toDataURL('image/png'); }catch(e){} }
+    cvs.width=w; cvs.height=h; ctx.setTransform(1,0,0,1,0,0); ctx.scale(ratio,ratio);
+    ctx.lineWidth=2; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.strokeStyle='#111827';
+    if(prevURL){ var img=new Image(); img.onload=function(){ ctx.drawImage(img,0,0,cvs.width,cvs.height); }; img.src=prevURL; }
+    else { ctx.clearRect(0,0,w,h); }
+  }
+  var drawing=false, last=null;
+  function getPos(e){ var r=cvs.getBoundingClientRect(); var t=(e.touches&&e.touches[0])||null; return t?{x:t.clientX-r.left,y:t.clientY-r.top}:{x:e.clientX-r.left,y:e.clientY-r.top}; }
+  function start(e){ if(e&&e.preventDefault) e.preventDefault(); drawing=true; last=getPos(e); }
+  function move (e){ if(!drawing) return; if(e&&e.preventDefault) e.preventDefault(); var p=getPos(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; }
+  function end (){ drawing=false; last=null; }
+  cvs.addEventListener('mousedown',start); cvs.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+  cvs.addEventListener('touchstart',start,{passive:false}); cvs.addEventListener('touchmove',move,{passive:false}); cvs.addEventListener('touchend',end);
+  window.addEventListener('orientationchange', function(){ internalResize(false); }, {passive:true});
+  internalResize(true);
+  if(btn){ btn.addEventListener('click', function(){ ctx.clearRect(0,0,cvs.width,cvs.height); }); }
+}
 
-              var scale = Math.min(2, window.devicePixelRatio || 2);
-              var cropHeightPx = Math.min(canvas.height, Math.max(1, Math.round(limitBottomCss * scale)));
-              var outCanvas = canvas;
-              if (cropHeightPx > 0 && cropHeightPx < canvas.height) {
-                outCanvas = document.createElement('canvas');
-                outCanvas.width = canvas.width; outCanvas.height = cropHeightPx;
-                var octx = outCanvas.getContext('2d');
-                octx.drawImage(canvas, 0, 0, canvas.width, cropHeightPx, 0, 0, canvas.width, cropHeightPx);
-              }
-              outCanvas.toBlob(function(b){ resolve(b); }, 'image/png', 1.0);
-            }).catch(function(e2){
-              backup.forEach(function(b){ b.el.style.overflow = b.overflow; b.el.style.width = b.width; });
-              reject(e2);
-            });
-          } else {
+/* 성명  서명란 자동반영 */
+function syncSigFromMeta(){
+  [
+    {src:"fSafety",  dst:"sigNameSafety"},
+    {src:"fWorker1", dst:"sigNameW1"},
+    {src:"fWorker2", dst:"sigNameW2"},
+    {src:"fWorker3", dst:"sigNameW3"}
+  ].forEach(function(m){
+    var s=byId(m.src), d=byId(m.dst); if(!s||!d) return;
+    d.value = s.value || "";
+    ["input","change"].forEach(function(ev){ s.addEventListener(ev, function(){ d.value = s.value || ""; }); });
+  });
+}
+
+/* 모바일 열 폭 동기화 */
+function equalizeHazardMitiWidth(){
+  var isMobile = window.matchMedia("(max-width: 800px), (pointer:coarse)").matches;
+  var styleId = "dyn-mobile-cols";
+  var styleEl = document.getElementById(styleId);
+  if(!styleEl){ styleEl = document.createElement("style"); styleEl.id = styleId; document.head.appendChild(styleEl); }
+  if(!isMobile){ styleEl.textContent=""; return; }
+  try{
+    var tb = document.getElementById("riskTable"); if(!tb||!tb.tBodies.length) return;
+    var firstRow = tb.tBodies[0].rows[0]; if(!firstRow||firstRow.cells.length<2) return;
+    var hazardCell=firstRow.cells[1]; var width=Math.round(hazardCell.getBoundingClientRect().width);
+    if(width>0){ styleEl.textContent = "@media (max-width:800px), (pointer:coarse){ col.c-miti{ width:"+width+"px !important; } }"; }
+  }catch(e){}
+}
+
+/* 인쇄 방향/스케일 */
+function setPrintOrientationClass(){
+  try{
+    var isLandscape = (window.matchMedia && window.matchMedia("(orientation: landscape)").matches) || (window.innerWidth > window.innerHeight);
+    var rootEl = document.documentElement;
+    if(isLandscape){ rootEl.classList.add("print-landscape"); rootEl.classList.remove("print-portrait"); }
+    else { rootEl.classList.add("print-portrait"); rootEl.classList.remove("print-landscape"); }
+  }catch(e){}
+}
+function clearPrintOrientationClass(){
+  var rootEl = document.documentElement; rootEl.classList.remove("print-landscape"); rootEl.classList.remove("print-portrait");
+}
+function scalePageBlocksForPrint(){
+  try{
+    var blocks = qsa('.page-block');
+    var viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
+    var marginComp = 40, usableH = Math.max(0, viewportH - marginComp);
+    blocks.forEach(function(block){
+      block.style.transform = ''; block.style.width = '';
+      var rect = block.getBoundingClientRect(), h = rect.height;
+      if(usableH > 0 && h > usableH){
+        var scale = usableH / h; scale = Math.max(0.8, Math.min(1.0, scale));
+        block.style.transform = "scale("+scale+")";
+        block.style.transformOrigin = 'top left';
+        block.style.width = "calc(100% / "+scale+")";
+      }
+    });
+    qsa('.miti-cell').forEach(function(cell){
+      var sel=cell.querySelector('.miti-select'), user=cell.querySelector('.miti-user'), p=cell.querySelector('.miti-print');
+      if(!p || !sel) return;
+      var v=sel.value; if(v==='완료'){ p.textContent='안전 조치 완료'; }
+      else if(v==='입력'){ p.textContent=(user && user.value) ? user.value : ''; }
+      else { p.textContent=''; }
+    });
+  }catch(e){}
+}
+function resetBlockScaleAfterPrint(){ qsa('.page-block').forEach(function(block){ block.style.transform=''; block.style.width=''; }); }
+
+/*  안전 프린트(초기화보다 먼저 정의) */
+function attachSafePrint(btn){
+  if(!btn) return; var printing=false;
+  var handler=function(){ if(printing) return; printing=true; try{ window.print(); } finally { setTimeout(function(){ printing=false; }, 1200); } };
+  btn.addEventListener("click", handler, {passive:false});
+}
+
+/* 마스터 체크박스 */
+function attachDoneMaster(){
+  var master=byId("doneMasterChk"); if(!master) return;
+  master.addEventListener("change", function(){
+    qsa('#riskTable tbody input.riskchk[data-col="done"]').forEach(function(chk){ if(chk.disabled) return; chk.checked = master.checked; });
+  });
+}
+
+/* 초기화 */
+function resetToMaster(){
+  try{
+    qsa('.riskchk').forEach(function(chk){ chk.checked=false; chk.disabled=false; });
+    qsa('input[type="text"], input[type="date"], textarea').forEach(function(el){ if(el.id==="fCompany") return; el.value=""; });
+    qsa('.miti-select').forEach(function(sel){ sel.value=""; });
+    qsa('.miti-user').forEach(function(inp){ inp.value=""; inp.style.display="none"; });
+    qsa('.miti-print').forEach(function(el){ el.textContent=""; });
+    ["sigCanvasSafety","sigCanvasW1","sigCanvasW2","sigCanvasW3"].forEach(function(cid){ var cvs=byId(cid); if(!cvs) return; var ctx=cvs.getContext('2d'); ctx.clearRect(0,0,cvs.width,cvs.height); });
+    qsa(".prep-extra-row").forEach(function(r){ r.remove(); }); qsa(".extra-work-row").forEach(function(r){ r.remove(); }); qsa(".misc-extra-row").forEach(function(r){ r.remove(); });
+    var prepCell=byId("prep-section-cell"); if(prepCell) prepCell.rowSpan=PREP_BASE_ROWS;
+    var worksCell=byId("task-works-label"); if(worksCell) worksCell.rowSpan=WORKS_BASE_ROWS;
+    var miscCell=byId("misc-section-cell"); if(miscCell) miscCell.rowSpan=MISC_BASE_ROWS;
+    setTimeout(equalizeHazardMitiWidth, 50);
+  }catch(e){ console.error(e); alert("초기화 중 오류: " + (e&&e.message?e.message:e)); }
+}
+
+/* 인쇄 이벤트 */
+window.addEventListener('beforeprint', function(){ setPrintOrientationClass(); scalePageBlocksForPrint(); });
+window.addEventListener('afterprint',  function(){ clearPrintOrientationClass(); resetBlockScaleAfterPrint(); });
+
+/* ========= [2] 캡쳐/공유 (Safari color() 대응 + 하단 크롭 + 공유문구 동적) ========= */
+
+/* html2canvas-pro 동적 로더 (오류 발생시에만 사용) */
+var _h2cProLoading = null;
+function loadHtml2CanvasPro(){
+  if(window.html2canvas && window.html2canvas.name && window.html2canvas.name.indexOf('pro')>=0) return Promise.resolve(window.html2canvas);
+  if(_h2cProLoading) return _h2cProLoading;
+  _h2cProLoading = new Promise(function(resolve,reject){
+    var tryUrls = [
+      "https://cdn.jsdelivr.net/npm/html2canvas-pro/dist/html2canvas-pro.min.js",
+      "https://cdn.jsdelivr.net/npm/html2canvas-pro/dist/html2canvas-pro.js"
+    ];
+    (function next(i){
+      if(i>=tryUrls.length){ reject(new Error("html2canvas-pro 로드 실패")); return; }
+      var s=document.createElement('script'); s.src=tryUrls[i]; s.async=true; s.onload=function(){ resolve(window.html2canvas); };
+      s.onerror=function(){ next(i+1); }; document.head.appendChild(s);
+    })(0);
+  });
+  return _h2cProLoading;
+}
+
+/* 공통 렌더 함수: 클론 DOM에서 :disabled/accents를 안전 색상으로 오버라이드 */
+function renderWithH2C(target, opt){
+  var h2c = window.html2canvas;
+  var scale = Math.min(2, window.devicePixelRatio || 2);
+  var baseOpt = {
+    backgroundColor:'#ffffff',
+    useCORS:true,
+    scrollX:0, scrollY:0,
+    windowWidth: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth, window.innerWidth),
+    windowHeight: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, window.innerHeight),
+    scale: scale,
+    onclone: function(clonedDoc){
+      var fixStyle = clonedDoc.createElement('style');
+      fixStyle.textContent = [
+        'input:disabled, textarea:disabled, select:disabled {',
+        '  color: #6b7280 !important;',
+        '  -webkit-text-fill-color: #6b7280 !important;',
+        '}',
+        'input[type="checkbox"], input[type="radio"] {',
+        '  accent-color: #111827 !important;',
+        '}'
+      ].join('\n');
+      clonedDoc.head.appendChild(fixStyle);
+      if(opt && typeof opt.onclone === 'function'){ try{ opt.onclone(clonedDoc); }catch(e){} }
+    }
+  };
+  var finalOpt = (opt ? Object.assign({}, baseOpt, opt) : baseOpt);
+  return h2c(target, finalOpt);
+}
+
+/* 전체 페이지  캔버스  '#approvalSection' 하단까지만 크롭  Blob */
+function captureFullPageToBlob(){
+  return new Promise(function(resolve, reject){
+    try{
+      var limitEl = byId('approvalSection');
+      var scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+      var limitBottomCss;
+      if(!limitEl){
+        limitBottomCss = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, window.innerHeight);
+      }else{
+        var r = limitEl.getBoundingClientRect(); limitBottomCss = r.bottom + scrollTop;
+      }
+
+      var wraps = qsa('.table-wrap');
+      var backup = wraps.map(function(el){ return { el:el, overflow:el.style.overflow, width:el.style.width }; });
+      wraps.forEach(function(el){
+        el.style.overflow = 'visible';
+        var w = el.scrollWidth || el.getBoundingClientRect().width; if(w && w>0) el.style.width = w + 'px';
+      });
+
+      renderWithH2C(document.body).then(function(canvas){
+        // 원복
+        backup.forEach(function(b){ b.el.style.overflow = b.overflow; b.el.style.width = b.width; });
+
+        var scale = Math.min(2, window.devicePixelRatio || 2);
+        var cropHeightPx = Math.min(canvas.height, Math.max(1, Math.round(limitBottomCss * scale)));
+        var outCanvas = canvas;
+        if (cropHeightPx > 0 && cropHeightPx < canvas.height) {
+          outCanvas = document.createElement('canvas');
+          outCanvas.width = canvas.width; outCanvas.height = cropHeightPx;
+          var octx = outCanvas.getContext('2d');
+          octx.drawImage(canvas, 0, 0, canvas.width, cropHeightPx, 0, 0, canvas.width, cropHeightPx);
+        }
+        outCanvas.toBlob(function(b){ resolve(b); }, 'image/png', 1.0);
+      }).catch(function(err){
+        // color()/oklab 등 오류  pro 폴백
+        var msg = (err && (err.message||err)).toString().toLowerCase();
+        if(msg.indexOf('unsupported color function')>=0 || msg.indexOf('color(')>=0 || msg.indexOf('oklab')>=0 || msg.indexOf('oklch')>=0 || msg.indexOf('lch(')>=0 || msg.indexOf('lab(')>=0){
+          loadHtml2CanvasPro().then(function(){
+            return renderWithH2C(document.body);
+          }).then(function(canvas){
             backup.forEach(function(b){ b.el.style.overflow = b.overflow; b.el.style.width = b.width; });
-            reject(err);
-          }
-        });
-      }catch(e){ reject(e); }
-    });
-  }
-
-  function getShareTitle(){
-    var siteEl = byId('fSiteName'); var site = (siteEl && siteEl.value || '').trim();
-    return site ? (site + ' 위험성 평가표') : '위험성 평가표';
-  }
-
-  function shareBlobPNG(blob){
-    return new Promise(function(resolve){
-      var fileName = "위험성평가_캡쳐_" + new Date().toISOString().slice(0,10) + ".png";
-      var file = new File([blob], fileName, {type:'image/png'});
-      var shareTitle = getShareTitle();
-      var shareText = shareTitle;
-      var done = function(ok){ resolve(!!ok); };
-
-      (async function(){
-        try{
-          if(navigator.canShare && navigator.canShare({ files:[file] })){
-            await navigator.share({ files:[file], title: shareTitle, text: shareText });
-            done(true); return;
-          }
-          if(navigator.share){
-            // files 미지원 브라우저는 아래 폴백 진행
-          }
-        }catch(e){ /* 사용자 취소 등 */ }
-
-        var url = URL.createObjectURL(blob);
-        var win = window.open(url, '_blank');
-        if(!win){
-          var a = document.createElement('a'); a.href = url; a.download = fileName;
-          document.body.appendChild(a); a.click(); a.remove();
-        }
-        setTimeout(function(){ URL.revokeObjectURL(url); }, 40000);
-        done(false);
-      })();
-    });
-  }
-
-  function attachCaptureShare(btn){
-    if(!btn) return;
-    btn.addEventListener('click', function(){
-      btn.disabled = true; var oldText = btn.textContent; btn.textContent = '캡쳐 중...';
-
-      //  실행 시점에 html2canvas 보장 후 캡쳐 수행
-      ensureHtml2Canvas()
-        .then(function(){ return captureFullPageToBlob(); })
-        .then(function(blob){
-          if(!blob) throw new Error('캡쳐 실패');
-          return shareBlobPNG(blob);
-        })
-        .catch(function(e){
-          alert('캡쳐/공유 중 오류: ' + (e && e.message ? e.message : e));
-        })
-        .finally(function(){
-          btn.textContent = oldText; btn.disabled = false;
-        });
-    }, {passive:false});
-  }
-
-  /* ========= [3] 초기화 ========= */
-  function initAll(){
-    try{
-      document.querySelectorAll('thead th.th-center').forEach(function(th){ th.style.textAlign = 'center'; });
-
-      try{
-        var raw=localStorage.getItem("hra-risk-mobile-v3");
-        if(raw){
-          var doc=JSON.parse(raw);
-          ["fSiteName","fDiagStart","fDiagEnd","fWrittenDate","fSafety","fWorker1","fWorker2","fWorker3","fRemark"].forEach(function(id){
-            var el=byId(id); if(!el) return;
-            var keyMap={fSiteName:"siteName",fDiagStart:"diagStart",fDiagEnd:"diagEnd",fWrittenDate:"writtenDate",fSafety:"safetyManager", fWorker1:"worker1",fWorker2:"worker2",fWorker3:"worker3",fRemark:"remark"};
-            var k=keyMap[id]; el.value = (doc.meta && doc.meta[k]) || "";
+            var scale = Math.min(2, window.devicePixelRatio || 2);
+            var cropHeightPx = Math.min(canvas.height, Math.max(1, Math.round(limitBottomCss * scale)));
+            var outCanvas = canvas;
+            if (cropHeightPx > 0 && cropHeightPx < canvas.height) {
+              outCanvas = document.createElement('canvas');
+              outCanvas.width = canvas.width; outCanvas.height = cropHeightPx;
+              var octx = outCanvas.getContext('2d');
+              octx.drawImage(canvas, 0, 0, canvas.width, cropHeightPx, 0, 0, canvas.width, cropHeightPx);
+            }
+            outCanvas.toBlob(function(b){ resolve(b); }, 'image/png', 1.0);
+          }).catch(function(e2){
+            backup.forEach(function(b){ b.el.style.overflow = b.overflow; b.el.style.width = b.width; });
+            reject(e2);
           });
-          var c=byId("fCompany"); if(c) c.value = (doc.meta && doc.meta.companyName) || c.value || "LG전자 ES에너지컨설팅팀";
+        } else {
+          backup.forEach(function(b){ b.el.style.overflow = b.overflow; b.el.style.width = b.width; });
+          reject(err);
         }
-      }catch(e){}
+      });
+    }catch(e){ reject(e); }
+  });
+}
 
-      var btnPrint = byId("printPDF"), btnClear = byId("clearAll");
-      var btnPrepAdd = byId("btnPrepAdd"), btnPrepRemove = byId("btnPrepRemove");
-      var btnWorksAdd= byId("btnWorksAdd"), btnWorksRemove = byId("btnWorksRemove");
-      var btnMiscAdd = byId("addMiscRow"), btnMiscRemove = byId("removeMiscRow");
-      var btnShareCap = byId("btnShareCapture");
+/* 공유 문구: 현장명  "{현장명} 위험성 평가표" / 없으면 "위험성 평가표" */
+function getShareTitle(){
+  var siteEl = byId('fSiteName'); var site = (siteEl && siteEl.value || '').trim();
+  return site ? (site + ' 위험성 평가표') : '위험성 평가표';
+}
 
-      attachSafePrint(btnPrint);
-      attachDoneMaster();
-      attachCaptureShare(btnShareCap);
+/* 공유 */
+function shareBlobPNG(blob){
+  return new Promise(function(resolve){
+    var fileName = "위험성평가_캡쳐_"+ new Date().toISOString().slice(0,10) +".png";
+    var file = new File([blob], fileName, {type:'image/png'});
+    var shareTitle = getShareTitle();
+    var shareText  = shareTitle;
 
-      if(btnClear){
-        btnClear.addEventListener("click", function(){
-          if(confirm("초기화 하시겠습니까? 저장된 데이터가 삭제됩니다.")){ resetToMaster(); }
-        });
+    var done = function(ok){ resolve(!!ok); };
+    (async function(){
+      try{
+        if(navigator.canShare && navigator.canShare({ files:[file] })){
+          await navigator.share({ files:[file], title: shareTitle, text: shareText });
+          done(true); return;
+        }
+        if(navigator.share){
+          // 일부 브라우저는 files 미지원  폴백
+        }
+      }catch(e){ /* 사용자 취소 등 */ }
+
+      // 폴백: 새 탭으로 Blob URL 열기(차단 시 다운로드)
+      var url = URL.createObjectURL(blob);
+      var win = window.open(url, '_blank');
+      if(!win){
+        var a = document.createElement('a'); a.href = url; a.download = fileName;
+        document.body.appendChild(a); a.click(); a.remove();
       }
-      if(btnPrepAdd)    btnPrepAdd.addEventListener("click", addPrepRow);
-      if(btnPrepRemove) btnPrepRemove.addEventListener("click", removePrepRow);
-      if(btnWorksAdd)   btnWorksAdd.addEventListener("click", addWorkRow);
-      if(btnWorksRemove)btnWorksRemove.addEventListener("click", removeWorkRow);
-      if(btnMiscAdd)    btnMiscAdd.addEventListener("click", addMiscRow);
-      if(btnMiscRemove) btnMiscRemove.addEventListener("click", removeMiscRow);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 40000);
+      done(false);
+    })();
+  });
+}
 
-      initRiskTable();
-      initPrepRowLogic();
-      initSignature('sigCanvasSafety','clearSigSafety');
-      initSignature('sigCanvasW1','clearSigW1');
-      initSignature('sigCanvasW2','clearSigW2');
-      initSignature('sigCanvasW3','clearSigW3');
-      syncSigFromMeta();
+/* 캡쳐공유 버튼 연결 */
+function attachCaptureShare(btn){
+  if(!btn) return;
+  btn.addEventListener('click', function(){
+    btn.disabled = true; var oldText = btn.textContent; btn.textContent = '캡쳐 중...';
+    captureFullPageToBlob().then(function(blob){
+      if(!blob) throw new Error('캡쳐 실패');
+      return shareBlobPNG(blob);
+    }).catch(function(e){
+      alert('캡쳐/공유 중 오류: ' + (e && e.message ? e.message : e));
+    }).finally(function(){
+      btn.textContent = oldText; btn.disabled = false;
+    });
+  }, {passive:false});
+}
 
-      setTimeout(equalizeHazardMitiWidth, 50);
-      window.addEventListener("resize", function(){ requestAnimationFrame(equalizeHazardMitiWidth); });
-      window.addEventListener("orientationchange", equalizeHazardMitiWidth);
+/* ========= [3] 초기화 루틴 (모든 함수 정의 후에만 실행) ========= */
+function initAll(){
+  try{
+    // 화면 헤더 센터 정렬 유지
+    document.querySelectorAll('thead th.th-center').forEach(function(th){ th.style.textAlign = 'center'; });
 
-    }catch(e){
-      console.error(e);
-      alert("기능 초기화 중 오류: " + (e && e.message ? e.message : e));
+    // (선택) 로컬스토리지 복원
+    try{
+      var raw=localStorage.getItem("hra-risk-mobile-v3");
+      if(raw){
+        var doc=JSON.parse(raw);
+        ["fSiteName","fDiagStart","fDiagEnd","fWrittenDate","fSafety","fWorker1","fWorker2","fWorker3","fRemark"].forEach(function(id){
+          var el=byId(id); if(!el) return;
+          var keyMap={fSiteName:"siteName",fDiagStart:"diagStart",fDiagEnd:"diagEnd",fWrittenDate:"writtenDate",fSafety:"safetyManager", fWorker1:"worker1",fWorker2:"worker2",fWorker3:"worker3",fRemark:"remark"};
+          var k=keyMap[id]; el.value = (doc.meta && doc.meta[k]) || "";
+        });
+        var c=byId("fCompany"); if(c) c.value = (doc.meta && doc.meta.companyName) || c.value || "LG전자 ES에너지컨설팅팀";
+      }
+    }catch(e){}
+
+    var btnPrint = byId("printPDF"), btnClear = byId("clearAll");
+    var btnPrepAdd = byId("btnPrepAdd"), btnPrepRemove = byId("btnPrepRemove");
+    var btnWorksAdd= byId("btnWorksAdd"), btnWorksRemove = byId("btnWorksRemove");
+    var btnMiscAdd = byId("addMiscRow"), btnMiscRemove = byId("removeMiscRow");
+    var btnShareCap = byId("btnShareCapture");
+
+    attachSafePrint(btnPrint);
+    attachDoneMaster();
+    attachCaptureShare(btnShareCap);
+
+    if(btnClear){
+      btnClear.addEventListener("click", function(){
+        if(confirm("초기화 하시겠습니까? 저장된 데이터가 삭제됩니다.")){ resetToMaster(); }
+      });
     }
+    if(btnPrepAdd)    btnPrepAdd   .addEventListener("click", addPrepRow);
+    if(btnPrepRemove) btnPrepRemove.addEventListener("click", removePrepRow);
+    if(btnWorksAdd)   btnWorksAdd  .addEventListener("click", addWorkRow);
+    if(btnWorksRemove)btnWorksRemove.addEventListener("click", removeWorkRow);
+    if(btnMiscAdd)    btnMiscAdd   .addEventListener("click", addMiscRow);
+    if(btnMiscRemove) btnMiscRemove.addEventListener("click", removeMiscRow);
+
+    initRiskTable();
+    initPrepRowLogic();
+    initSignature('sigCanvasSafety','clearSigSafety');
+    initSignature('sigCanvasW1','clearSigW1');
+    initSignature('sigCanvasW2','clearSigW2');
+    initSignature('sigCanvasW3','clearSigW3');
+    syncSigFromMeta();
+
+    setTimeout(equalizeHazardMitiWidth, 50);
+    window.addEventListener("resize", function(){ requestAnimationFrame(equalizeHazardMitiWidth); });
+    window.addEventListener("orientationchange", equalizeHazardMitiWidth);
+
+  }catch(e){
+    console.error(e);
+    alert("기능 초기화 중 오류: " + (e && e.message ? e.message : e));
   }
-  document.addEventListener("DOMContentLoaded", initAll);
-  </script>
+}
+document.addEventListener("DOMContentLoaded", initAll);
+</script>
 </body>
 </html>
