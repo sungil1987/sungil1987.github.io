@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="light" />
 <title>LG전자 ES에너지컨설팅팀 위험성 평가표 (모바일 표 Ver.)</title>
-111111111111111111111111111111111111111111111111111
-<!--  html2canvas 정식 로더 (깨진 태그 복구) -->
+
+<!-- ✅ html2canvas (정식 로드) -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
@@ -69,7 +69,6 @@ main{padding:12px 0}
 }
 .field:focus{ border-color:var(--focus); box-shadow:0 0 0 3px rgba(59,130,246,.15) }
 .field.textarea{ min-height:72px; resize:vertical }
-
 .table-wrap{
   width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--border); border-radius:var(--radius); background:#fff;
 }
@@ -79,7 +78,6 @@ table{
 /* 화면용 열 폭 */
 col.c-task { width:72px } col.c-hazard{ width:364px } col.c-ok { width:72px } col.c-fix { width:72px }
 col.c-na { width:88px } col.c-miti{ width:220px } col.c-done{ width:56px }
-
 th,td{ border:1px solid var(--border); padding:var(--table-pad); font-size:var(--fs-body); vertical-align:top }
 thead th{ background:#f3f4f6; text-align:center; white-space:nowrap }
 td{ text-align:left }
@@ -87,15 +85,13 @@ td.section{ text-align:center !important; vertical-align:middle !important; font
 .section-cell{ display:flex; flex-direction:column; align-items:center; justify-content:space-between; min-height:100%; gap:8px }
 .section-title{ font-weight:700 }
 .section-actions{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap }
-.chk-wrap{ display:flex; align-items:center; justify-content:center; min-height:32px; }
+.chk-wrap{ display:flex; align-items:center; justify-content:center; min-height:32px; position:relative; } /* ✕ 표시용 relative */
 .riskchk{ width:18px; height:18px; accent-color:#111827; cursor:pointer; }
 @media(pointer:coarse){ .riskchk{ width:21px; height:21px } }
-
 .cell-input{
   width:100%; min-height:40px; border:1px solid var(--border); border-radius:8px; background:#fff; font-family:inherit; font-size:inherit;
   padding:6px 8px; outline:none; white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; resize:vertical;
 }
-
 /* 보완대책 드롭셀/사용자입력 UI */
 .miti-cell{ padding:6px !important; }
 .miti-ui{ display:flex; flex-direction:column; gap:6px; }
@@ -105,18 +101,19 @@ td.section{ text-align:center !important; vertical-align:middle !important; font
 }
 .miti-user{ display:none; }
 .miti-print{ display:none; min-height:48px; white-space:pre-wrap; word-break:break-word; }
-
 @supports (-webkit-touch-callout: none) {
   .miti-select{ padding-top:8px; padding-bottom:8px; }
 }
 @media (pointer:coarse) and (max-width:800px){ .miti-select{ line-height:1.2; } }
-
 .signature{ width:100%; height:130px }
 .sig-box{ position:relative }
 #printPDF{ position:absolute; top:-50px; right:14px; transform:none; z-index:2 }
 .signature canvas{
   width:100%; height:100%; display:block; border:1px dashed var(--border); border-radius:8px; background:#fff; touch-action:none
 }
+
+/* ✕(X) 표시 스타일: 비활성 텍스트 색과 동일 (#6b7280) */
+.xmark{ position:absolute; pointer-events:none; color:#6b7280; font-weight:700; font-size:18px; line-height:1; left:50%; top:50%; transform:translate(-50%,-58%); }
 
 /* 인쇄 최적화 */
 @page{ margin:12mm }
@@ -149,7 +146,6 @@ td.section{ text-align:center !important; vertical-align:middle !important; font
   html.print-portrait col.c-na{width:6%!important}
   html.print-portrait col.c-miti{width:36%!important}
   html.print-portrait col.c-done{width:2%!important}
-
   html.print-landscape col.c-task{width:8%!important}
   html.print-landscape col.c-hazard{width:36%!important}
   html.print-landscape col.c-ok{width:5%!important}
@@ -172,7 +168,6 @@ td.section{ text-align:center !important; vertical-align:middle !important; font
 #approvalSection > h2{ font-size:calc(var(--fs-h2) - 4px + 3px) }
 </style>
 </head>
-
 <body>
 <header>
   <div class="wrap">
@@ -301,18 +296,21 @@ td.section{ text-align:center !important; vertical-align:middle !important; font
         <div class="signature" style="margin-top:6px"><canvas id="sigCanvasSafety"></canvas></div>
         <div style="margin-top:6px"><button class="secondary" id="clearSigSafety" type="button">Clear</button></div>
       </div>
+
       <div class="sig-box">
         <label>작업자1</label>
         <input id="sigNameW1" type="text" placeholder="성명" class="field">
         <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW1"></canvas></div>
         <div style="margin-top:6px"><button class="secondary" id="clearSigW1" type="button">Clear</button></div>
       </div>
+
       <div class="sig-box">
         <label>작업자2</label>
         <input id="sigNameW2" type="text" placeholder="성명" class="field">
         <div class="signature" style="margin-top:6px"><canvas id="sigCanvasW2"></canvas></div>
         <div style="margin-top:6px"><button class="secondary" id="clearSigW2" type="button">Clear</button></div>
       </div>
+
       <div class="sig-box">
         <label>작업자3</label>
         <input id="sigNameW3" type="text" placeholder="성명" class="field">
@@ -328,7 +326,7 @@ td.section{ text-align:center !important; vertical-align:middle !important; font
 /* ========= A. 런타임 로더: html2canvas 보장 ========= */
 function ensureHtml2Canvas(){
   return new Promise(function(resolve, reject){
-    if (window.html2canvas && typeof window.html2canvas === 'function') { resolve(window.html2canvas); return; }
+    if (window.html2canvas && typeof window.html2canvas === 'function'){ resolve(window.html2canvas); return; }
     let tries = 0;
     (function waitForIt(){
       if (window.html2canvas && typeof window.html2canvas === 'function'){ resolve(window.html2canvas); return; }
@@ -351,12 +349,7 @@ const byId = (id)=>document.getElementById(id);
 const qs  = (sel)=>document.querySelector(sel);
 const qsa = (sel)=>Array.prototype.slice.call(document.querySelectorAll(sel));
 
-/* ========= C. 표/입력/행증감/마스터체크/서명패드/인쇄  기존 로직 (불변) ========= */
-/* (중략 없이 그대로 유지  아래 원문과 동일) */
-
-/* ... (여기부터는 사용 중이던 원본 로직을 그대로 포함: injectCheckbox/injectTextarea/injectMitiInput/initRiskRow/행증감/서명패드/인쇄/캡쳐공유 등 기존 함수 원문) ... */
-
-/* === 원문 그대로 시작 === */
+/* ========= C. 표/입력/행증감/마스터체크/서명패드/인쇄 — 기존 로직 (불변) ========= */
 function injectCheckbox(cell, colKey, labelText){
   const input=document.createElement("input");
   input.type="checkbox"; input.className="riskchk";
@@ -429,7 +422,6 @@ function initRiskRow(tr){
   if(idxHaz>=0 && tds[idxHaz].textContent.trim()==="" && !tds[idxHaz].querySelector(".cell-input")) injectTextarea(tds[idxHaz]);
 }
 function initRiskTable(){ qsa("#riskTable tbody tr").forEach(initRiskRow); }
-
 const PREP_BASE_ROWS=8, WORKS_BASE_ROWS=5, MISC_BASE_ROWS=1;
 function adjustRowspan(cellId, base, delta){
   const td = byId(cellId); if(!td) return;
@@ -498,6 +490,18 @@ function removeMiscRow(){
     tbody.removeChild(lastExtra); adjustRowspan("misc-section-cell", MISC_BASE_ROWS, -1);
   }catch(e){ console.error(e); alert("기타 섹션 행 삭제 중 오류: " + (e?.message || e)); }
 }
+
+/* === [개선 유지] 해당없음(마스터) 체크 시 하위 5개 항목 비활성 + 체크박스에 ✕ 표시 === */
+function toggleXForRow(row, show){
+  row.querySelectorAll('.chk-wrap').forEach(wrap=>{
+    let x = wrap.querySelector('.xmark');
+    if(show){
+      if(!x){ x = document.createElement('span'); x.className='xmark'; x.textContent='✕'; wrap.appendChild(x); }
+    }else{
+      if(x) x.remove();
+    }
+  });
+}
 function setPrepSubRowsDisabled(disabled){
   qsa("#riskTable tbody tr.prep-sub-row").forEach((row)=>{
     ["ok","fix","na","done"].forEach((colKey)=>{
@@ -507,6 +511,7 @@ function setPrepSubRowsDisabled(disabled){
     const sel=row.querySelector('.miti-select'); const user=row.querySelector('.miti-user');
     if(sel){ sel.disabled=!!disabled; }
     if(user){ user.disabled=!!disabled; }
+    toggleXForRow(row, !!disabled);
   });
 }
 function initPrepRowLogic(){
@@ -519,6 +524,8 @@ function initPrepRowLogic(){
   qsa('#prep-master-row input.riskchk[data-col="na"]').forEach((chk)=>chk.addEventListener("change", evalState));
   evalState();
 }
+
+/* 서명패드 */
 function initSignature(canvasId, clearBtnId){
   const cvs=byId(canvasId), btn=byId(clearBtnId); if(!cvs) return;
   const ctx=cvs.getContext('2d');
@@ -544,11 +551,15 @@ function initSignature(canvasId, clearBtnId){
   internalResize(true);
   btn?.addEventListener('click', ()=>ctx.clearRect(0,0,cvs.width,cvs.height));
 }
+
+/* 인쇄 */
 function attachSafePrint(btn){
   if(!btn) return; let printing=false;
   const handler=function(){ if(printing) return; printing=true; try{ window.print(); } finally { setTimeout(()=>{ printing=false; }, 1200); } };
   btn.addEventListener("click", handler, {passive:false});
 }
+
+/* 초기화 */
 function resetToMaster(){
   try{
     qsa('.riskchk').forEach((chk)=>{ chk.checked=false; chk.disabled=false; });
@@ -561,9 +572,11 @@ function resetToMaster(){
     const prepCell=byId("prep-section-cell"); if(prepCell) prepCell.rowSpan=PREP_BASE_ROWS;
     const worksCell=byId("task-works-label"); if(worksCell) worksCell.rowSpan=WORKS_BASE_ROWS;
     const miscCell=byId("misc-section-cell"); if(miscCell) miscCell.rowSpan=MISC_BASE_ROWS;
+    qsa('.xmark').forEach((x)=>x.remove());
     setTimeout(equalizeHazardMitiWidth, 50);
   }catch(e){ console.error(e); alert("초기화 중 오류: " + (e?.message || e)); }
 }
+
 function equalizeHazardMitiWidth(){
   const isMobile = window.matchMedia("(max-width: 800px), (pointer:coarse)").matches;
   const styleId = "dyn-mobile-cols";
@@ -615,13 +628,15 @@ function scalePageBlocksForPrint(){
   }catch(e){}
 }
 function resetBlockScaleAfterPrint(){ qsa('.page-block').forEach((block)=>{ block.style.transform=''; block.style.width=''; }); }
+
 function attachDoneMaster(){
   const master=byId("doneMasterChk"); if(!master) return;
   master.addEventListener("change", ()=>{
     qsa('#riskTable tbody input.riskchk[data-col="done"]').forEach((chk)=>{ if(chk.disabled) return; chk.checked = master.checked; });
   });
 }
-/* ========= D. 캡쳐/공유 (불변) ========= */
+
+/* ========= D. 캡쳐/공유 ========= */
 function getContentWidth(doc){
   const de = doc.documentElement, bo = doc.body;
   return Math.max(de.scrollWidth, bo.scrollWidth, de.clientWidth, bo.clientWidth);
@@ -687,48 +702,48 @@ function captureFullPageToBlob(){
         const w = el.scrollWidth || el.getBoundingClientRect().width; if(w && w>0) el.style.width = w + 'px';
       });
       ensureHtml2Canvas()
-      .then(()=>renderWithH2C(document.body))
-      .then((canvas)=>{
-        backup.forEach((b)=>{ b.el.style.overflow = b.overflow; b.el.style.width = b.width; });
-        const scale = Math.min(2, window.devicePixelRatio || 2);
-        const cropHeightPx = Math.min(canvas.height, Math.max(1, Math.round(limitBottomCss * scale)));
-        let outCanvas = canvas;
-        if (cropHeightPx > 0 && cropHeightPx < canvas.height) {
-          outCanvas = document.createElement('canvas');
-          outCanvas.width = canvas.width; outCanvas.height = cropHeightPx;
-          const octx = outCanvas.getContext('2d');
-          octx.drawImage(canvas, 0, 0, canvas.width, cropHeightPx, 0, 0, canvas.width, cropHeightPx);
-        }
-        outCanvas.toBlob((b)=>{ resolve(b); }, 'image/png', 1.0);
-      })
-      .catch((err)=>{
-        const msg = (err && (err.message || err)).toString().toLowerCase();
-        if(msg.includes('unsupported color function') || msg.includes('color(') || msg.includes('oklab') || msg.includes('oklch') || msg.includes('lch(') || msg.includes('lab(')){
-          const s=document.createElement('script');
-          s.src="https://cdn.jsdelivr.net/npm/html2canvas-pro/dist/html2canvas-pro.min.js";
-          s.async=true;
-          s.onload=function(){
-            renderWithH2C(document.body).then((canvas)=>{
-              backup.forEach((b)=>{ b.el.style.overflow = b.overflow; b.el.style.width = b.width; });
-              const scale = Math.min(2, window.devicePixelRatio || 2);
-              const cropHeightPx = Math.min(canvas.height, Math.max(1, Math.round(limitBottomCss * scale)));
-              let outCanvas = canvas;
-              if (cropHeightPx > 0 && cropHeightPx < canvas.height) {
-                outCanvas = document.createElement('canvas');
-                outCanvas.width = canvas.width; outCanvas.height = cropHeightPx;
-                const octx = outCanvas.getContext('2d');
-                octx.drawImage(canvas, 0, 0, canvas.width, cropHeightPx, 0, 0, canvas.width, cropHeightPx);
-              }
-              outCanvas.toBlob((b)=>{ resolve(b); }, 'image/png', 1.0);
-            }).catch((e2)=>{ backup.forEach((b)=>{ b.el.style.overflow = b.overflow; b.el.style.width = b.width; }); reject(e2); });
-          };
-          s.onerror=function(){ backup.forEach((b)=>{ b.el.style.overflow = b.overflow; b.el.style.width = b.width; }); reject(err); };
-          document.head.appendChild(s);
-        } else {
+       .then(()=>renderWithH2C(document.body))
+       .then((canvas)=>{
           backup.forEach((b)=>{ b.el.style.overflow = b.overflow; b.el.style.width = b.width; });
-          reject(err);
-        }
-      });
+          const scale = Math.min(2, window.devicePixelRatio || 2);
+          const cropHeightPx = Math.min(canvas.height, Math.max(1, Math.round(limitBottomCss * scale)));
+          let outCanvas = canvas;
+          if (cropHeightPx > 0 && cropHeightPx < canvas.height) {
+            outCanvas = document.createElement('canvas');
+            outCanvas.width = canvas.width; outCanvas.height = cropHeightPx;
+            const octx = outCanvas.getContext('2d');
+            octx.drawImage(canvas, 0, 0, canvas.width, cropHeightPx, 0, 0, canvas.width, cropHeightPx);
+          }
+          outCanvas.toBlob((b)=>{ resolve(b); }, 'image/png', 1.0);
+       })
+       .catch((err)=>{
+          const msg = (err && (err.message || err)).toString().toLowerCase();
+          if(msg.includes('unsupported color function') || msg.includes('color(') || msg.includes('oklab') || msg.includes('oklch') || msg.includes('lch(') || msg.includes('lab(')){
+            const s=document.createElement('script');
+            s.src="https://cdn.jsdelivr.net/npm/html2canvas-pro/dist/html2canvas-pro.min.js";
+            s.async=true;
+            s.onload=function(){
+              renderWithH2C(document.body).then((canvas)=>{
+                backup.forEach((b)=>{ b.el.style.overflow = b.overflow; b.el.style.width = b.width; });
+                const scale = Math.min(2, window.devicePixelRatio || 2);
+                const cropHeightPx = Math.min(canvas.height, Math.max(1, Math.round(limitBottomCss * scale)));
+                let outCanvas = canvas;
+                if (cropHeightPx > 0 && cropHeightPx < canvas.height) {
+                  outCanvas = document.createElement('canvas');
+                  outCanvas.width = canvas.width; outCanvas.height = cropHeightPx;
+                  const octx = outCanvas.getContext('2d');
+                  octx.drawImage(canvas, 0, 0, canvas.width, cropHeightPx, 0, 0, canvas.width, cropHeightPx);
+                }
+                outCanvas.toBlob((b)=>{ resolve(b); }, 'image/png', 1.0);
+              }).catch((e2)=>{ backup.forEach((b)=>{ b.el.style.overflow = b.overflow; b.el.style.width = b.width; }); reject(e2); });
+            };
+            s.onerror=function(){ backup.forEach((b)=>{ b.el.style.overflow = b.overflow; b.el.style.width = b.width; }); reject(err); };
+            document.head.appendChild(s);
+          } else {
+            backup.forEach((b)=>{ b.el.style.overflow = b.overflow; b.el.style.width = b.width; });
+            reject(err);
+          }
+       });
     }catch(e){ reject(e); }
   });
 }
@@ -819,7 +834,7 @@ function initAll(){
     const btnPrepAdd = byId("btnPrepAdd"), btnPrepRemove = byId("btnPrepRemove");
     const btnWorksAdd= byId("btnWorksAdd"), btnWorksRemove = byId("btnWorksRemove");
     const btnMiscAdd = byId("addMiscRow"), btnMiscRemove = byId("removeMiscRow");
-    const btnShareCap = byId("btnShareCapture"); //  존재 확인 후 전달
+    const btnShareCap = byId("btnShareCapture");
 
     attachSafePrint(btnPrint);
     attachDoneMaster();
@@ -834,8 +849,7 @@ function initAll(){
     btnMiscRemove?.addEventListener("click", removeMiscRow);
 
     initRiskTable();
-    initPrepRowLogic();
-
+    initPrepRowLogic();   //  마스터 해당없음  하위 5개 항목 제어 + ✕ 표시
     initSignature('sigCanvasSafety','clearSigSafety');
     initSignature('sigCanvasW1','clearSigW1');
     initSignature('sigCanvasW2','clearSigW2');
@@ -854,8 +868,66 @@ function initAll(){
   }
 }
 document.addEventListener("DOMContentLoaded", initAll);
+
+/* ========= F. 자동 업데이트/새로고침 (단일 index.html만 사용, 웹/앱 공통) ========= */
+(function(){
+  // 중복 리로드 방지
+  let reloadedOnce = false;
+  function softReloadOnce(){
+    if (reloadedOnce) return;
+    reloadedOnce = true;
+    location.reload();
+  }
+
+  // 현재 문서의 정적 DOM 해시 (스크립트/폼/캔버스 등 제외)
+  function getCurrentDocFingerprint(){
+    try{
+      const clone = document.documentElement.cloneNode(true);
+      clone.querySelectorAll('script, canvas, input, textarea, select').forEach(n=>n.remove());
+      let text = clone.outerHTML.replace(/\s+/g,' ');
+      let h=0; for (let i=0; i<text.length; i++){ h=((h<<5)-h)+text.charCodeAt(i); h|=0; }
+      return String(h);
+    }catch(e){ return String(Math.random()); }
+  }
+  const currentHash = getCurrentDocFingerprint();
+
+  // 원본 index.html을 네트워크로 강제 요청하여 비교 (Service Worker가 강제 캐시하지 않는 한 통과)
+  async function checkAndReloadIfUpdated(){
+    try{
+      const url = new URL(location.href);
+      url.searchParams.set('_v', Date.now().toString());       // 캐시 우회 쿼리
+      const resp = await fetch(url.toString(), { cache: 'no-store' }); // 네트워크 강제
+      if (!resp.ok) return;
+      let html = await resp.text();
+      html = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'').replace(/\s+/g,' ');
+      let h=0; for (let i=0; i<html.length; i++){ h=((h<<5)-h)+html.charCodeAt(i); h|=0; }
+      const remoteHash = String(h);
+      if (remoteHash && remoteHash !== currentHash){
+        softReloadOnce();
+      }
+    }catch(e){
+      // 오프라인/차단 등은 조용히 무시 (오류 팝업 금지)
+    }
+  }
+
+  function scheduleChecks(){
+    // 최초 1회
+    checkAndReloadIfUpdated();
+    // 포커스/가시 상태 전환 시 재확인 (PWA/브라우저 공통)
+    document.addEventListener('visibilitychange', function(){
+      if (document.visibilityState === 'visible') checkAndReloadIfUpdated();
+    });
+    window.addEventListener('focus', checkAndReloadIfUpdated);
+    // GitHub Pages 특성상 초기 10초 내 재확인 1회(선택)
+    setTimeout(checkAndReloadIfUpdated, 10000);
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    scheduleChecks();
+  } else {
+    document.addEventListener('DOMContentLoaded', scheduleChecks, { once:true });
+  }
+})();
 </script>
 </body>
 </html>
-
-
